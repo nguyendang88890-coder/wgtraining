@@ -6,6 +6,7 @@ Training portal cho nhân viên WeGolden — quản lý khóa học, tiến đ�
 
 - [Next.js](https://nextjs.org) (App Router) + TypeScript + Tailwind CSS
 - [Prisma](https://www.prisma.io) ORM — SQLite cho dev, có thể chuyển sang PostgreSQL cho production
+- [NextAuth.js / Auth.js v5](https://authjs.dev) — credentials provider (email/password), 2 role: ADMIN/LEARNER
 - GitHub Actions cho CI
 
 ## Getting Started
@@ -32,6 +33,14 @@ prisma/
   schema.prisma                     # data model
 prisma.config.ts                    # cấu hình Prisma CLI (migrate, DATABASE_URL)
 ```
+
+## Authentication
+
+- Đăng ký: `/register` (Server Action hash password bằng bcryptjs, tạo `User` role LEARNER)
+- Đăng nhập: `/login` (NextAuth Credentials provider)
+- Route `/dashboard/*` được bảo vệ bởi `src/proxy.ts` (Next.js 16 Proxy, trước đây gọi là middleware) — chưa đăng nhập sẽ tự redirect về `/login`
+- Cấu hình edge-safe tách riêng ở `src/auth.config.ts` (không đụng Prisma), phần đầy đủ có Credentials + Prisma ở `src/auth.ts`
+- Cần set `AUTH_SECRET` trong `.env` (đã có sẵn cho dev, đổi giá trị khác khi lên production)
 
 ## Database
 
