@@ -11,3 +11,87 @@ generator client {
 datasource db {
   provider = "sqlite"
 }
+
+enum Role {
+  ADMIN
+  LEARNER
+}
+
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  passwordHash String
+  name         String
+  role         Role     @default(LEARNER)
+  createdAt    DateTime @default(now())
+
+  coursesCreated Course[]     @relation("CourseCreatedBy")
+  enrollments    Enrollment[]
+  attempts       Attempt[]
+}
+
+model Course {
+  id          String   @id @default(cuid())
+  title       String
+  description String
+  createdById String
+  createdBy   User     @relation("CourseCreatedBy", fields: [createdById], references: [id])
+  createdAt   DateTime @default(now())
+
+  lessons     Lesson[]
+  quizzes     Quiz[]
+  enrollments Enrollment[]
+}
+
+model Lesson {
+  id       String @id @default(cuid())
+  courseId String
+  course   Course @relation(fields: [courseId], references: [id])
+  title    String
+  content  String
+  order    Int
+}
+
+model Enrollment {
+  id          String    @id @default(cuid())
+  userId      String
+  user        User      @relation(fields: [userId], references: [id])
+  courseId    String
+  course      Course    @relation(fields: [courseId], references: [id])
+  progress    Int       @default(0)
+  enrolledAt  DateTime  @default(now())
+  completedAt DateTime?
+
+  @@unique([userId, courseId])
+}
+
+model Quiz {
+  id       String @id @default(cuid())
+  courseId String
+  course   Course @relation(fields: [courseId], references: [id])
+  title    String
+
+  questions Question[]
+  attempts  Attempt[]
+}
+
+model Question {
+  id           String @id @default(cuid())
+  quizId       String
+  quiz         Quiz   @relation(fields: [quizId], references: [id])
+  text         String
+  options      Json
+  correctIndex Int
+  order        Int
+}
+
+model Attempt {
+  id          String   @id @default(cuid())
+  quizId      String
+  quiz        Quiz     @relation(fields: [quizId], references: [id])
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+  answers     Json
+  score       Int
+  submittedAt DateTime @default(now())
+}
