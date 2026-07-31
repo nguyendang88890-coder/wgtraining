@@ -1,52 +1,47 @@
 # WG Training Portal
 
-Training portal cho nhân viên WeGolden — quản lý khóa học, tiến độ học viên, dashboard.
+Training portal cho nhân viên WeGolden — quản lý khóa học, thi cử, phỏng vấn, theo dõi tiến độ học viên.
 
 ## Stack
 
-- [Next.js](https://nextjs.org) (App Router) + TypeScript + Tailwind CSS
-- [Prisma](https://www.prisma.io) ORM — SQLite cho dev, có thể chuyển sang PostgreSQL cho production
-- [NextAuth.js / Auth.js v5](https://authjs.dev) — credentials provider (email/password), 2 role: ADMIN/LEARNER
-- GitHub Actions cho CI
+- HTML/CSS/JavaScript thuần (không build step, không framework)
+- [Firebase Realtime Database](https://firebase.google.com/docs/database) — project `wmt-training-portal`
+- Kiến trúc lưu trữ: đọc/ghi qua `localStorage` trước (nhanh, hoạt động offline), đồng bộ nền với Firebase qua `firebase-config.js`
 
-## Getting Started
+## Chạy local
 
 ```bash
-npm install
-npx prisma generate
-npm run dev
+npx serve -p 3030 .
 ```
 
-Mở [http://localhost:3000](http://localhost:3000) để xem kết quả.
+Mở [http://localhost:3030](http://localhost:3030).
 
-## Cấu trúc thư mục
+## Cấu trúc
 
 ```
-src/
-  app/
-    (auth)/login, (auth)/register   # trang đăng nhập / đăng ký
-    courses/                        # danh sách khóa học
-    dashboard/                      # dashboard học viên
-  lib/db.ts                         # Prisma client singleton
-  generated/prisma/                 # Prisma client generated (gitignored)
-prisma/
-  schema.prisma                     # data model
-prisma.config.ts                    # cấu hình Prisma CLI (migrate, DATABASE_URL)
+index.html          # Dashboard học viên
+about.html           # Giới thiệu
+admin.html           # Quản trị (admin)
+leader.html          # Trang trưởng nhóm/leader
+module1-7.html       # 7 module đào tạo
+exam.html            # Bài thi
+monthlytest.html     # Bài test hàng tháng
+interview.html       # Quy trình phỏng vấn
+tracker.html         # Theo dõi tiến độ
+results.html         # Kết quả
+taketest.html        # Làm bài thi
+firebase-config.js   # Cấu hình Firebase + lớp đồng bộ localStorage <-> Firebase
+module-common.js     # Logic dùng chung cho các trang module
+style.css            # Style dùng chung
 ```
-
-## Authentication
-
-- Đăng ký: `/register` (Server Action hash password bằng bcryptjs, tạo `User` role LEARNER)
-- Đăng nhập: `/login` (NextAuth Credentials provider)
-- Route `/dashboard/*` được bảo vệ bởi `src/proxy.ts` (Next.js 16 Proxy, trước đây gọi là middleware) — chưa đăng nhập sẽ tự redirect về `/login`
-- Cấu hình edge-safe tách riêng ở `src/auth.config.ts` (không đụng Prisma), phần đầy đủ có Credentials + Prisma ở `src/auth.ts`
-- Cần set `AUTH_SECRET` trong `.env` (đã có sẵn cho dev, đổi giá trị khác khi lên production)
 
 ## Database
 
-- Dev: SQLite (`file:./dev.db`), cấu hình qua biến `DATABASE_URL` trong `.env`
-- Đổi schema: sửa `prisma/schema.prisma` rồi chạy `npx prisma migrate dev --name <mô_tả>`
+Firebase Realtime Database, project `wmt-training-portal`. Cấu trúc dữ liệu (xem `_fbPath` trong `firebase-config.js`):
+
+- `users`, `exam_qbank`, `monthly_config`, `monthly_scores`, `proposals`, `interviews_list`, `qbank/*` — dữ liệu chung
+- `progress/{user}`, `exam/{user}`, `quiz/{user}/m{n}`, `interview/{user}`, `submissions/{user}/{month}`, `reschedule/{user}` — dữ liệu theo từng học viên
 
 ## Deploy
 
-Chưa cấu hình. Khi lên production cần đổi `datasource` sang PostgreSQL và cập nhật driver adapter trong `src/lib/db.ts`.
+Chưa cấu hình — có thể deploy tĩnh lên Firebase Hosting, Vercel, hoặc bất kỳ static host nào.
