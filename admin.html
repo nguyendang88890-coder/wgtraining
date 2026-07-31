@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Admin Panel | WMT Training</title>
+  <title>Admin Panel | WG Training</title>
   <link rel="stylesheet" href="style.css">
   <style>
     .admin-stats {
@@ -473,7 +473,7 @@
               <strong>Google Gemini API Key</strong>
             </div>
             <p style="font-size:0.82rem;color:var(--text-muted);margin-bottom:14px;">
-              Used for AI essay grading in Monthly Test. Key is stored locally in your browser only and never sent to WMT servers.<br>
+              Used for AI essay grading in Monthly Test. Key is stored locally in your browser only and never sent to WG servers.<br>
               Get your key at <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener" style="color:var(--gold);">aistudio.google.com</a>.
             </p>
             <div class="form-group" style="margin-bottom:10px;">
@@ -721,7 +721,7 @@ async function runAutoUpgrade() {
   if (window.FDB) {
     await Promise.all(upgraded.map(({ uname }) =>
       window.FDB.ref('users/' + uname).update({ employeeType: 'old' })
-        .catch(e => console.warn('[WMT] autoUpgrade Firebase error:', uname, e.message))
+        .catch(e => console.warn('[WG] autoUpgrade Firebase error:', uname, e.message))
     ));
   }
 
@@ -993,7 +993,7 @@ async function fixAllDepartments() {
   if (window.FDB) {
     await Promise.all(changed.map(({ uname, fixed }) =>
       window.FDB.ref('users/' + uname).update({ department: fixed })
-        .catch(e => console.warn('[WMT] fixDept Firebase error:', uname, e.message))
+        .catch(e => console.warn('[WG] fixDept Firebase error:', uname, e.message))
     ));
   }
 
@@ -2185,7 +2185,7 @@ function saveResetPw() {
   users[uname].password = nw;
   localStorage.setItem('wmt_users_db', JSON.stringify(users));
   if (window.FDB) window.FDB.ref('users/' + uname).update({ password: nw })
-    .catch(e => console.warn('[WMT] resetPw Firebase error:', e.message));
+    .catch(e => console.warn('[WG] resetPw Firebase error:', e.message));
   closeResetPwModal();
   alert('✅ Password for "' + uname + '" has been reset successfully.');
 }

@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Monthly Test | WMT Training</title>
+<title>Monthly Test | WG Training</title>
 <link rel="stylesheet" href="style.css">
 <style>
 .mt-hero {
@@ -1140,7 +1140,7 @@ function getNotifPrefs(u) {
 function saveNotifPrefs(u, prefs) {
   localStorage.setItem(NOTIF_PREFS_KEY(u), JSON.stringify(prefs));
   if (window.FDB) window.FDB.ref('notif_prefs/' + u).set(prefs)
-    .catch(e => console.warn('[WMT] notifPrefs sync error:', e.message));
+    .catch(e => console.warn('[WG] notifPrefs sync error:', e.message));
 }
 
 function fmtLocalTime(iso, tz) {
@@ -1198,7 +1198,7 @@ function scheduleReminderNotifs(u) {
     if (delay > 0 && delay < 172800000) { // within 48h
       setTimeout(() => {
         if (Notification.permission === 'granted') {
-          new Notification('📅 WMT Monthly Test', { body, icon: '', tag: 'wmt-' + m + '-' + key });
+          new Notification('📅 WG Monthly Test', { body, icon: '', tag: 'wmt-' + m + '-' + key });
         }
       }, delay);
     }
@@ -1217,7 +1217,7 @@ async function requestNotifPermission() {
   renderNotifPanel();
   if (perm === 'granted') {
     scheduleReminderNotifs(u);
-    new Notification('📅 WMT Monthly Test', { body: 'Notifications enabled! You will be reminded before tests.', tag: 'wmt-test-on' });
+    new Notification('📅 WG Monthly Test', { body: 'Notifications enabled! You will be reminded before tests.', tag: 'wmt-test-on' });
   }
 }
 
@@ -2085,7 +2085,7 @@ async function aiGradeOne(qid) {
   feedbackEl.classList.add('hidden');
   feedbackEl.classList.remove('err');
 
-  const prompt = `You are grading a training exam essay for a sales/trading company (WeMasterTrade). Grade the student's answer based on the rubric. The answer may be in English or Vietnamese — assess content, not language.
+  const prompt = `You are grading a training exam essay for a sales/trading company (WeGolden). Grade the student's answer based on the rubric. The answer may be in English or Vietnamese — assess content, not language.
 
 Question: ${q.text}
 Max Points: ${q.maxPts}

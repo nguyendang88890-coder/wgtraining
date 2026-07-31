@@ -52,13 +52,13 @@ function adminPushUserMigration() {
     if (Object.keys(patch).length) {
       // update() merges — does NOT replace the whole user object
       window.FDB.ref('users/' + uname).update(patch)
-        .catch(err => console.warn('[WMT] migration patch failed for', uname, err.message));
+        .catch(err => console.warn('[WG] migration patch failed for', uname, err.message));
     }
   });
 
   // Reflect patched defaults in localStorage as well
   localStorage.setItem('wmt_users_db', JSON.stringify(users));
-  console.info('[WMT] adminPushUserMigration: patched missing fields via per-user update().');
+  console.info('[WG] adminPushUserMigration: patched missing fields via per-user update().');
 }
 
 // Auth guard
@@ -173,7 +173,7 @@ function saveProfileModal() {
   localStorage.setItem('wmt_users_db', JSON.stringify(users));
   if (window.FDB) {
     window.FDB.ref('users/' + user).update({ email, fullName })
-      .catch(e => console.warn('[WMT] saveProfileModal Firebase error:', e.message));
+      .catch(e => console.warn('[WG] saveProfileModal Firebase error:', e.message));
   }
   const s = document.getElementById('pmSuccess');
   s.style.display = 'block';
@@ -455,8 +455,8 @@ function getSidebarHTML(activeModule) {
   const ivStatus  = !iv ? 'BOOK' : ({ pending:'⏳', confirmed:'✅', completed:'🏆', cancelled:'↺' }[iv.status] || '⏳');
   return `
     <div class="sidebar-header">
-      <div class="sidebar-logo">WeMasterTrade</div>
-      <div class="sidebar-subtitle">Sales Training Portal</div>
+      <div class="sidebar-logo">WeGolden</div>
+      <div class="sidebar-subtitle">Internal Training Portal</div>
     </div>
     <div class="sidebar-user">
       <div class="user-avatar">${user[0].toUpperCase()}</div>
@@ -469,7 +469,7 @@ function getSidebarHTML(activeModule) {
     <nav class="sidebar-nav">
       <div class="nav-section-title">Training Modules</div>
       <a href="index.html" class="nav-item"><span class="nav-icon">🏠</span> Dashboard</a>
-      <a href="about.html" class="nav-item ${activeModule === 'about' ? 'active' : ''}"><span class="nav-icon">🏢</span> About WMT <span style="font-size:0.6rem;font-weight:700;background:rgba(255,61,113,0.18);color:#ff6b8a;border:1px solid rgba(255,61,113,0.35);border-radius:4px;padding:1px 5px;margin-left:4px;vertical-align:middle;white-space:nowrap;">IMPORTANT</span></a>
+      <a href="about.html" class="nav-item ${activeModule === 'about' ? 'active' : ''}"><span class="nav-icon">🏢</span> About WG <span style="font-size:0.6rem;font-weight:700;background:rgba(255,61,113,0.18);color:#ff6b8a;border:1px solid rgba(255,61,113,0.35);border-radius:4px;padding:1px 5px;margin-left:4px;vertical-align:middle;white-space:nowrap;">IMPORTANT</span></a>
       ${modules.map(m => `
         <a href="${m.file}" class="nav-item ${m.id === activeModule ? 'active' : ''}" id="nav-m${m.id}">
           <span class="nav-icon">${m.icon}</span> <span>${m.title}</span>

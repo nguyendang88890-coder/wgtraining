@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Final Exam | WMT Training</title>
+  <title>Final Exam | WG Training</title>
   <link rel="stylesheet" href="style.css">
 <style>
 .exam-mod-hdr { font-size:0.78rem;font-weight:700;color:var(--gold);text-transform:uppercase;letter-spacing:.5px;margin:22px 0 10px;padding-bottom:6px;border-bottom:1px solid var(--border); }
@@ -101,7 +101,7 @@
       <!-- Intro View -->
       <div id="introView">
         <div class="exam-header">
-          <h2>📝 WeMasterTrade Final Exam</h2>
+          <h2>📝 WeGolden Final Exam</h2>
           <p>Test your knowledge across all 7 training modules. Answer 30 randomized questions.</p>
           <div class="exam-stats">
             <div class="exam-stat">
@@ -138,7 +138,7 @@
             <span class="callout-icon">⭐</span>
             <div class="callout-content">
               <strong>On Passing:</strong>
-              <p>You will be directed to schedule your video interview with a WeMasterTrade trainer. You will receive your Introducing Partner Certificate after the interview.</p>
+              <p>You will be directed to schedule your video interview with a WeGolden trainer. You will receive your Introducing Partner Certificate after the interview.</p>
             </div>
           </div>
         </div>
@@ -204,15 +204,15 @@
 <script>
 // ===== QUESTION BANK (55 questions) =====
 const QUESTION_BANK = [
-  // ABOUT WMT
-  { q: "What is the legal company name behind WeMasterTrade?", opts: ["WeMasterTrade Ltd.","WeCopy Fintech Inc.","WMT Global Corp.","MasterTrade Holdings"], _c: "MQ==", module: 0 },
-  { q: "In which city is WeMasterTrade's headquarters located?", opts: ["Dubai","Singapore","Vancouver","Montevideo"], _c: "Mg==", module: 0 },
-  { q: "In which year was WeMasterTrade founded?", opts: ["2019","2020","2021","2022"], _c: "Mg==", module: 0 },
-  { q: "How many global offices does WeMasterTrade currently have?", opts: ["2","3","4","5"], _c: "Mg==", module: 0 },
-  { q: "Which of the following is a WeMasterTrade office location?", opts: ["Tokyo, Japan","Sydney, Australia","Montevideo, Uruguay","London, UK"], _c: "Mg==", module: 0 },
-  { q: "What is WeMasterTrade's stated vision?", opts: ["To become the #1 forex broker","To become a Top 5 Prop Firm providing Instant Funding globally","To launch a crypto exchange by 2027","To open 10 offices worldwide"], _c: "MQ==", module: 0 },
-  { q: "WeMasterTrade is an official Season 2026 partner of which football club?", opts: ["Lamphun Warrior FC","Vancouver FC","Bangkok United","Toronto FC"], _c: "MQ==", module: 0 },
-  { q: "WeMasterTrade sponsors Lamphun Warrior FC in which country?", opts: ["Vietnam","Indonesia","Malaysia","Thailand"], _c: "Mw==", module: 0 },
+  // ABOUT WG
+  { q: "What is the legal company name behind WeGolden?", opts: ["WeGolden Ltd.","WeCopy Fintech Inc.","WG Global Corp.","MasterTrade Holdings"], _c: "MQ==", module: 0 },
+  { q: "In which city is WeGolden's headquarters located?", opts: ["Dubai","Singapore","Vancouver","Montevideo"], _c: "Mg==", module: 0 },
+  { q: "In which year was WeGolden founded?", opts: ["2019","2020","2021","2022"], _c: "Mg==", module: 0 },
+  { q: "How many global offices does WeGolden currently have?", opts: ["2","3","4","5"], _c: "Mg==", module: 0 },
+  { q: "Which of the following is a WeGolden office location?", opts: ["Tokyo, Japan","Sydney, Australia","Montevideo, Uruguay","London, UK"], _c: "Mg==", module: 0 },
+  { q: "What is WeGolden's stated vision?", opts: ["To become the #1 forex broker","To become a Top 5 Prop Firm providing Instant Funding globally","To launch a crypto exchange by 2027","To open 10 offices worldwide"], _c: "MQ==", module: 0 },
+  { q: "WeGolden is an official Season 2026 partner of which football club?", opts: ["Lamphun Warrior FC","Vancouver FC","Bangkok United","Toronto FC"], _c: "MQ==", module: 0 },
+  { q: "WeGolden sponsors Lamphun Warrior FC in which country?", opts: ["Vietnam","Indonesia","Malaysia","Thailand"], _c: "Mw==", module: 0 },
 
   // MODULE 1 — Products
   { q: "What is the profit target for Challenge Phase 1?", opts: ["5%","8%","10%","6%"], _c: "MQ==", module: 1 },
@@ -255,15 +255,15 @@ const QUESTION_BANK = [
   { q: "What commission applies to trading Indices (US30, NAS100)?", opts: ["$5/lot","$6/lot","0.035%","$0/lot"], _c: "Mw==", explain: "Indices (US30, NAS100, SPX500) have $0 commission per lot — no fixed commission charge. Forex is $5/lot, Gold is $6/lot, and Crypto uses 0.035% per trade.", module: 4 },
   { q: "Which platform supports Expert Advisors (EAs) for automated trading?", opts: ["NinjaTrader","MetaTrader 5","TradingView","cTrader"], _c: "MQ==", module: 4 },
   { q: "Which platform supports algorithmic trading via cBots?", opts: ["MetaTrader 5","TradingView","cTrader","All platforms"], _c: "Mg==", module: 4 },
-  { q: "Which cryptocurrencies are tradeable on WeMasterTrade?", opts: ["Only BTC","Only ETH","BTC and ETH","BTC, ETH, and XRP"], _c: "Mg==", module: 4 },
+  { q: "Which cryptocurrencies are tradeable on WeGolden?", opts: ["Only BTC","Only ETH","BTC and ETH","BTC, ETH, and XRP"], _c: "Mg==", module: 4 },
   { q: "What is the crypto trading commission?", opts: ["$5 per trade","$4 per lot","0.035% per trade","$1 per lot"], _c: "Mg==", module: 4 },
 
   // MODULE 5 — Payments
   { q: "Which crypto stablecoin is accepted for international deposits?", opts: ["BTC","ETH","USDT","All of the above"], _c: "Mw==", module: 5 },
-  { q: "Which platform does WeMasterTrade use for global profit payouts to traders?", opts: ["PayPal","Wise","Riseworks","Western Union"], _c: "Mg==", module: 5 },
+  { q: "Which platform does WeGolden use for global profit payouts to traders?", opts: ["PayPal","Wise","Riseworks","Western Union"], _c: "Mg==", module: 5 },
   { q: "Which of the following is a local wallet accepted for package purchases?", opts: ["Venmo","GCash","Revolut","Skrill"], _c: "MQ==", module: 5 },
-  { q: "What is the average profit payout processing time at WeMasterTrade?", opts: ["48 business hours","7 business days","24 business hours","3 business days"], _c: "Mg==", module: 5 },
-  { q: "BTC and USDT withdrawals at WeMasterTrade are processed at what cost?", opts: ["$5 flat fee","0.5% fee","Free of charge","Applicable fees apply"], _c: "Mw==", module: 5 },
+  { q: "What is the average profit payout processing time at WeGolden?", opts: ["48 business hours","7 business days","24 business hours","3 business days"], _c: "Mg==", module: 5 },
+  { q: "BTC and USDT withdrawals at WeGolden are processed at what cost?", opts: ["$5 flat fee","0.5% fee","Free of charge","Applicable fees apply"], _c: "Mw==", module: 5 },
   { q: "Which payment method for purchasing packages is available via paypal.me/wecopytrade?", opts: ["Cryptocurrency","Local bank transfer","PayPal","Local wallet"], _c: "Mg==", module: 5 },
 
   // MODULE 6 — Profit & Payouts
@@ -273,11 +273,11 @@ const QUESTION_BANK = [
   { q: "Which certificate will traders be granted after a successful payout?", opts: ["Profit Split Certificate","Challenge Certificate","Introducing Partner Certificate","Academy Certificate"], _c: "MA==", explain: "The Profit Split Certificate is issued to funded traders who receive payouts — it serves as official proof of profit withdrawal. The Challenge Certificate is for passing the evaluation, the Introducing Partner Certificate is for active sales partners, and the Academy Certificate is for education program completions.", module: 6 },
   { q: "In 510Zero, what happens to the profit share if profit is less than 6%?", opts: ["Stays the same","Reduced to fixed 10%","Reduced to 20%","Account suspended"], _c: "MQ==", module: 6 },
   { q: "In 510Zero, under 8% profit, which customers also have their profit share reduced to 10%?", opts: ["Vietnam and Philippines","Indonesia and Thailand","USA and UK","All customers"], _c: "MQ==", module: 6 },
-  { q: "When is a refund of an Instant Funding account allowed under WeMasterTrade's policy?", opts: ["Any time","Within 30 days","Only if no trades placed","Never"], _c: "Mg==", module: 6 },
+  { q: "When is a refund of an Instant Funding account allowed under WeGolden's policy?", opts: ["Any time","Within 30 days","Only if no trades placed","Never"], _c: "Mg==", module: 6 },
   { q: "Which certificate is awarded to Active introducing partners?", opts: ["Profit Split Certificate","Challenge Certificate","Introducing Partner Certificate","Academy Certificate"], _c: "Mg==", module: 6 },
 
   // MODULE 7 — Compliance
-  { q: "Which of the following countries is on WeMasterTrade's restricted list?", opts: ["Indonesia","Malaysia","Iran","Philippines"], _c: "Mg==", module: 7 },
+  { q: "Which of the following countries is on WeGolden's restricted list?", opts: ["Indonesia","Malaysia","Iran","Philippines"], _c: "Mg==", module: 7 },
   { q: "Which of the following countries was RECENTLY ADDED to the restricted list?", opts: ["India","Philippines","Vietnam","Indonesia"], _c: "Mg==", module: 7 },
   { q: "What is the consequence of Tick Scalping?", opts: ["Account reset without reducing profit share","7-day suspension","Immediate termination","10% penalty"], _c: "MA==", module: 7 },
   { q: "For Indonesia and Thailand, first rule violation results in?", opts: ["Warning","2-week suspension","Immediate termination","50% profit reduction"], _c: "Mg==", module: 7 },
@@ -307,7 +307,7 @@ function getActiveQBank() {
   const stored = localStorage.getItem('wmt_exam_qbank_v2');
   if (stored) {
     const parsed = JSON.parse(stored);
-    // Auto-reset if stored bank is missing module-0 (About WMT) questions
+    // Auto-reset if stored bank is missing module-0 (About WG) questions
     if (!parsed.some(q => (q.module || 0) === 0)) {
       dbWrite('wmt_exam_qbank_v2', JSON.stringify(QUESTION_BANK));
       return QUESTION_BANK;
@@ -334,7 +334,7 @@ function _ansQ(q) {
 }
 
 // ===== ADMIN EXAM MANAGEMENT =====
-const EQ_MODULE_NAMES = ['About WMT','Products','Trading Rules','Profit & Payouts','Payment Methods','Financial Products','Introducing Partner','Compliance & Risk'];
+const EQ_MODULE_NAMES = ['About WG','Products','Trading Rules','Profit & Payouts','Payment Methods','Financial Products','Introducing Partner','Compliance & Risk'];
 function getExamQBank() {
   const stored = JSON.parse(localStorage.getItem('wmt_exam_qbank_v2') || 'null');
   if (!stored) return null;

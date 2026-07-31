@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>WeMasterTrade — Sales Training Portal</title>
+  <title>WeGolden — Internal Training Portal</title>
   <link rel="stylesheet" href="style.css">
   <style>
     .exam-ready-card {
@@ -119,8 +119,8 @@
 <div id="loginPage" class="login-page">
   <div class="login-box animate-in">
     <div class="login-logo">
-      <h1>WeMasterTrade</h1>
-      <p>Sales Training Portal</p>
+      <h1>WeGolden</h1>
+      <p>Internal Training Portal</p>
     </div>
 
     <div class="auth-tabs">
@@ -251,8 +251,8 @@
 
   <aside class="sidebar" id="sidebar">
     <div class="sidebar-header">
-      <div class="sidebar-logo">WeMasterTrade</div>
-      <div class="sidebar-subtitle">Sales Training Portal</div>
+      <div class="sidebar-logo">WeGolden</div>
+      <div class="sidebar-subtitle">Internal Training Portal</div>
     </div>
 
     <div class="sidebar-user">
@@ -271,7 +271,7 @@
         <span class="nav-icon">🏠</span> Dashboard
       </a>
       <a href="about.html" class="nav-item">
-        <span class="nav-icon">🏢</span> About WMT
+        <span class="nav-icon">🏢</span> About WG
       </a>
       <a href="module1.html" class="nav-item" id="nav-m1">
         <span class="nav-icon">📦</span> <span>Products</span>
@@ -361,7 +361,7 @@
     <div class="page-content animate-in">
       <div class="welcome-banner">
         <h2>Welcome back, <span id="welcomeName">Trainee</span>! 👋</h2>
-        <p>Complete all 7 modules and pass the final exam to become a certified WeMasterTrade Sales Partner.</p>
+        <p>Complete all 7 modules and pass the final exam to become a certified WeGolden Sales Partner.</p>
         <div class="overall-progress">
           <div class="progress-stats">
             <div class="stat-item">
@@ -408,7 +408,7 @@
         <div class="exam-ready-card" id="interviewCardInner">
           <div class="exam-ready-text">
             <h4 id="ivCardTitle">📅 Book Your Interview</h4>
-            <p id="ivCardDesc">You passed the exam! Schedule your video interview with a WeMasterTrade trainer.</p>
+            <p id="ivCardDesc">You passed the exam! Schedule your video interview with a WeGolden trainer.</p>
             <div class="locked-msg" id="ivCardSub"></div>
           </div>
           <a href="interview.html" class="btn btn-primary" id="ivCardBtn">Book Interview →</a>
@@ -554,7 +554,7 @@ function doRegister() {
   localStorage.setItem('wmt_users_db', JSON.stringify(users));
   if (window.FDB) {
     window.FDB.ref('users/' + u).set(newUser)
-      .catch(e => console.warn('[WMT] register Firebase error:', e.message));
+      .catch(e => console.warn('[WG] register Firebase error:', e.message));
   }
 
   // Auto-login
@@ -616,7 +616,7 @@ function saveDashboardProfile() {
   localStorage.setItem('wmt_users_db', JSON.stringify(users));
   if (window.FDB) {
     window.FDB.ref('users/' + user).update({ email, fullName })
-      .catch(e => console.warn('[WMT] saveDashboardProfile Firebase error:', e.message));
+      .catch(e => console.warn('[WG] saveDashboardProfile Firebase error:', e.message));
   }
   const s = document.getElementById('dpmSuccess');
   s.style.display = 'block';
@@ -666,7 +666,7 @@ function saveChangePw() {
   users[user].password = nw;
   localStorage.setItem('wmt_users_db', JSON.stringify(users));
   if (window.FDB) window.FDB.ref('users/' + user).update({ password: nw })
-    .catch(e => console.warn('[WMT] changePw Firebase error:', e.message));
+    .catch(e => console.warn('[WG] changePw Firebase error:', e.message));
   document.getElementById('cpSuccess').style.display = 'block';
   document.getElementById('cpCurrent').value = '';
   document.getElementById('cpNew').value = '';
@@ -728,7 +728,7 @@ function forgotSave() {
   users[un].password = nw;
   localStorage.setItem('wmt_users_db', JSON.stringify(users));
   if (window.FDB) window.FDB.ref('users/' + un).update({ password: nw })
-    .catch(e => console.warn('[WMT] forgotPw Firebase error:', e.message));
+    .catch(e => console.warn('[WG] forgotPw Firebase error:', e.message));
   document.getElementById('fpStep2').style.display   = 'none';
   document.getElementById('fpSuccess').style.display = 'block';
   setTimeout(hideForgotPw, 2000);
@@ -752,7 +752,7 @@ function toggleSidebar() {
 
 // ===== MODULES DATA =====
 const MODULES = [
-  { id: 1, title: 'WeMasterTrade Products', icon: '📦', file: 'module1.html' },
+  { id: 1, title: 'WeGolden Products', icon: '📦', file: 'module1.html' },
   { id: 2, title: 'Trading Rules',          icon: '📋', file: 'module2.html' },
   { id: 3, title: 'Profit & Payouts',       icon: '🏆', file: 'module3.html' },
   { id: 4, title: 'Payment Methods',        icon: '💳', file: 'module4.html' },
@@ -874,7 +874,7 @@ function initDashboard(user) {
       const iv = JSON.parse(localStorage.getItem('wmt_interview_' + user) || 'null');
       if (!iv) {
         titleEl.textContent = '📅 Book Your Interview';
-        descEl.textContent  = 'You passed the exam! Schedule a video interview with a WeMasterTrade trainer to finalise your onboarding.';
+        descEl.textContent  = 'You passed the exam! Schedule a video interview with a WeGolden trainer to finalise your onboarding.';
         subEl.textContent   = '';
         btnEl.textContent   = 'Book Interview →';
       } else {
@@ -966,7 +966,7 @@ function _scheduleNotifs(u) {
     if (!prefs.reminders.includes(key) || !fireAt) return;
     const delay = fireAt - now;
     if (delay > 0 && delay < 172800000)
-      setTimeout(() => { if (Notification.permission === 'granted') new Notification('📅 WMT Monthly Test', { body, tag:'wmt-'+m+'-'+key }); }, delay);
+      setTimeout(() => { if (Notification.permission === 'granted') new Notification('📅 WG Monthly Test', { body, tag:'wmt-'+m+'-'+key }); }, delay);
   });
 }
 
@@ -980,7 +980,7 @@ async function _requestNotifPermission(u) {
   renderDashNotifPanel(u);
   if (perm === 'granted') {
     _scheduleNotifs(u);
-    new Notification('📅 WMT Monthly Test', { body: 'Notifications enabled! You will be reminded before tests.', tag:'wmt-on' });
+    new Notification('📅 WG Monthly Test', { body: 'Notifications enabled! You will be reminded before tests.', tag:'wmt-on' });
   }
 }
 
@@ -1177,7 +1177,7 @@ async function autoUpgradeCheck(loginUser) {
   if (window.FDB) {
     await Promise.all(upgraded.map(({ uname }) =>
       window.FDB.ref('users/' + uname).update({ employeeType: 'old' })
-        .catch(e => console.warn('[WMT] autoUpgrade Firebase sync error:', uname, e.message))
+        .catch(e => console.warn('[WG] autoUpgrade Firebase sync error:', uname, e.message))
     ));
   }
 
