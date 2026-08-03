@@ -44,4 +44,4 @@ Firebase Realtime Database, project `wmt-training-portal`. Cấu trúc dữ li�
 
 ## Deploy
 
-Chưa cấu hình — có thể deploy tĩnh lên Firebase Hosting, Vercel, hoặc bất kỳ static host nào.
+Live tại **https://training.wegolden.com** — VPS Ubuntu 24.04 (Singapore), Nginx + Let's Encrypt SSL. Push lên `main` sẽ tự động deploy qua GitHub Actions (`.github/workflows/deploy.yml`, SSH vào VPS chạy `git pull`).
