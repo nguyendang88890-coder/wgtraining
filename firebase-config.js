@@ -21,7 +21,13 @@ const _FB_READY = firebaseConfig.apiKey !== "your_API_key";
 // "auth != null" and reads/writes issued before sign-in completes would
 // otherwise race and fail with permission_denied.
 let _authReadyResolve;
+let _authSettled = false;
 const _authReady = new Promise(resolve => { _authReadyResolve = resolve; });
+function _settleAuthReady() {
+  if (_authSettled) return;
+  _authSettled = true;
+  _authReadyResolve();
+}
 
 if (_FB_READY) {
   try {
@@ -35,31 +41,33 @@ if (_FB_READY) {
     // resolves — reads issued in between still get permission_denied.
     const _unsubAuth = firebase.auth().onAuthStateChanged(user => {
       if (user) {
-        _authReadyResolve();
+        _settleAuthReady();
         _unsubAuth();
       }
     });
     firebase.auth().signInAnonymously().catch(e => {
       console.warn("[Firebase] Anonymous auth failed:", e.message);
-      _authReadyResolve(); // unblock the app even if sign-in itself failed
+      _settleAuthReady(); // unblock the app even if sign-in itself failed
     });
     // Safety net: never let the app hang forever waiting on Firebase Auth
     // (blocked third-party storage, flaky network, etc.) — give up after 8s
     // and proceed unauthenticated; reads/writes will just fail per the rules
-    // instead of freezing the login button indefinitely.
+    // instead of freezing the login button indefinitely. Only fires (and
+    // warns) if nothing above already settled it.
     setTimeout(() => {
+      if (_authSettled) return;
       console.warn("[Firebase] Auth readiness timed out after 8s — continuing anyway.");
-      _authReadyResolve();
+      _settleAuthReady();
     }, 8000);
   } catch (e) {
     console.warn("[Firebase] Init failed:", e.message);
     window.FDB = null;
-    _authReadyResolve();
+    _settleAuthReady();
   }
 } else {
   window.FDB = null;
   console.info("[Firebase] Config not set — running in localStorage-only mode.");
-  _authReadyResolve();
+  _settleAuthReady();
 }
 
 // ── Password hashing (PBKDF2 via the browser's built-in Web Crypto API) ─────
