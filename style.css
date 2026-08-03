@@ -1,20 +1,20 @@
 /* WeGolden Training Portal - Shared Styles */
 :root {
-  --bg-primary: #0a0a16;
-  --bg-secondary: #0f0f24;
-  --bg-card: #13132a;
-  --bg-hover: #1a1a35;
-  --gold: #FFD700;
-  --gold-dark: #c9a800;
-  --gold-light: #ffe55a;
-  --text-primary: #e8e8f0;
-  --text-secondary: #9090b0;
-  --text-muted: #5a5a7a;
-  --border: #1e1e3a;
-  --border-gold: rgba(255, 215, 0, 0.3);
-  --success: #00d68f;
-  --danger: #ff3d71;
-  --warning: #ffaa00;
+  --bg-primary: #FEF9ED;
+  --bg-secondary: #FDF2DC;
+  --bg-card: #FFFFFF;
+  --bg-hover: #FBEFD5;
+  --gold: #CF9B21;
+  --gold-dark: #A97D18;
+  --gold-light: #FFB020;
+  --text-primary: #0C0C0C;
+  --text-secondary: #4A4A4A;
+  --text-muted: #808080;
+  --border: #E3D9BE;
+  --border-gold: rgba(207, 155, 33, 0.35);
+  --success: #19C37D;
+  --danger: #D6335A;
+  --warning: #B8791F;
   --sidebar-width: 280px;
   --header-height: 64px;
 }
@@ -53,7 +53,7 @@ a:hover {
   align-items: center;
   justify-content: center;
   min-height: 100vh;
-  background: radial-gradient(ellipse at center, #0d0d20 0%, #0a0a16 70%);
+  background: radial-gradient(ellipse at center, #FFFDF6 0%, #FBEFD5 70%);
   padding: 20px;
 }
 
@@ -64,7 +64,7 @@ a:hover {
   padding: 48px 40px;
   width: 100%;
   max-width: 420px;
-  box-shadow: 0 0 60px rgba(255, 215, 0, 0.08), 0 20px 60px rgba(0,0,0,0.5);
+  box-shadow: 0 0 60px rgba(207, 155, 33, 0.1), 0 20px 60px rgba(0,0,0,0.1);
 }
 
 .login-logo {
@@ -145,7 +145,7 @@ a:hover {
 .btn-primary:hover {
   background: linear-gradient(135deg, var(--gold-light) 0%, var(--gold) 100%);
   transform: translateY(-1px);
-  box-shadow: 0 4px 20px rgba(255,215,0,0.3);
+  box-shadow: 0 4px 20px rgba(207,155,33,0.3);
 }
 
 .btn-secondary {
@@ -294,7 +294,7 @@ a:hover {
 }
 
 .nav-item.active {
-  background: rgba(255, 215, 0, 0.08);
+  background: rgba(207, 155, 33, 0.08);
   color: var(--gold);
   border-left-color: var(--gold);
 }
@@ -348,7 +348,7 @@ a:hover {
 
 .logout-btn:hover {
   color: var(--danger);
-  background: rgba(255, 61, 113, 0.1);
+  background: rgba(214, 51, 90, 0.1);
 }
 
 /* ======= MAIN CONTENT ======= */
@@ -415,7 +415,7 @@ a:hover {
 
 /* ======= DASHBOARD ======= */
 .welcome-banner {
-  background: linear-gradient(135deg, var(--bg-card) 0%, #1a1025 100%);
+  background: linear-gradient(135deg, var(--bg-card) 0%, var(--bg-secondary) 100%);
   border: 1px solid var(--border-gold);
   border-radius: 16px;
   padding: 32px;
@@ -431,7 +431,7 @@ a:hover {
   right: -20%;
   width: 300px;
   height: 300px;
-  background: radial-gradient(circle, rgba(255,215,0,0.05) 0%, transparent 70%);
+  background: radial-gradient(circle, rgba(207,155,33,0.05) 0%, transparent 70%);
   border-radius: 50%;
 }
 
@@ -530,7 +530,7 @@ a:hover {
 .module-card:hover {
   border-color: var(--border-gold);
   transform: translateY(-2px);
-  box-shadow: 0 8px 30px rgba(0,0,0,0.3);
+  box-shadow: 0 8px 30px rgba(0,0,0,0.08);
 }
 
 .module-card.completed {
@@ -601,7 +601,7 @@ a:hover {
 }
 
 .status-badge.inprogress {
-  background: rgba(255, 215, 0, 0.15);
+  background: rgba(207, 155, 33, 0.15);
   color: var(--gold);
 }
 
@@ -627,7 +627,7 @@ a:hover {
 .module-header-num {
   width: 56px;
   height: 56px;
-  background: linear-gradient(135deg, rgba(255,215,0,0.2), rgba(255,215,0,0.05));
+  background: linear-gradient(135deg, rgba(207,155,33,0.2), rgba(207,155,33,0.05));
   border: 2px solid var(--border-gold);
   border-radius: 14px;
   display: flex;
@@ -731,8 +731,8 @@ a:hover {
 }
 
 .callout.gold {
-  background: rgba(255, 215, 0, 0.08);
-  border: 1px solid rgba(255, 215, 0, 0.3);
+  background: rgba(207, 155, 33, 0.08);
+  border: 1px solid rgba(207, 155, 33, 0.3);
   color: var(--text-primary);
 }
 
@@ -743,8 +743,8 @@ a:hover {
 }
 
 .callout.danger {
-  background: rgba(255, 61, 113, 0.08);
-  border: 1px solid rgba(255, 61, 113, 0.3);
+  background: rgba(214, 51, 90, 0.08);
+  border: 1px solid rgba(214, 51, 90, 0.3);
   color: var(--text-primary);
 }
 
@@ -764,8 +764,8 @@ a:hover {
 }
 .table-wrap::-webkit-scrollbar { height: 6px; width: 6px; }
 .table-wrap::-webkit-scrollbar-track { background: transparent; }
-.table-wrap::-webkit-scrollbar-thumb { background: rgba(255,215,0,0.25); border-radius: 3px; }
-.table-wrap::-webkit-scrollbar-thumb:hover { background: rgba(255,215,0,0.5); }
+.table-wrap::-webkit-scrollbar-thumb { background: rgba(207,155,33,0.25); border-radius: 3px; }
+.table-wrap::-webkit-scrollbar-thumb:hover { background: rgba(207,155,33,0.5); }
 .table-wrap::-webkit-scrollbar-corner { background: transparent; }
 
 table {
@@ -814,7 +814,7 @@ tbody td:first-child {
 }
 
 .highlight-row {
-  background: rgba(255, 215, 0, 0.05) !important;
+  background: rgba(207, 155, 33, 0.05) !important;
 }
 
 .highlight-row td {
@@ -898,7 +898,7 @@ tbody td:first-child {
 
 .option-item.selected {
   border-color: var(--gold);
-  background: rgba(255, 215, 0, 0.08);
+  background: rgba(207, 155, 33, 0.08);
   color: var(--text-primary);
 }
 
@@ -910,7 +910,7 @@ tbody td:first-child {
 
 .option-item.wrong {
   border-color: var(--danger);
-  background: rgba(255, 61, 113, 0.1);
+  background: rgba(214, 51, 90, 0.1);
   color: var(--danger);
 }
 
@@ -945,8 +945,8 @@ tbody td:first-child {
 }
 
 .feedback-box.wrong {
-  background: rgba(255, 61, 113, 0.1);
-  border: 1px solid rgba(255, 61, 113, 0.3);
+  background: rgba(214, 51, 90, 0.1);
+  border: 1px solid rgba(214, 51, 90, 0.3);
   color: var(--danger);
 }
 
@@ -1197,7 +1197,7 @@ tbody td:first-child {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  background: rgba(255, 215, 0, 0.1);
+  background: rgba(207, 155, 33, 0.1);
   border: 1px solid var(--border-gold);
   border-radius: 8px;
   padding: 10px 16px;
@@ -1346,7 +1346,7 @@ tbody td:first-child {
   background: linear-gradient(90deg, var(--gold-dark), var(--gold), #FFA500);
   z-index: 49;
   transition: width 0.08s linear;
-  box-shadow: 0 0 10px rgba(255,215,0,0.45);
+  box-shadow: 0 0 10px rgba(207,155,33,0.45);
   pointer-events: none;
 }
 
@@ -1372,14 +1372,14 @@ tbody td:first-child {
   transition: background 0.2s, border-color 0.2s, transform 0.2s, box-shadow 0.2s;
 }
 .sec-dot:hover {
-  background: rgba(255,215,0,0.35);
+  background: rgba(207,155,33,0.35);
   border-color: var(--gold);
   transform: scale(1.35);
 }
 .sec-dot.active {
   background: var(--gold);
   border-color: var(--gold);
-  box-shadow: 0 0 8px rgba(255,215,0,0.65);
+  box-shadow: 0 0 8px rgba(207,155,33,0.65);
   transform: scale(1.15);
 }
 .sec-dot.done {
@@ -1490,7 +1490,7 @@ tbody td:first-child {
   margin-top: 6px;
   transition: all 0.15s;
 }
-.sidebar-edit-profile:hover { color: var(--gold); border-color: var(--border-gold); background: rgba(255,215,0,0.04); }
+.sidebar-edit-profile:hover { color: var(--gold); border-color: var(--border-gold); background: rgba(207,155,33,0.04); }
 
 /* ======= READING PROGRESS BAR ======= */
 .reading-progress {
@@ -1499,7 +1499,7 @@ tbody td:first-child {
   left: 0;
   width: 100%;
   height: 3px;
-  background: rgba(255,215,0,0.08);
+  background: rgba(207,155,33,0.08);
   z-index: 9999;
   pointer-events: none;
 }
@@ -1508,14 +1508,14 @@ tbody td:first-child {
   background: linear-gradient(90deg, #FFD700, #FFA500);
   width: 0%;
   transition: width 0.08s linear;
-  box-shadow: 0 0 8px rgba(255,215,0,0.5);
+  box-shadow: 0 0 8px rgba(207,155,33,0.5);
 }
 
 /* ======= QUIZ EXPLANATIONS & REVIEW ======= */
 .explain-text {
   margin-top: 10px;
   padding: 10px 14px;
-  background: rgba(255,215,0,0.06);
+  background: rgba(207,155,33,0.06);
   border-left: 3px solid var(--gold);
   border-radius: 0 8px 8px 0;
   font-size: 13px;
@@ -1567,8 +1567,8 @@ tbody td:first-child {
   font-weight: 600;
 }
 .review-opt.review-wrong {
-  background: rgba(255,61,113,0.08);
-  border-color: rgba(255,61,113,0.3);
+  background: rgba(214,51,90,0.08);
+  border-color: rgba(214,51,90,0.3);
   color: var(--danger);
   text-decoration: line-through;
   opacity: 0.85;
@@ -1586,12 +1586,12 @@ tbody td:first-child {
   flex-shrink: 0;
 }
 .review-correct .review-letter { background: rgba(0,214,143,0.2); }
-.review-wrong   .review-letter { background: rgba(255,61,113,0.2); }
+.review-wrong   .review-letter { background: rgba(214,51,90,0.2); }
 .review-explain {
   margin-top: 12px;
   padding: 10px 14px;
-  background: rgba(255,215,0,0.05);
-  border-left: 3px solid rgba(255,215,0,0.5);
+  background: rgba(207,155,33,0.05);
+  border-left: 3px solid rgba(207,155,33,0.5);
   border-radius: 0 8px 8px 0;
   font-size: 13px;
   color: #c0c0d0;

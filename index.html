@@ -4,10 +4,10 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>WeGolden — Internal Training Portal</title>
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style.css?v=2">
   <style>
     .exam-ready-card {
-      background: linear-gradient(135deg, rgba(255,215,0,0.1), rgba(255,215,0,0.03));
+      background: linear-gradient(135deg, rgba(207,155,33,0.1), rgba(207,155,33,0.03));
       border: 1px solid var(--border-gold);
       border-radius: 12px;
       padding: 24px;
@@ -56,8 +56,8 @@
       padding: 10px 14px; border: 1.5px solid var(--border); border-radius: 10px;
       transition: all .15s; user-select: none;
     }
-    .emp-type-opt:hover { border-color: rgba(255,215,0,0.4); }
-    .emp-type-opt.selected { border-color: var(--gold); background: rgba(255,215,0,0.05); }
+    .emp-type-opt:hover { border-color: rgba(207,155,33,0.4); }
+    .emp-type-opt.selected { border-color: var(--gold); background: rgba(207,155,33,0.05); }
     .emp-type-opt .emp-icon { font-size: 1.4rem; flex-shrink: 0; }
     .emp-type-opt .emp-lbl { font-weight: 600; font-size: 0.85rem; color: var(--text-primary); }
     .emp-type-opt .emp-sub { font-size: 0.7rem; color: var(--text-muted); margin-top: 1px; }
@@ -80,7 +80,7 @@
       font-size: 1rem; display: flex; align-items: center; gap: 5px; transition: all .18s;
       position: relative; margin-left: 8px;
     }
-    .notif-bell-btn:hover, .notif-bell-btn.active { background: rgba(255,215,0,0.1); border-color: rgba(255,215,0,0.3); color: var(--gold); }
+    .notif-bell-btn:hover, .notif-bell-btn.active { background: rgba(207,155,33,0.1); border-color: rgba(207,155,33,0.3); color: var(--gold); }
     .notif-badge {
       position: absolute; top: -6px; right: -6px;
       background: var(--danger); color: #fff; font-size: 0.62rem; font-weight: 800;
@@ -99,11 +99,11 @@
     /* Monthly test reminder banner */
     .mt-reminder-banner {
       display: flex; align-items: flex-start; gap: 14px; padding: 16px 20px;
-      background: rgba(255,215,0,0.07); border: 1px solid rgba(255,215,0,0.25);
+      background: rgba(207,155,33,0.07); border: 1px solid rgba(207,155,33,0.25);
       border-radius: 14px; margin-bottom: 22px; cursor: pointer;
       transition: background .18s;
     }
-    .mt-reminder-banner:hover { background: rgba(255,215,0,0.11); }
+    .mt-reminder-banner:hover { background: rgba(207,155,33,0.11); }
     .mt-reminder-banner.active { background: rgba(0,214,143,0.07); border-color: rgba(0,214,143,0.3); }
     .mt-reminder-icon { font-size: 1.6rem; flex-shrink: 0; line-height: 1; }
     .mt-reminder-body { flex: 1; }
@@ -335,7 +335,7 @@
         <div class="nav-section-title">Administration</div>
         <a href="admin.html" class="nav-item">
           <span class="nav-icon">⚙️</span> Admin Panel
-          <span class="nav-badge" style="background:rgba(255,215,0,0.2);color:var(--gold)">ADMIN</span>
+          <span class="nav-badge" style="background:rgba(207,155,33,0.2);color:var(--gold)">ADMIN</span>
         </a>
       </div>
     </nav>
@@ -578,20 +578,20 @@ function openDashboardProfileModal() {
       <h3 style="color:var(--gold);margin-bottom:20px;">👤 My Profile</h3>
       <div class="form-group">
         <label>Username</label>
-        <input type="text" value="${user}" disabled style="opacity:.45;cursor:not-allowed;width:100%;padding:10px 14px;background:#0a0a16;border:1px solid #2a2a4a;border-radius:8px;color:#e0e0e0;">
+        <input type="text" value="${user}" disabled style="opacity:.45;cursor:not-allowed;width:100%;padding:10px 14px;background:#FDF2DC;border:1px solid #E3D9BE;border-radius:8px;color:#0C0C0C;">
       </div>
       <div class="form-group">
         <label>Email</label>
-        <input type="email" id="dpmEmail" value="${u.email||''}" placeholder="your@email.com" style="width:100%;padding:10px 14px;background:#0a0a16;border:1px solid #2a2a4a;border-radius:8px;color:#e0e0e0;font-size:14px;box-sizing:border-box;">
+        <input type="email" id="dpmEmail" value="${u.email||''}" placeholder="your@email.com" style="width:100%;padding:10px 14px;background:#FDF2DC;border:1px solid #E3D9BE;border-radius:8px;color:#0C0C0C;font-size:14px;box-sizing:border-box;">
       </div>
       <div class="form-group">
         <label>Full Name</label>
-        <input type="text" id="dpmFullName" value="${u.fullName||''}" placeholder="Your full name" style="width:100%;padding:10px 14px;background:#0a0a16;border:1px solid #2a2a4a;border-radius:8px;color:#e0e0e0;font-size:14px;box-sizing:border-box;">
+        <input type="text" id="dpmFullName" value="${u.fullName||''}" placeholder="Your full name" style="width:100%;padding:10px 14px;background:#FDF2DC;border:1px solid #E3D9BE;border-radius:8px;color:#0C0C0C;font-size:14px;box-sizing:border-box;">
       </div>
       <div id="dpmSuccess" style="display:none;color:#4caf50;font-size:13px;margin-top:6px;font-weight:600;">✓ Profile saved!</div>
       <div style="display:flex;gap:10px;margin-top:20px;">
         <button onclick="document.getElementById('dashProfileModal').classList.remove('show')" style="flex:1;padding:11px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.15);border-radius:10px;color:#aaa;cursor:pointer;font-weight:600;">Cancel</button>
-        <button onclick="saveDashboardProfile()" style="flex:1;padding:11px;background:linear-gradient(135deg,#FFD700,#FFA500);color:#0a0a16;font-weight:800;border:none;border-radius:10px;cursor:pointer;font-size:14px;">Save</button>
+        <button onclick="saveDashboardProfile()" style="flex:1;padding:11px;background:linear-gradient(135deg,#CF9B21,#A97D18);color:#0a0a16;font-weight:800;border:none;border-radius:10px;cursor:pointer;font-size:14px;">Save</button>
       </div>
     </div>`;
   modal.addEventListener('click', e => { if (e.target === modal) modal.classList.remove('show'); });
@@ -622,7 +622,7 @@ function saveDashboardProfile() {
 function openChangePwModal() {
   const existing = document.getElementById('changePwModal');
   if (existing) { existing.classList.add('show'); return; }
-  const s = 'width:100%;padding:10px 14px;background:#0a0a16;border:1px solid #2a2a4a;border-radius:8px;color:#e0e0e0;font-size:14px;box-sizing:border-box;';
+  const s = 'width:100%;padding:10px 14px;background:#FDF2DC;border:1px solid #E3D9BE;border-radius:8px;color:#0C0C0C;font-size:14px;box-sizing:border-box;';
   const modal = document.createElement('div');
   modal.id = 'changePwModal'; modal.className = 'modal-overlay show'; modal.style.zIndex = '400';
   modal.innerHTML = `
@@ -640,7 +640,7 @@ function openChangePwModal() {
         <button onclick="document.getElementById('changePwModal').classList.remove('show')"
           style="flex:1;padding:11px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.15);border-radius:10px;color:#aaa;cursor:pointer;font-weight:600;">Cancel</button>
         <button onclick="saveChangePw()"
-          style="flex:1;padding:11px;background:linear-gradient(135deg,#FFD700,#FFA500);color:#0a0a16;font-weight:800;border:none;border-radius:10px;cursor:pointer;font-size:14px;">Save</button>
+          style="flex:1;padding:11px;background:linear-gradient(135deg,#CF9B21,#A97D18);color:#0a0a16;font-weight:800;border:none;border-radius:10px;cursor:pointer;font-size:14px;">Save</button>
       </div>
     </div>`;
   modal.addEventListener('click', e => { if (e.target === modal) modal.classList.remove('show'); });
@@ -1054,7 +1054,7 @@ function renderDashNotifPanel(u) {
     ctrl = `
       <p style="font-size:0.78rem;color:var(--text-muted);margin-top:14px;line-height:1.6;">Enable reminders to get notified before each test, in your local timezone.</p>
       <button onclick="_requestNotifPermission('${u}')"
-        style="width:100%;margin-top:12px;padding:12px;background:linear-gradient(135deg,#FFD700,#FFA500);color:#0a0a16;font-weight:800;border:none;border-radius:10px;cursor:pointer;font-size:0.88rem;">
+        style="width:100%;margin-top:12px;padding:12px;background:linear-gradient(135deg,#CF9B21,#A97D18);color:#0a0a16;font-weight:800;border:none;border-radius:10px;cursor:pointer;font-size:0.88rem;">
         🔔 Enable Notifications
       </button>`;
   } else {
