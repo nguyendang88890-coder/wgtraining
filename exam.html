@@ -102,7 +102,7 @@
       <div id="introView">
         <div class="exam-header">
           <h2>📝 WeGolden Final Exam</h2>
-          <p>Test your knowledge across all 7 training modules. Answer 30 randomized questions.</p>
+          <p>Test your knowledge across all 5 training modules. Answer 30 randomized questions.</p>
           <div class="exam-stats">
             <div class="exam-stat">
               <div class="exam-stat-value">30</div>
@@ -132,7 +132,7 @@
             <li>You have <strong>2 attempts</strong> total</li>
             <li>If you fail attempt 1, you must wait <strong>3 days</strong> before retrying</li>
             <li>If you fail attempt 2, you will be <strong>permanently disqualified</strong></li>
-            <li>Make sure you have completed all 7 modules before taking this exam</li>
+            <li>Make sure you have completed all 5 modules before taking this exam</li>
           </ul>
           <div class="callout gold" style="margin-top:16px;">
             <span class="callout-icon">⭐</span>
@@ -148,7 +148,7 @@
             🚀 Start Final Exam
           </button>
           <div id="moduleWarning" class="hidden" style="margin-top:14px;padding:14px 18px;background:rgba(255,61,113,0.08);border:1px solid rgba(255,61,113,0.3);border-radius:10px;font-size:0.88rem;color:var(--danger);">
-            🔒 <strong>You have not completed all 7 Training Modules.</strong><br>
+            🔒 <strong>You have not completed all 5 Training Modules.</strong><br>
             <span style="color:var(--text-muted);font-size:0.82rem;margin-top:4px;display:block;">Please complete all modules and submit each module quiz before taking the Final Exam.</span>
           </div>
         </div>
@@ -267,24 +267,6 @@ const QUESTION_BANK = [
   { q: "BTC and USDT withdrawals at WeGolden are processed at what cost?", opts: ["$5 flat fee","0.5% fee","Free of charge","Applicable fees apply"], _c: "Mw==", module: 5 },
   { q: "Which payment method for purchasing packages is available via paypal.me/wecopytrade?", opts: ["Cryptocurrency","Local bank transfer","PayPal","Local wallet"], _c: "Mg==", module: 5 },
 
-  // MODULE 6 — Profit & Payouts
-  { q: "What is the payout percentage for the 1st withdrawal?", opts: ["90%","75%","50%","60%"], _c: "Mg==", module: 6 },
-  { q: "What profit share on the 2nd payout (Challenge/51010)?", opts: ["50%","75%","90%","60%"], _c: "MQ==", module: 6 },
-  { q: "From which payout number do traders receive 90% (51010)?", opts: ["1st","2nd","3rd","5th"], _c: "Mg==", module: 6 },
-  { q: "Which certificate will traders be granted after a successful payout?", opts: ["Profit Split Certificate","Challenge Certificate","Introducing Partner Certificate","Academy Certificate"], _c: "MA==", explain: "The Profit Split Certificate is issued to funded traders who receive payouts — it serves as official proof of profit withdrawal. The Challenge Certificate is for passing the evaluation, the Introducing Partner Certificate is for active sales partners, and the Academy Certificate is for education program completions.", module: 6 },
-  { q: "In 510Zero, what happens to the profit share if profit is less than 6%?", opts: ["Stays the same","Reduced to fixed 10%","Reduced to 20%","Account suspended"], _c: "MQ==", module: 6 },
-  { q: "In 510Zero, under 8% profit, which customers also have their profit share reduced to 10%?", opts: ["Vietnam and Philippines","Indonesia and Thailand","USA and UK","All customers"], _c: "MQ==", module: 6 },
-  { q: "When is a refund of an Instant Funding account allowed under WeGolden's policy?", opts: ["Any time","Within 30 days","Only if no trades placed","Never"], _c: "Mg==", module: 6 },
-  { q: "Which certificate is awarded to Active introducing partners?", opts: ["Profit Split Certificate","Challenge Certificate","Introducing Partner Certificate","Academy Certificate"], _c: "Mg==", module: 6 },
-
-  // MODULE 7 — Compliance
-  { q: "Which of the following countries is on WeGolden's restricted list?", opts: ["Indonesia","Malaysia","Iran","Philippines"], _c: "Mg==", module: 7 },
-  { q: "Which of the following countries was RECENTLY ADDED to the restricted list?", opts: ["India","Philippines","Vietnam","Indonesia"], _c: "Mg==", module: 7 },
-  { q: "What is the consequence of Tick Scalping?", opts: ["Account reset without reducing profit share","7-day suspension","Immediate termination","10% penalty"], _c: "MA==", module: 7 },
-  { q: "For Indonesia and Thailand, first rule violation results in?", opts: ["Warning","2-week suspension","Immediate termination","50% profit reduction"], _c: "Mg==", module: 7 },
-  { q: "Which of these is a prohibited trading practice?", opts: ["Using stop losses","Hedging across accounts for guaranteed profit","Trading Gold","Using MT5 EAs"], _c: "MQ==", module: 7 },
-  { q: "When must KYC be completed?", opts: ["Before first trade","Within 7 days of signup","Before first payout request","KYC is optional"], _c: "Mg==", module: 7 },
-  { q: "Which of these trading practices is ALLOWED?", opts: ["Tick Scalping","Arbitrage","Using proper stop losses and risk management","Large Hedging across accounts"], _c: "Mg==", module: 7 }
 ];
 
 // ===== EXAM STATE =====
@@ -335,7 +317,7 @@ function _ansQ(q) {
 }
 
 // ===== ADMIN EXAM MANAGEMENT =====
-const EQ_MODULE_NAMES = ['About WG','Products','Trading Rules','Profit & Payouts','Payment Methods','Financial Products','Introducing Partner','Compliance & Risk'];
+const EQ_MODULE_NAMES = ['About WG','Products','Trading Rules','Profit & Payouts','Payment Methods','Financial Products'];
 function getExamQBank() {
   const stored = JSON.parse(localStorage.getItem('wmt_exam_qbank_v2') || 'null');
   if (!stored) return null;
@@ -385,7 +367,7 @@ function _eqModal(title, q, idx, isNew) {
     <h3 style="margin-bottom:16px;">${title}</h3>
     <div class="form-group"><label>Module</label>
       <select id="eeM" style="width:100%;background:var(--bg-secondary);border:1px solid var(--border);color:var(--text-primary);padding:8px 12px;border-radius:8px;">
-        ${[0,1,2,3,4,5,6,7].map(n=>`<option value="${n}" ${q&&q.module===n?'selected':''}>${n} — ${EQ_MODULE_NAMES[n]}</option>`).join('')}
+        ${[0,1,2,3,4,5].map(n=>`<option value="${n}" ${q&&q.module===n?'selected':''}>${n} — ${EQ_MODULE_NAMES[n]}</option>`).join('')}
       </select></div>
     <div class="form-group"><label>Question</label>
       <textarea id="eeQ" rows="3" style="width:100%;background:var(--bg-secondary);border:1px solid var(--border);color:var(--text-primary);padding:10px;border-radius:8px;font-size:0.88rem;resize:vertical;">${q?q.q:''}</textarea></div>
@@ -467,7 +449,7 @@ function _proposeModal(title, q, idx, isNew) {
     <div style="font-size:0.78rem;color:var(--text-muted);margin-bottom:16px;">Your proposal will be sent to Admin for review. The original question remains unchanged until approved.</div>
     <div class="form-group"><label>Module</label>
       <select id="ppM" style="${inputStyle}">
-        ${[1,2,3,4,5,6,7].map(n=>`<option value="${n}" ${q&&q.module===n?'selected':''}>${n} — ${EQ_MODULE_NAMES[n]}</option>`).join('')}
+        ${[1,2,3,4,5].map(n=>`<option value="${n}" ${q&&q.module===n?'selected':''}>${n} — ${EQ_MODULE_NAMES[n]}</option>`).join('')}
       </select></div>
     <div class="form-group"><label>Question</label>
       <textarea id="ppQ" rows="3" style="${inputStyle}resize:vertical;">${q?q.q:''}</textarea></div>
@@ -547,7 +529,7 @@ window.addEventListener('load', async function() {
   // Check module completion — hard block if not all done
   const p = getProgress();
   let doneCnt = 0;
-  for (let i = 1; i <= 7; i++) {
+  for (let i = 1; i <= 5; i++) {
     if (p[`module${i}_done`]) doneCnt++;
   }
   if (doneCnt < 7) {
@@ -557,7 +539,7 @@ window.addEventListener('load', async function() {
     btn.style.opacity = '0.4';
     btn.style.cursor  = 'not-allowed';
     btn.onclick       = null;
-    btn.textContent   = `🔒 Locked (${doneCnt}/7 modules done)`;
+    btn.textContent   = `🔒 Locked (${doneCnt}/5 modules done)`;
   }
 
   const es = getExamState();

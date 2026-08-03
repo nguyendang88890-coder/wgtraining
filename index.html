@@ -293,14 +293,6 @@
         <span class="nav-icon">💰</span> <span>Financial Products</span>
         <span class="nav-badge" id="badge-m5">M5</span>
       </a>
-      <a href="module6.html" class="nav-item" id="nav-m6">
-        <span class="nav-icon">🤝</span> <span>Introducing Partner</span>
-        <span class="nav-badge" id="badge-m6">M6</span>
-      </a>
-      <a href="module7.html" class="nav-item" id="nav-m7">
-        <span class="nav-icon">⚖️</span> <span>Compliance & Risk</span>
-        <span class="nav-badge" id="badge-m7">M7</span>
-      </a>
 
       <div class="nav-section-title">Assessment</div>
       <a href="exam.html" class="nav-item" id="nav-exam">
@@ -350,7 +342,7 @@
       <button class="hamburger" onclick="toggleSidebar()">☰</button>
       <span class="top-bar-title">Dashboard</span>
       <div class="top-bar-actions">
-        <div class="progress-pill" id="topProgressPill">0 / 7 Modules</div>
+        <div class="progress-pill" id="topProgressPill">0 / 5 Modules</div>
         <button class="notif-bell-btn hidden" id="notifBellDash" onclick="toggleDashNotifPanel()" title="Monthly Test Notifications">
           🔔 <span class="notif-badge hidden" id="notifBadgeDash">0</span>
         </button>
@@ -361,7 +353,7 @@
     <div class="page-content animate-in">
       <div class="welcome-banner">
         <h2>Welcome back, <span id="welcomeName">Trainee</span>! 👋</h2>
-        <p>Complete all 7 modules and pass the final exam to become a certified WeGolden Sales Partner.</p>
+        <p>Complete all 5 modules and pass the final exam to become a certified WeGolden Sales Partner.</p>
         <div class="overall-progress">
           <div class="progress-stats">
             <div class="stat-item">
@@ -369,7 +361,7 @@
               <span class="stat-label">Modules Done</span>
             </div>
             <div class="stat-item">
-              <span class="stat-value" id="statTotal">7</span>
+              <span class="stat-value" id="statTotal">5</span>
               <span class="stat-label">Total Modules</span>
             </div>
             <div class="stat-item">
@@ -396,7 +388,7 @@
       <div class="exam-ready-card" id="examCard">
         <div class="exam-ready-text">
           <h4>📝 Final Exam — 30 Questions</h4>
-          <p>Covers all 7 modules. Pass score: 70%. You have 2 attempts.</p>
+          <p>Covers all 5 modules. Pass score: 70%. You have 2 attempts.</p>
           <div class="locked-msg" id="examLockMsg">Complete all modules to unlock the exam.</div>
         </div>
         <a href="exam.html" class="btn btn-primary" id="examBtn" style="display:none">Start Exam →</a>
@@ -755,9 +747,7 @@ const MODULES = [
   { id: 2, title: 'Trading Rules',          icon: '📋', file: 'module2.html' },
   { id: 3, title: 'Profit & Payouts',       icon: '🏆', file: 'module3.html' },
   { id: 4, title: 'Payment Methods',        icon: '💳', file: 'module4.html' },
-  { id: 5, title: 'Financial Products',     icon: '💰', file: 'module5.html' },
-  { id: 6, title: 'Introducing Partner',    icon: '🤝', file: 'module6.html' },
-  { id: 7, title: 'Compliance & Risk',      icon: '⚖️', file: 'module7.html' }
+  { id: 5, title: 'Financial Products',     icon: '💰', file: 'module5.html' }
 ];
 
 // ===== DASHBOARD =====
@@ -837,15 +827,15 @@ function initDashboard(user) {
       </a>`;
   });
 
-  const pct = Math.round((completedCount / 7) * 100);
+  const pct = Math.round((completedCount / 5) * 100);
   document.getElementById('statCompleted').textContent = completedCount;
   document.getElementById('statPercent').textContent = pct + '%';
   document.getElementById('overallProgressBar').style.width = pct + '%';
-  document.getElementById('topProgressPill').textContent = `${completedCount} / 7 Modules`;
+  document.getElementById('topProgressPill').textContent = `${completedCount} / 5 Modules`;
   document.getElementById('statAvgScore').textContent = scoredModules > 0
     ? Math.round(totalScore / scoredModules) + '%' : '—';
 
-  if (completedCount === 7) {
+  if (completedCount === 5) {
     document.getElementById('examLockMsg').textContent = '🎉 All modules complete! You can now take the final exam.';
     document.getElementById('examBtn').style.display = 'inline-flex';
   }

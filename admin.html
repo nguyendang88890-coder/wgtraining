@@ -1100,12 +1100,12 @@ function renderUsersTableBody() {
     const iv = getInterviewData(uname);
 
     let doneCnt = 0, scoreSum = 0, scoreCnt = 0;
-    for (let i = 1; i <= 7; i++) {
+    for (let i = 1; i <= 5; i++) {
       if (p[`module${i}_done`]) doneCnt++;
       if (p[`module${i}_score`] !== undefined) { scoreSum += p[`module${i}_score`]; scoreCnt++; }
     }
     const avgScore = scoreCnt > 0 ? Math.round(scoreSum / scoreCnt) + '%' : '—';
-    const modPct   = Math.round((doneCnt / 7) * 100);
+    const modPct   = Math.round((doneCnt / 5) * 100);
 
     let examBadge = '';
     const hasExamData = ex.score !== undefined || ex.passed || ex.disqualified;
@@ -1183,9 +1183,9 @@ function renderUsersTableBody() {
       <td>
         <div class="mod-progress">
           <div class="mod-progress-bar">
-            <div class="mod-progress-fill ${doneCnt===7?'complete':''}" style="width:${modPct}%"></div>
+            <div class="mod-progress-fill ${doneCnt===5?'complete':''}" style="width:${modPct}%"></div>
           </div>
-          <span style="color:${doneCnt===7?'var(--success)':'var(--text-secondary)'};">${doneCnt}/7</span>
+          <span style="color:${doneCnt===5?'var(--success)':'var(--text-secondary)'};">${doneCnt}/5</span>
         </div>
       </td>
       <td style="color:var(--gold);font-weight:600;">${avgScore}</td>
@@ -1213,8 +1213,8 @@ function renderAdminPanel() {
     if (udata.role !== 'admin') totalTrainees++;
     const p = getUserProgress(uname);
     let done = 0;
-    for (let i = 1; i <= 7; i++) { if (p[`module${i}_done`]) done++; }
-    if (done === 7) totalCompleted++;
+    for (let i = 1; i <= 5; i++) { if (p[`module${i}_done`]) done++; }
+    if (done === 5) totalCompleted++;
     if (getExamData(uname).passed) totalPassed++;
     const iv = getInterviewData(uname);
     if (iv) { totalInterviews++; if (iv.status === 'pending') pendingCount++; }
@@ -1337,7 +1337,7 @@ function resetUser(uname) {
   dbRemove('wmt_progress_' + uname);
   dbRemove('wmt_exam_'      + uname);
   dbRemove('wmt_interview_' + uname);
-  for (let i = 1; i <= 7; i++) dbRemove(`wmt_quiz_${uname}_m${i}`);
+  for (let i = 1; i <= 5; i++) dbRemove(`wmt_quiz_${uname}_m${i}`);
   const list = JSON.parse(localStorage.getItem('wmt_interviews_list') || '[]');
   dbWrite('wmt_interviews_list', JSON.stringify(list.filter(x => x.username !== uname)));
   renderAdminPanel();
@@ -1550,9 +1550,9 @@ function resetQuiz(uname, moduleId) {
 }
 
 function resetAllQuizzes(uname) {
-  if (!confirm(`Reset all quizzes for "${uname}"?\nTrainee will be able to retake all 7 module quizzes.`)) return;
+  if (!confirm(`Reset all quizzes for "${uname}"?\nTrainee will be able to retake all 5 module quizzes.`)) return;
   const p = getUserProgress(uname);
-  for (let i = 1; i <= 7; i++) {
+  for (let i = 1; i <= 5; i++) {
     dbRemove(`wmt_quiz_${uname}_m${i}`);
     delete p[`module${i}_done`];
     delete p[`module${i}_score`];
@@ -1575,7 +1575,7 @@ function deleteUser(uname) {
   localStorage.setItem('wmt_users_db', JSON.stringify(users));
   if (window.FDB) window.FDB.ref('users/' + uname).remove();
   ['wmt_progress_','wmt_exam_','wmt_interview_'].forEach(k => dbRemove(k + uname));
-  for (let i = 1; i <= 7; i++) dbRemove(`wmt_quiz_${uname}_m${i}`);
+  for (let i = 1; i <= 5; i++) dbRemove(`wmt_quiz_${uname}_m${i}`);
   const list = JSON.parse(localStorage.getItem('wmt_interviews_list') || '[]');
   dbWrite('wmt_interviews_list', JSON.stringify(list.filter(x => x.username !== uname)));
   if (localStorage.getItem('wmt_user') === uname) { localStorage.removeItem('wmt_user'); window.location.href = 'index.html'; return; }

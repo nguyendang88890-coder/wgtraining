@@ -183,7 +183,7 @@ function toggleSidebar() {
 
 function updateSidebarProgress() {
   const p = getProgress();
-  for (let i = 1; i <= 7; i++) {
+  for (let i = 1; i <= 5; i++) {
     const badge = document.getElementById(`badge-m${i}`);
     const navItem = document.getElementById(`nav-m${i}`);
     if (badge && p[`module${i}_done`]) {
@@ -223,8 +223,21 @@ class ModuleQuiz {
       this.showLockedLegacy(p[`module${this.moduleId}_score`] ?? 0);
       return;
     }
+    if (this.questions.length === 0) {
+      this.renderEmpty();
+      return;
+    }
     this.renderQuestion(0);
     this.renderDots();
+  }
+
+  renderEmpty() {
+    document.getElementById('quizContainer').innerHTML =
+      `<div style="text-align:center;padding:24px;color:var(--text-muted);">📝 Quiz content coming soon.</div>`;
+    const dots = document.getElementById('quizDots');
+    const nav  = document.getElementById('quizNavBottom');
+    if (dots) dots.innerHTML = '';
+    if (nav)  nav.innerHTML  = '';
   }
 
   _lockBanner(subtitle) {
@@ -412,9 +425,7 @@ function getSidebarHTML(activeModule) {
     { id: 2, icon: '📋', title: 'Trading Rules',       file: 'module2.html' },
     { id: 3, icon: '🏆', title: 'Profit & Payouts',    file: 'module3.html' },
     { id: 4, icon: '💳', title: 'Payment Methods',     file: 'module4.html' },
-    { id: 5, icon: '💰', title: 'Financial Products',  file: 'module5.html' },
-    { id: 6, icon: '🤝', title: 'Introducing Partner', file: 'module6.html' },
-    { id: 7, icon: '⚖️', title: 'Compliance & Risk',   file: 'module7.html' }
+    { id: 5, icon: '💰', title: 'Financial Products',  file: 'module5.html' }
   ];
   const user    = localStorage.getItem('wmt_user') || 'Trainee';
   const users   = getUsersDB();
@@ -608,8 +619,6 @@ const _MOD_PAGE_MAP = {
   'module3.html': { moduleId: 3, moduleName: 'Profit & Payouts' },
   'module4.html': { moduleId: 4, moduleName: 'Payment Methods' },
   'module5.html': { moduleId: 5, moduleName: 'Financial Products' },
-  'module6.html': { moduleId: 6, moduleName: 'Introducing Partner' },
-  'module7.html': { moduleId: 7, moduleName: 'Compliance & Risk' },
   'exam.html':    { moduleId: 0, moduleName: 'Final Exam' },
   'monthlytest.html': { moduleId: 0, moduleName: 'Monthly Test' },
   'leader.html':      { moduleId: 0, moduleName: 'Leader Dashboard' },

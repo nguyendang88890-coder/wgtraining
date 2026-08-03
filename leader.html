@@ -468,9 +468,9 @@ function renderAllTeamsOverview() {
     members.forEach(([uname]) => {
       const p = getUserProgress(uname);
       let done = 0;
-      for (let i = 1; i <= 7; i++) if (p[`module${i}_done`]) done++;
+      for (let i = 1; i <= 5; i++) if (p[`module${i}_done`]) done++;
       if (done > 0) tStarted++;
-      if (done === 7) tDone++;
+      if (done === 5) tDone++;
       if (getExamData(uname).passed) tPassed++;
     });
     totalMembers += members.length;
@@ -542,9 +542,9 @@ function renderTeamStats(leaderName) {
   members.forEach(([uname]) => {
     const p = getUserProgress(uname);
     let done = 0;
-    for (let i = 1; i <= 7; i++) if (p[`module${i}_done`]) done++;
+    for (let i = 1; i <= 5; i++) if (p[`module${i}_done`]) done++;
     if (done > 0) totalStarted++;
-    if (done === 7) totalDone++;
+    if (done === 5) totalDone++;
     if (getExamData(uname).passed) totalPassed++;
   });
 
@@ -608,9 +608,9 @@ function renderTeamTable() {
     if (filterProg || filterExam) {
       const p = getUserProgress(uname);
       let done = 0;
-      for (let i = 1; i <= 7; i++) if (p[`module${i}_done`]) done++;
+      for (let i = 1; i <= 5; i++) if (p[`module${i}_done`]) done++;
       if (filterProg === 'complete'   && done < 7) return false;
-      if (filterProg === 'inprogress' && (done === 0 || done === 7)) return false;
+      if (filterProg === 'inprogress' && (done === 0 || done === 5)) return false;
       if (filterProg === 'notstarted' && done > 0) return false;
 
       const ex = getExamData(uname);
@@ -640,12 +640,12 @@ function renderTeamTable() {
     const ex = getExamData(uname);
 
     let doneCnt = 0, scoreSum = 0, scoreCnt = 0;
-    for (let i = 1; i <= 7; i++) {
+    for (let i = 1; i <= 5; i++) {
       if (p[`module${i}_done`]) doneCnt++;
       if (p[`module${i}_score`] !== undefined) { scoreSum += p[`module${i}_score`]; scoreCnt++; }
     }
     const avgScore = scoreCnt > 0 ? Math.round(scoreSum / scoreCnt) + '%' : '—';
-    const modPct   = Math.round((doneCnt / 7) * 100);
+    const modPct   = Math.round((doneCnt / 5) * 100);
 
     let examBadge;
     if (ex.passed) {
@@ -680,9 +680,9 @@ function renderTeamTable() {
       <td>
         <div class="mod-progress">
           <div class="mod-progress-bar">
-            <div class="mod-progress-fill ${doneCnt===7?'complete':''}" style="width:${modPct}%"></div>
+            <div class="mod-progress-fill ${doneCnt===5?'complete':''}" style="width:${modPct}%"></div>
           </div>
-          <span style="font-size:0.8rem;color:${doneCnt===7?'var(--success)':'var(--text-secondary)'};">${doneCnt}/7</span>
+          <span style="font-size:0.8rem;color:${doneCnt===5?'var(--success)':'var(--text-secondary)'};">${doneCnt}/5</span>
         </div>
       </td>
       <td style="color:var(--gold);font-weight:600;">${avgScore}</td>
