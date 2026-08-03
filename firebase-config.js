@@ -3,14 +3,14 @@
 // Get them from: Firebase Console → Project Settings → Your apps → Config
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
-  apiKey: "AIzaSyDWRWgJk2JR2ZWkgZUO4PEaBR61f60pr5M",
-  authDomain: "wmt-training-portal.firebaseapp.com",
-  databaseURL: "https://wmt-training-portal-default-rtdb.asia-southeast1.firebasedatabase.app",
-  projectId: "wmt-training-portal",
-  storageBucket: "wmt-training-portal.firebasestorage.app",
-  messagingSenderId: "629464411536",
-  appId: "1:629464411536:web:f6b73e3e121d3ba1ae9715",
-  measurementId: "G-NZK3GJJQY2"
+  apiKey: "AIzaSyDb1g23S4_5qub_WO8zeeASF_Y8ySi352E",
+  authDomain: "wgtraining-a669d.firebaseapp.com",
+  databaseURL: "https://wgtraining-a669d-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "wgtraining-a669d",
+  storageBucket: "wgtraining-a669d.firebasestorage.app",
+  messagingSenderId: "724317598235",
+  appId: "1:724317598235:web:0cac6311d964c9b0fdfebe",
+  measurementId: "G-WJD9D652N0"
 };
 
 // ── Init ───────────────────────────────────────────────────────────────────
@@ -22,6 +22,12 @@ if (_FB_READY) {
       firebase.initializeApp(firebaseConfig);
     }
     window.FDB = firebase.database();
+    // Anonymous auth so Realtime Database rules can require "auth != null"
+    // (blocks raw REST/curl access with no Firebase SDK at all) without
+    // needing a full login system rework.
+    firebase.auth().signInAnonymously().catch(e => {
+      console.warn("[Firebase] Anonymous auth failed:", e.message);
+    });
   } catch (e) {
     console.warn("[Firebase] Init failed:", e.message);
     window.FDB = null;
