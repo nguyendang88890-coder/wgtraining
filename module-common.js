@@ -3,15 +3,9 @@
 function getUsersDB() {
   let users = JSON.parse(localStorage.getItem('wmt_users_db') || 'null');
   if (!users) {
-    // Seed local-only defaults — do NOT push to Firebase (would overwrite real registered users)
-    users = {
-      admin:   { password: 'wmt2026',  role: 'admin',   createdAt: new Date().toISOString() },
-      trainee: { password: 'train123', role: 'trainee', createdAt: new Date().toISOString() }
-    };
-    localStorage.setItem('wmt_users_db', JSON.stringify(users));
-  }
-  if (!users.admin) {
-    users.admin = { password: 'wmt2026', role: 'admin', createdAt: new Date().toISOString() };
+    // Admin accounts live in Firebase only — synced in on first load.
+    // Nothing to seed locally before that sync completes.
+    users = {};
     localStorage.setItem('wmt_users_db', JSON.stringify(users));
   }
 

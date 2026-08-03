@@ -16,25 +16,42 @@ const firebaseConfig = {
 // ── Init ───────────────────────────────────────────────────────────────────
 const _FB_READY = firebaseConfig.apiKey !== "your_API_key";
 
+// Resolves once anonymous sign-in has settled (success or failure) — dbWrite/
+// dbRemove/syncFromFirebase all await this first, since the DB rules require
+// "auth != null" and reads/writes issued before sign-in completes would
+// otherwise race and fail with permission_denied.
+let _authReadyResolve;
+const _authReady = new Promise(resolve => { _authReadyResolve = resolve; });
+
 if (_FB_READY) {
   try {
     if (!firebase.apps || !firebase.apps.length) {
       firebase.initializeApp(firebaseConfig);
     }
     window.FDB = firebase.database();
-    // Anonymous auth so Realtime Database rules can require "auth != null"
-    // (blocks raw REST/curl access with no Firebase SDK at all) without
-    // needing a full login system rework.
+    // Wait for onAuthStateChanged rather than just the signInAnonymously()
+    // promise: the Database SDK picks up the new auth token for its own
+    // (separate) socket connection on that event, slightly after the promise
+    // resolves — reads issued in between still get permission_denied.
+    const _unsubAuth = firebase.auth().onAuthStateChanged(user => {
+      if (user) {
+        _authReadyResolve();
+        _unsubAuth();
+      }
+    });
     firebase.auth().signInAnonymously().catch(e => {
       console.warn("[Firebase] Anonymous auth failed:", e.message);
+      _authReadyResolve(); // unblock the app even if sign-in itself failed
     });
   } catch (e) {
     console.warn("[Firebase] Init failed:", e.message);
     window.FDB = null;
+    _authReadyResolve();
   }
 } else {
   window.FDB = null;
   console.info("[Firebase] Config not set — running in localStorage-only mode.");
+  _authReadyResolve();
 }
 
 // ── Path mapper ────────────────────────────────────────────────────────────
@@ -85,8 +102,9 @@ function _fbPath(key) {
 // ── Write ──────────────────────────────────────────────────────────────────
 // Writes to localStorage synchronously and fires to Firebase in the background.
 // value must be a JSON string (same as what you'd pass to localStorage.setItem).
-window.dbWrite = function(key, value) {
+window.dbWrite = async function(key, value) {
   localStorage.setItem(key, value);
+  await _authReady;
   if (window.FDB) {
     try {
       const parsed = JSON.parse(value);
@@ -99,8 +117,9 @@ window.dbWrite = function(key, value) {
 };
 
 // ── Remove ─────────────────────────────────────────────────────────────────
-window.dbRemove = function(key) {
+window.dbRemove = async function(key) {
   localStorage.removeItem(key);
+  await _authReady;
   if (window.FDB) {
     window.FDB.ref(_fbPath(key)).remove()
       .catch(err => console.warn(`[Firebase] remove failed (${key}):`, err.message));
@@ -111,6 +130,7 @@ window.dbRemove = function(key) {
 // Call `await syncFromFirebase()` on page load so every device gets fresh data.
 // After this resolves, all reads can use localStorage as normal (fast + sync).
 window.syncFromFirebase = async function() {
+  await _authReady;
   if (!window.FDB) return; // no-op in localStorage-only mode
 
   try {
