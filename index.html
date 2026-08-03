@@ -421,7 +421,7 @@
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
-<script src="firebase-config.js?v=2"></script>
+<script src="firebase-config.js?v=3"></script>
 <script>
 // ===== USER DB =====
 function getUsersDB() {
@@ -474,7 +474,7 @@ async function doLogin() {
   const p = document.getElementById('password').value;
   const users = getUsersDB();
 
-  if (users[u] && users[u].password === p) {
+  if (users[u] && await verifyPassword(p, users[u])) {
     localStorage.setItem('wmt_user', u);
     err.textContent = '';
     document.getElementById('loginPage').classList.add('hidden');
@@ -498,7 +498,7 @@ document.addEventListener('keydown', function(e) {
 });
 
 // ===== REGISTER =====
-function doRegister() {
+async function doRegister() {
   const u   = document.getElementById('regUsername').value.trim().toLowerCase();
   const p   = document.getElementById('regPassword').value;
   const c   = document.getElementById('regConfirm').value;
@@ -532,7 +532,7 @@ function doRegister() {
   }
 
   const newUser = {
-    password:     p,
+    ...(await createPasswordRecord(p)),
     role:         'trainee',
     fullName:     document.getElementById('regFullName').value.trim(),
     email:        document.getElementById('regEmail').value.trim(),
@@ -647,7 +647,7 @@ function openChangePwModal() {
   document.body.appendChild(modal);
 }
 
-function saveChangePw() {
+async function saveChangePw() {
   const user  = localStorage.getItem('wmt_user');
   const users = getUsersDB();
   const cur = document.getElementById('cpCurrent').value;
@@ -655,12 +655,14 @@ function saveChangePw() {
   const cf  = document.getElementById('cpConfirm').value;
   const err = document.getElementById('cpError');
   err.textContent = '';
-  if (!users[user] || users[user].password !== cur) { err.textContent = 'Current password is incorrect.'; return; }
+  if (!users[user] || !(await verifyPassword(cur, users[user]))) { err.textContent = 'Current password is incorrect.'; return; }
   if (nw.length < 6) { err.textContent = 'New password must be at least 6 characters.'; return; }
   if (nw !== cf)     { err.textContent = 'Passwords do not match.'; return; }
-  users[user].password = nw;
+  const rec = await createPasswordRecord(nw);
+  Object.assign(users[user], rec);
+  delete users[user].password;
   localStorage.setItem('wmt_users_db', JSON.stringify(users));
-  if (window.FDB) window.FDB.ref('users/' + user).update({ password: nw })
+  if (window.FDB) window.FDB.ref('users/' + user).update({ ...rec, password: null })
     .catch(e => console.warn('[WG] changePw Firebase error:', e.message));
   document.getElementById('cpSuccess').style.display = 'block';
   document.getElementById('cpCurrent').value = '';
@@ -710,7 +712,7 @@ function forgotVerify() {
   setTimeout(() => document.getElementById('fpNewPw').focus(), 80);
 }
 
-function forgotSave() {
+async function forgotSave() {
   const un  = document.getElementById('fpUsername').dataset.verified;
   const nw  = document.getElementById('fpNewPw').value;
   const cf  = document.getElementById('fpConfirm').value;
@@ -720,9 +722,11 @@ function forgotSave() {
   if (nw.length < 6) { err.textContent = 'Password must be at least 6 characters.'; return; }
   if (nw !== cf)     { err.textContent = 'Passwords do not match.'; return; }
   const users = getUsersDB();
-  users[un].password = nw;
+  const rec = await createPasswordRecord(nw);
+  Object.assign(users[un], rec);
+  delete users[un].password;
   localStorage.setItem('wmt_users_db', JSON.stringify(users));
-  if (window.FDB) window.FDB.ref('users/' + un).update({ password: nw })
+  if (window.FDB) window.FDB.ref('users/' + un).update({ ...rec, password: null })
     .catch(e => console.warn('[WG] forgotPw Firebase error:', e.message));
   document.getElementById('fpStep2').style.display   = 'none';
   document.getElementById('fpSuccess').style.display = 'block';

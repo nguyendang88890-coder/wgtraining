@@ -639,11 +639,8 @@
           <div>
             <div style="font-size:0.75rem;color:var(--text-muted);margin-bottom:5px;">Current Password</div>
             <div style="position:relative;">
-              <input type="password" id="editCurrentPwDisplay" disabled
-                style="width:100%;padding:9px 38px 9px 12px;background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:8px;color:var(--text-secondary);font-size:13px;font-family:monospace;box-sizing:border-box;letter-spacing:0.1em;">
-              <button type="button" onclick="toggleEditPwVis('editCurrentPwDisplay',this)"
-                style="position:absolute;right:8px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:0.9rem;padding:2px;color:var(--text-muted);line-height:1;"
-                title="Show/hide password">👁️</button>
+              <input type="text" id="editCurrentPwDisplay" disabled
+                style="width:100%;padding:9px 12px;background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:8px;color:var(--text-secondary);font-size:13px;box-sizing:border-box;">
             </div>
           </div>
           <div>
@@ -670,7 +667,7 @@
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
-<script src="firebase-config.js?v=2"></script>
+<script src="firebase-config.js?v=3"></script>
 <script src="module-common.js?v=2"></script>
 <script>
 // Admin guard — runs AFTER syncFromFirebase so newly promoted admins
@@ -1952,12 +1949,8 @@ function openEditUser(uname) {
   document.getElementById('editIsLeader').checked      = u.isLeader    || false;
   document.getElementById('editLeaderName').value      = u.leaderName  || '';
   document.getElementById('editUserError').textContent = '';
-  // Password fields
-  const curPwEl = document.getElementById('editCurrentPwDisplay');
-  curPwEl.value = u.password || '';
-  curPwEl.type  = 'password';
-  const curBtn  = curPwEl.nextElementSibling;
-  if (curBtn) curBtn.textContent = '👁️';
+  // Password fields — hashed, so there is nothing to display; only a reset is possible.
+  document.getElementById('editCurrentPwDisplay').value = '•••••••• (hashed — cannot be viewed)';
   document.getElementById('editNewPw').value = '';
   document.getElementById('editNewPw').type  = 'password';
   const newBtn = document.getElementById('editNewPw').nextElementSibling;
@@ -1967,7 +1960,7 @@ function openEditUser(uname) {
 }
 function closeEditUser() { document.getElementById('editUserModal').classList.remove('show'); }
 
-function saveEditUser() {
+async function saveEditUser() {
   const uname = document.getElementById('editUsername').value;
   const users = getUsersDB();
   if (!users[uname]) return;
@@ -1992,7 +1985,10 @@ function saveEditUser() {
     isLeader:     document.getElementById('editIsLeader').checked,
     leaderName:   document.getElementById('editLeaderName').value.trim().toLowerCase(),
   };
-  if (newPw) patch.password = newPw;
+  if (newPw) {
+    Object.assign(patch, await createPasswordRecord(newPw));
+    patch.password = null; // clear any legacy plaintext field on Firebase
+  }
 
   Object.assign(users[uname], patch);
   localStorage.setItem('wmt_users_db', JSON.stringify(users));
@@ -2172,7 +2168,7 @@ function closeResetPwModal() {
   _resetPwTarget = null;
 }
 
-function saveResetPw() {
+async function saveResetPw() {
   const uname = _resetPwTarget;
   const nw  = document.getElementById('resetPwNew').value;
   const cf  = document.getElementById('resetPwConfirm').value;
@@ -2183,9 +2179,11 @@ function saveResetPw() {
   if (nw !== cf)     { err.textContent = 'Passwords do not match.'; return; }
   const users = getUsersDB();
   if (!users[uname]) { err.textContent = 'User not found.'; return; }
-  users[uname].password = nw;
+  const rec = await createPasswordRecord(nw);
+  Object.assign(users[uname], rec);
+  delete users[uname].password;
   localStorage.setItem('wmt_users_db', JSON.stringify(users));
-  if (window.FDB) window.FDB.ref('users/' + uname).update({ password: nw })
+  if (window.FDB) window.FDB.ref('users/' + uname).update({ ...rec, password: null })
     .catch(e => console.warn('[WG] resetPw Firebase error:', e.message));
   closeResetPwModal();
   alert('✅ Password for "' + uname + '" has been reset successfully.');

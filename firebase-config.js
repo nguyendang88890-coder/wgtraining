@@ -62,6 +62,45 @@ if (_FB_READY) {
   _authReadyResolve();
 }
 
+// ── Password hashing (PBKDF2 via the browser's built-in Web Crypto API) ─────
+// No external library needed. Each user gets a random salt; the hash is
+// never reversible, so nobody — including admins — can read a real password.
+async function _hashPassword(password, saltB64) {
+  const enc = new TextEncoder();
+  const keyMaterial = await crypto.subtle.importKey(
+    'raw', enc.encode(password), 'PBKDF2', false, ['deriveBits']
+  );
+  const saltBytes = Uint8Array.from(atob(saltB64), c => c.charCodeAt(0));
+  const bits = await crypto.subtle.deriveBits(
+    { name: 'PBKDF2', salt: saltBytes, iterations: 100000, hash: 'SHA-256' },
+    keyMaterial, 256
+  );
+  return btoa(String.fromCharCode(...new Uint8Array(bits)));
+}
+
+function _generateSalt() {
+  const bytes = new Uint8Array(16);
+  crypto.getRandomValues(bytes);
+  return btoa(String.fromCharCode(...bytes));
+}
+
+// Call when setting/changing a password (register, change-password, admin
+// reset...). Returns { passwordHash, passwordSalt } to merge into the user
+// record — always set `password: null` alongside it to clear any legacy
+// plaintext field on Firebase (update() only merges, never removes keys).
+window.createPasswordRecord = async function(plaintext) {
+  const passwordSalt = _generateSalt();
+  const passwordHash = await _hashPassword(plaintext, passwordSalt);
+  return { passwordHash, passwordSalt };
+};
+
+// Call at login / any "verify current password" check.
+window.verifyPassword = async function(plaintext, user) {
+  if (!user || !user.passwordHash || !user.passwordSalt) return false;
+  const computed = await _hashPassword(plaintext, user.passwordSalt);
+  return computed === user.passwordHash;
+};
+
 // ── Path mapper ────────────────────────────────────────────────────────────
 // Maps a localStorage key to a Firebase Realtime Database path.
 function _fbPath(key) {
