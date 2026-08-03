@@ -43,6 +43,14 @@ if (_FB_READY) {
       console.warn("[Firebase] Anonymous auth failed:", e.message);
       _authReadyResolve(); // unblock the app even if sign-in itself failed
     });
+    // Safety net: never let the app hang forever waiting on Firebase Auth
+    // (blocked third-party storage, flaky network, etc.) — give up after 8s
+    // and proceed unauthenticated; reads/writes will just fail per the rules
+    // instead of freezing the login button indefinitely.
+    setTimeout(() => {
+      console.warn("[Firebase] Auth readiness timed out after 8s — continuing anyway.");
+      _authReadyResolve();
+    }, 8000);
   } catch (e) {
     console.warn("[Firebase] Init failed:", e.message);
     window.FDB = null;
