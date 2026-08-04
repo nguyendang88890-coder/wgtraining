@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Feedback | WG Training</title>
+  <link rel="stylesheet" href="style.css?v=2">
+  <style>
+    .fb-hero {
+      background: linear-gradient(135deg, var(--bg-card) 0%, var(--bg-secondary) 100%);
+      border: 1px solid var(--border-gold);
+      border-radius: 16px;
+      padding: 32px;
+      margin-bottom: 28px;
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+    .fb-hero-icon { font-size: 2.5rem; flex-shrink: 0; }
+    .fb-hero h2 { font-size: 1.5rem; color: var(--gold); margin-bottom: 6px; }
+    .fb-hero p  { color: var(--text-secondary); font-size: 0.9rem; }
+
+    .fb-section {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 24px 28px;
+      margin-bottom: 20px;
+    }
+    .fb-section h3 { font-size: 1.05rem; color: var(--gold); margin-bottom: 4px; }
+    .fb-section-sub { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 16px; }
+
+    .fb-stars { display: flex; gap: 6px; margin-bottom: 16px; }
+    .fb-star {
+      font-size: 2rem;
+      line-height: 1;
+      cursor: pointer;
+      color: var(--border);
+      transition: transform 0.1s, color 0.15s;
+      user-select: none;
+    }
+    .fb-star:hover { transform: scale(1.15); }
+    .fb-star.filled { color: var(--gold); }
+    .fb-rating-label { font-size: 0.82rem; color: var(--text-muted); margin-left: 8px; }
+
+    .fb-success-banner {
+      background: rgba(0,214,143,0.08);
+      border: 1px solid rgba(0,214,143,0.3);
+      border-radius: 12px;
+      padding: 16px 20px;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      color: var(--success);
+      font-weight: 600;
+      font-size: 0.9rem;
+    }
+    .fb-success-banner.hidden { display: none; }
+  </style>
+</head>
+<body>
+<div class="app-layout">
+  <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+  <aside class="sidebar" id="sidebar"></aside>
+
+  <div class="main-content">
+    <div class="top-bar">
+      <button class="hamburger" onclick="toggleSidebar()">☰</button>
+      <span class="top-bar-title">Feedback</span>
+      <div class="top-bar-actions">
+        <a href="index.html" class="btn btn-secondary" style="padding:6px 14px;font-size:0.82rem;">← Dashboard</a>
+      </div>
+    </div>
+
+    <div class="page-content animate-in">
+
+      <div class="fb-hero">
+        <div class="fb-hero-icon">💬</div>
+        <div>
+          <h2>Training Feedback</h2>
+          <p>Help us improve — rate the training content and your trainer/interview experience. You can update your feedback anytime.</p>
+        </div>
+      </div>
+
+      <div class="fb-success-banner hidden" id="fbSuccessBanner">
+        ✅ <span id="fbSuccessText">Feedback saved!</span>
+      </div>
+
+      <!-- Training Content -->
+      <div class="fb-section">
+        <h3>📚 Training Content</h3>
+        <div class="fb-section-sub">How would you rate the quality and usefulness of the 5 training modules?</div>
+        <div class="fb-stars" id="contentStars"></div>
+        <div class="form-group">
+          <label>Comments (optional)</label>
+          <textarea id="contentComment" placeholder="What did you like? What could be improved?"></textarea>
+        </div>
+      </div>
+
+      <!-- Trainer / Interview -->
+      <div class="fb-section">
+        <h3>🎓 Trainer & Interview Experience</h3>
+        <div class="fb-section-sub">How would you rate your trainer and the video interview experience?</div>
+        <div class="fb-stars" id="trainerStars"></div>
+        <div class="form-group">
+          <label>Comments (optional)</label>
+          <textarea id="trainerComment" placeholder="How was your trainer? Any suggestions?"></textarea>
+        </div>
+      </div>
+
+      <button class="btn btn-primary" id="fbSubmitBtn" onclick="submitFeedback()" style="max-width:260px;">Submit Feedback</button>
+      <div class="error-msg" id="fbError"></div>
+      <div id="fbLastSubmitted" style="margin-top:10px;font-size:0.8rem;color:var(--text-muted);"></div>
+
+    </div>
+  </div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="firebase-config.js?v=4"></script>
+<script src="module-common.js?v=2"></script>
+<script>
+document.getElementById('sidebar').innerHTML = getSidebarHTML('feedback');
+updateSidebarProgress();
+
+let contentRating = 0;
+let trainerRating = 0;
+
+function renderStars(containerId, current, onSelect) {
+  const el = document.getElementById(containerId);
+  el.innerHTML = '';
+  for (let i = 1; i <= 5; i++) {
+    const star = document.createElement('span');
+    star.className = 'fb-star' + (i <= current ? ' filled' : '');
+    star.textContent = i <= current ? '★' : '☆';
+    star.onclick = () => onSelect(i);
+    el.appendChild(star);
+  }
+  const label = document.createElement('span');
+  label.className = 'fb-rating-label';
+  label.textContent = current ? `${current} / 5` : 'Not rated yet';
+  el.appendChild(label);
+}
+
+function selectContentStar(i) { contentRating = i; renderStars('contentStars', contentRating, selectContentStar); }
+function selectTrainerStar(i) { trainerRating = i; renderStars('trainerStars', trainerRating, selectTrainerStar); }
+
+async function loadExistingFeedback() {
+  await _syncReadyOrSkip();
+  const user = localStorage.getItem('wmt_user') || '';
+  const raw = localStorage.getItem('wmt_feedback_' + user);
+  if (raw) {
+    const fb = JSON.parse(raw);
+    contentRating = fb.contentRating || 0;
+    trainerRating = fb.trainerRating || 0;
+    document.getElementById('contentComment').value = fb.contentComment || '';
+    document.getElementById('trainerComment').value = fb.trainerComment || '';
+    if (fb.submittedAt) {
+      document.getElementById('fbLastSubmitted').textContent =
+        'Last submitted: ' + new Date(fb.submittedAt).toLocaleString('en-GB');
+      document.getElementById('fbSubmitBtn').textContent = 'Update Feedback';
+    }
+  }
+  renderStars('contentStars', contentRating, selectContentStar);
+  renderStars('trainerStars', trainerRating, selectTrainerStar);
+}
+
+// Best-effort: wait briefly for Firebase sync if the app exposes it, but never hang the page.
+async function _syncReadyOrSkip() {
+  if (typeof syncFromFirebase === 'function') {
+    try { await syncFromFirebase(); } catch (e) {}
+  }
+}
+
+function submitFeedback() {
+  const err = document.getElementById('fbError');
+  err.textContent = '';
+  if (!contentRating && !trainerRating) {
+    err.textContent = 'Please give at least one rating before submitting.';
+    return;
+  }
+  const user = localStorage.getItem('wmt_user') || '';
+  const data = {
+    contentRating,
+    contentComment: document.getElementById('contentComment').value.trim(),
+    trainerRating,
+    trainerComment: document.getElementById('trainerComment').value.trim(),
+    submittedAt: new Date().toISOString()
+  };
+  dbWrite('wmt_feedback_' + user, JSON.stringify(data));
+
+  document.getElementById('fbLastSubmitted').textContent =
+    'Last submitted: ' + new Date(data.submittedAt).toLocaleString('en-GB');
+  document.getElementById('fbSubmitBtn').textContent = 'Update Feedback';
+
+  const banner = document.getElementById('fbSuccessBanner');
+  banner.classList.remove('hidden');
+  setTimeout(() => banner.classList.add('hidden'), 3000);
+}
+
+loadExistingFeedback();
+</script>
+</body>
+</html>

@@ -495,6 +495,9 @@ function getSidebarHTML(activeModule) {
         <span class="nav-icon">🎤</span> Interview
         <span class="nav-badge" style="background:rgba(0,214,143,0.15);color:var(--success)">${ivStatus}</span>
       </a>` : ''}
+      <a href="feedback.html" class="nav-item ${activeModule === 'feedback' ? 'active' : ''}">
+        <span class="nav-icon">💬</span> Feedback
+      </a>
       ${(isAdmin || isLeader) ? `
       <a href="leader.html" class="nav-item ${activeModule === 'leader' ? 'active' : ''}">
         <span class="nav-icon">👥</span> Member Management

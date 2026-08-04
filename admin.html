@@ -366,6 +366,7 @@
         <button class="page-tab"        id="tabQuiz"        onclick="switchTab('quiz')">📝 Quiz</button>
         <button class="page-tab"        id="tabProposals"   onclick="switchTab('proposals')">💡 Proposals <span class="tab-badge hidden" id="proposalsBadge">0</span></button>
         <button class="page-tab"        id="tabReschedule"  onclick="switchTab('reschedule')">🔄 Reschedule <span class="tab-badge hidden" id="rsBadge">0</span></button>
+        <button class="page-tab"        id="tabFeedback"    onclick="switchTab('feedback')">💬 Feedback</button>
         <button class="page-tab"        id="tabSettings"    onclick="switchTab('settings')">⚙️ Settings</button>
       </div>
 
@@ -461,6 +462,25 @@
           Monthly Test reschedule requests from trainees. Approve or reject each request below.
         </p>
         <div id="adminRescheduleTab"></div>
+      </div>
+
+      <!-- ===== FEEDBACK TAB ===== -->
+      <div id="feedbackTab" class="hidden">
+        <p style="color:var(--text-muted);font-size:0.85rem;margin-bottom:20px;">
+          Trainee feedback on training content and trainer/interview experience.
+        </p>
+        <div id="feedbackSummary" style="display:flex;gap:16px;margin-bottom:20px;flex-wrap:wrap;"></div>
+        <div class="users-table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Username</th><th>Content Rating</th><th>Content Comment</th>
+                <th>Trainer Rating</th><th>Trainer Comment</th><th>Submitted</th>
+              </tr>
+            </thead>
+            <tbody id="feedbackTableBody"></tbody>
+          </table>
+        </div>
       </div>
 
       <!-- ===== SETTINGS TAB ===== -->
@@ -808,7 +828,7 @@ function saveInterviewData(username, data) {
 
 // ===== TAB SWITCH =====
 async function switchTab(tab) {
-  ['users','interviews','quiz','proposals','reschedule','settings'].forEach(t => {
+  ['users','interviews','quiz','proposals','reschedule','feedback','settings'].forEach(t => {
     document.getElementById(t+'Tab').classList.toggle('hidden', t !== tab);
     document.getElementById('tab'+t.charAt(0).toUpperCase()+t.slice(1)).classList.toggle('active', t === tab);
   });
@@ -821,6 +841,7 @@ async function switchTab(tab) {
   }
   if (tab === 'proposals') renderProposalsTab();
   if (tab === 'reschedule') { await syncFromFirebase(); renderRescheduleTab(); }
+  if (tab === 'feedback') { await syncFromFirebase(); renderFeedbackTab(); }
   if (tab === 'settings') renderSettingsTab();
 }
 
@@ -2072,6 +2093,48 @@ function renderRescheduleTab() {
           title="Xoá request — user có thể gửi lại">↩ Reset</button>
       </div>
     </div>`).join('');
+}
+
+function getFeedback(uname) {
+  return JSON.parse(localStorage.getItem('wmt_feedback_' + uname) || 'null');
+}
+
+function renderFeedbackTab() {
+  const users = getUsersDB();
+  const rows = Object.entries(users)
+    .map(([un, ud]) => ({ un, ud, fb: getFeedback(un) }))
+    .filter(r => r.fb);
+
+  const summaryEl = document.getElementById('feedbackSummary');
+  const bodyEl = document.getElementById('feedbackTableBody');
+
+  if (!rows.length) {
+    summaryEl.innerHTML = '';
+    bodyEl.innerHTML = `<tr><td colspan="6" style="text-align:center;padding:24px;color:var(--text-muted);">No feedback submitted yet.</td></tr>`;
+    return;
+  }
+
+  const contentRatings = rows.map(r => r.fb.contentRating).filter(Boolean);
+  const trainerRatings = rows.map(r => r.fb.trainerRating).filter(Boolean);
+  const avg = arr => arr.length ? (arr.reduce((a, b) => a + b, 0) / arr.length).toFixed(1) : '—';
+
+  summaryEl.innerHTML = `
+    <div class="exam-stat"><div class="exam-stat-value">${rows.length}</div><div class="exam-stat-label">Responses</div></div>
+    <div class="exam-stat"><div class="exam-stat-value">⭐ ${avg(contentRatings)}</div><div class="exam-stat-label">Avg. Content Rating</div></div>
+    <div class="exam-stat"><div class="exam-stat-value">⭐ ${avg(trainerRatings)}</div><div class="exam-stat-label">Avg. Trainer Rating</div></div>
+  `;
+
+  const stars = n => n ? '★'.repeat(n) + '☆'.repeat(5 - n) : '—';
+  rows.sort((a, b) => new Date(b.fb.submittedAt || 0) - new Date(a.fb.submittedAt || 0));
+  bodyEl.innerHTML = rows.map(({ un, ud, fb }) => `
+    <tr>
+      <td><strong>${un}</strong>${ud.fullName ? `<br><span style="font-size:0.78rem;color:var(--text-muted);">${ud.fullName}</span>` : ''}</td>
+      <td style="color:var(--gold);white-space:nowrap;">${stars(fb.contentRating)}</td>
+      <td style="max-width:220px;color:var(--text-secondary);font-size:0.82rem;">${fb.contentComment || ''}</td>
+      <td style="color:var(--gold);white-space:nowrap;">${stars(fb.trainerRating)}</td>
+      <td style="max-width:220px;color:var(--text-secondary);font-size:0.82rem;">${fb.trainerComment || ''}</td>
+      <td style="font-size:0.78rem;color:var(--text-muted);white-space:nowrap;">${fb.submittedAt ? new Date(fb.submittedAt).toLocaleDateString('en-GB') : ''}</td>
+    </tr>`).join('');
 }
 
 function approveRs(un, m) {

@@ -138,6 +138,10 @@ function _fbPath(key) {
   const ivMatch = key.match(/^wmt_interview_(.+)$/);
   if (ivMatch) return `interview/${ivMatch[1]}`;
 
+  // Per-user feedback: wmt_feedback_{user}
+  const fbMatch = key.match(/^wmt_feedback_(.+)$/);
+  if (fbMatch) return `feedback/${fbMatch[1]}`;
+
   // Per-user submission: wmt_sub_{user}_{month}
   const subMatch = key.match(/^wmt_sub_(.+)_(\d{4}-\d{2})$/);
   if (subMatch) return `submissions/${subMatch[1]}/${subMatch[2]}`;
@@ -231,6 +235,7 @@ window.syncFromFirebase = async function() {
         perUserPaths.push({ fb: `exam/${u}`,       ls: `wmt_exam_${u}`,       clearable: true  });
         perUserPaths.push({ fb: `interview/${u}`,  ls: `wmt_interview_${u}`,  clearable: true  });
         perUserPaths.push({ fb: `reschedule/${u}`, ls: `wmt_monthly_reschedule_${u}`, clearable: true });
+        perUserPaths.push({ fb: `feedback/${u}`,   ls: `wmt_feedback_${u}`,   clearable: true  });
       });
 
       await Promise.all(perUserPaths.map(async ({ fb, ls, clearable }) => {
