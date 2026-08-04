@@ -421,11 +421,11 @@ document.addEventListener('DOMContentLoaded', function() {
 // Sidebar HTML snippet generator
 function getSidebarHTML(activeModule) {
   const modules = [
-    { id: 1, icon: '📦', title: 'Products',            file: 'module1.html' },
-    { id: 2, icon: '📋', title: 'Trading Rules',       file: 'module2.html' },
-    { id: 3, icon: '🏆', title: 'Profit & Payouts',    file: 'module3.html' },
-    { id: 4, icon: '💳', title: 'Payment Methods',     file: 'module4.html' },
-    { id: 5, icon: '💰', title: 'Financial Products',  file: 'module5.html' }
+    { id: 1, icon: '🏢', title: 'Overview',                        file: 'module1.html' },
+    { id: 2, icon: '💼', title: 'Trading Accounts',                 file: 'module2.html' },
+    { id: 3, icon: '📈', title: 'Financial Products & Leverage',    file: 'module3.html' },
+    { id: 4, icon: '🤝', title: 'IB Policies & Reward',             file: 'module4.html' },
+    { id: 5, icon: '💳', title: 'Deposit & Withdrawal',             file: 'module5.html' }
   ];
   const user    = localStorage.getItem('wmt_user') || 'Trainee';
   const users   = getUsersDB();
@@ -614,11 +614,11 @@ window.addEventListener('load', async function() {
 
 // ===== MODERATOR CONTENT PROPOSAL =====
 const _MOD_PAGE_MAP = {
-  'module1.html': { moduleId: 1, moduleName: 'Products' },
-  'module2.html': { moduleId: 2, moduleName: 'Trading Rules' },
-  'module3.html': { moduleId: 3, moduleName: 'Profit & Payouts' },
-  'module4.html': { moduleId: 4, moduleName: 'Payment Methods' },
-  'module5.html': { moduleId: 5, moduleName: 'Financial Products' },
+  'module1.html': { moduleId: 1, moduleName: 'Overview' },
+  'module2.html': { moduleId: 2, moduleName: 'Trading Accounts' },
+  'module3.html': { moduleId: 3, moduleName: 'Financial Products & Leverage' },
+  'module4.html': { moduleId: 4, moduleName: 'IB Policies & Reward' },
+  'module5.html': { moduleId: 5, moduleName: 'Deposit & Withdrawal' },
   'exam.html':    { moduleId: 0, moduleName: 'Final Exam' },
   'monthlytest.html': { moduleId: 0, moduleName: 'Monthly Test' },
   'leader.html':      { moduleId: 0, moduleName: 'Leader Dashboard' },

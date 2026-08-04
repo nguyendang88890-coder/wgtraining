@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Module 2 — Trading Rules | WG Training</title>
+  <title>Module 2 — Trading Accounts | WG Training</title>
   <link rel="stylesheet" href="style.css?v=2">
 </head>
 <body>
@@ -14,7 +14,7 @@
   <div class="main-content">
     <div class="top-bar">
       <button class="hamburger" onclick="toggleSidebar()">☰</button>
-      <span class="top-bar-title">Module 2 — Trading Rules</span>
+      <span class="top-bar-title">Module 2 — Trading Accounts</span>
       <div class="top-bar-actions">
         <a href="index.html" class="btn btn-secondary" style="padding:6px 14px;font-size:0.82rem;">← Dashboard</a>
       </div>
@@ -24,12 +24,153 @@
       <div class="module-header">
         <div class="module-header-num">2</div>
         <div class="module-header-info">
-          <h2>Trading Rules</h2>
-          <p>Master all trading rules that traders must follow to maintain their funded accounts</p>
+          <h2>Trading Accounts</h2>
+          <p>The 3 live account types WeGolden offers — ECN, Standard, and Cent</p>
         </div>
       </div>
+
+      <!-- 2.1 ECN Account -->
       <div class="content-section">
-        <p style="color:var(--text-muted);text-align:center;padding:24px 0;">📝 Content coming soon.</p>
+        <h3>⚡ 2.1 ECN Account</h3>
+        <p>The <strong>ECN (Electronic Communication Network) Account</strong> is designed for professional traders who require direct market access, institutional-grade pricing, and ultra-fast order execution. Orders are routed directly to liquidity providers, resulting in raw spreads and high execution efficiency.</p>
+
+        <div class="callout gold">
+          <span class="callout-icon">⭐</span>
+          <div class="callout-content">
+            <strong>Key Features</strong>
+            <ul style="margin:8px 0 0;padding-left:18px;line-height:1.8;">
+              <li>Raw spreads from 0.0 pip</li>
+              <li>Commission-based pricing</li>
+              <li>Fast market execution with reduced slippage</li>
+              <li>Margin Call: 150% · Stop Out: 20%</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="table-wrap">
+          <table>
+            <tbody>
+              <tr><td><strong>Suitable For</strong></td><td>Professional traders, scalpers, algorithmic (EA) traders, and high-volume traders</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="callout success">
+          <span class="callout-icon">✅</span>
+          <div class="callout-content">
+            <strong>Advantages</strong>
+            <ul style="margin:8px 0 0;padding-left:18px;line-height:1.8;">
+              <li>Ultra-low spreads</li>
+              <li>Direct access to liquidity providers</li>
+              <li>Optimized for scalping and automated trading</li>
+            </ul>
+          </div>
+        </div>
+        <div class="callout danger">
+          <span class="callout-icon">⚠️</span>
+          <div class="callout-content">
+            <strong>Limitations</strong>
+            <ul style="margin:8px 0 0;padding-left:18px;line-height:1.8;">
+              <li>Commission is charged on each trade</li>
+              <li>Less suitable for inexperienced traders</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2.2 Standard Account -->
+      <div class="content-section">
+        <h3>📊 2.2 Standard Account</h3>
+        <p>The <strong>Standard Account</strong> is the most widely used account type and is intended for retail traders seeking a straightforward pricing model. Trading costs are incorporated into the spread, with no commission charged.</p>
+
+        <div class="callout gold">
+          <span class="callout-icon">⭐</span>
+          <div class="callout-content">
+            <strong>Key Features</strong>
+            <ul style="margin:8px 0 0;padding-left:18px;line-height:1.8;">
+              <li>Floating spreads</li>
+              <li>No commission</li>
+              <li>Fast execution through liquidity providers</li>
+              <li>Margin Call: 150% · Stop Out: 20%</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="table-wrap">
+          <table>
+            <tbody>
+              <tr><td><strong>Suitable For</strong></td><td>Beginner traders, swing traders, and clients who prefer a simple fee structure</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="callout success">
+          <span class="callout-icon">✅</span>
+          <div class="callout-content">
+            <strong>Advantages</strong>
+            <ul style="margin:8px 0 0;padding-left:18px;line-height:1.8;">
+              <li>Commission-free trading</li>
+              <li>Easy-to-understand trading costs</li>
+              <li>Appropriate for most retail traders</li>
+            </ul>
+          </div>
+        </div>
+        <div class="callout danger">
+          <span class="callout-icon">⚠️</span>
+          <div class="callout-content">
+            <strong>Limitations</strong>
+            <p>Wider spreads than the ECN Account.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2.3 Cent Account -->
+      <div class="content-section">
+        <h3>🪙 2.3 Cent Account</h3>
+        <p>The <strong>Cent Account</strong> is a live trading account that uses Cent as the account currency rather than USD. It enables clients to trade with significantly smaller effective position sizes while maintaining the full functionality of the MT5 platform.</p>
+
+        <div class="callout gold">
+          <span class="callout-icon">⭐</span>
+          <div class="callout-content">
+            <strong>Key Features</strong>
+            <ul style="margin:8px 0 0;padding-left:18px;line-height:1.8;">
+              <li>Base currency: Cent (100 Cent = 1 USD)</li>
+              <li>Minimum deposit: USD 3</li>
+              <li>Available on MT5 Desktop, Web, and Mobile</li>
+              <li>USDT deposits and withdrawals only</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="table-wrap">
+          <table>
+            <tbody>
+              <tr><td><strong>Suitable For</strong></td><td>New traders, strategy testing, EA testing, and risk management practice</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="callout success">
+          <span class="callout-icon">✅</span>
+          <div class="callout-content">
+            <strong>Advantages</strong>
+            <ul style="margin:8px 0 0;padding-left:18px;line-height:1.8;">
+              <li>Low financial risk</li>
+              <li>Ideal learning environment with real market conditions</li>
+              <li>Suitable for testing trading strategies</li>
+            </ul>
+          </div>
+        </div>
+        <div class="callout danger">
+          <span class="callout-icon">⚠️</span>
+          <div class="callout-content">
+            <strong>Limitations</strong>
+            <ul style="margin:8px 0 0;padding-left:18px;line-height:1.8;">
+              <li>Not intended for large-capital trading</li>
+              <li>Lower profit potential due to smaller trading volume</li>
+            </ul>
+          </div>
+        </div>
       </div>
 
       <!-- Mark Complete -->
