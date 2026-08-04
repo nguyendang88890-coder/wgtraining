@@ -1632,3 +1632,38 @@ tbody td:first-child {
   color: #c0c0d0;
   line-height: 1.6;
 }
+
+/* ===== Mandatory Feedback Gate (shown after Final Exam + Interview completed) ===== */
+.fb-gate-overlay {
+  position: fixed; inset: 0; z-index: 99999;
+  background: rgba(12,10,4,0.72);
+  display: flex; align-items: center; justify-content: center;
+  padding: 20px; overflow-y: auto;
+  animation: fbGateFadeIn .18s ease;
+}
+@keyframes fbGateFadeIn { from { opacity: 0; } to { opacity: 1; } }
+.fb-gate-box {
+  background: var(--bg-card); border: 1px solid var(--border-gold);
+  border-radius: 16px; padding: 32px; max-width: 460px; width: 100%;
+  max-height: 90vh; overflow-y: auto; box-shadow: 0 16px 48px rgba(0,0,0,0.35);
+}
+.fb-gate-icon  { font-size: 1.8rem; margin-bottom: 10px; }
+.fb-gate-title { font-size: 1.15rem; font-weight: 800; color: var(--gold); margin-bottom: 8px; }
+.fb-gate-sub   { font-size: 0.85rem; color: var(--text-secondary); line-height: 1.6; margin-bottom: 22px; }
+.fb-gate-section { margin-bottom: 16px; }
+.fb-gate-label { font-size: 0.85rem; font-weight: 700; color: var(--text-primary); margin-bottom: 8px; }
+.fb-gate-textarea {
+  width: 100%; margin-top: 4px; padding: 10px 12px; background: var(--bg-secondary);
+  border: 1px solid var(--border); border-radius: 8px; color: var(--text-primary);
+  font-size: 0.85rem; resize: vertical; box-sizing: border-box; font-family: inherit;
+}
+.fb-gate-error  { color: var(--danger); font-size: 0.82rem; min-height: 1.2em; margin: 8px 0; }
+.fb-gate-submit { width: 100%; margin-top: 6px; }
+
+.fb-stars { display: flex; gap: 6px; align-items: center; }
+.fb-star {
+  font-size: 1.9rem; line-height: 1; cursor: pointer; color: var(--border);
+  transition: transform 0.1s, color 0.15s; user-select: none;
+}
+.fb-star:hover  { transform: scale(1.15); }
+.fb-star.filled { color: var(--gold); }

@@ -734,6 +734,102 @@ function getSidebarHTML(activeModule) {
   document.addEventListener('DOMContentLoaded', injectGlobalBell);
 })();
 
+// ===== MANDATORY FEEDBACK GATE =====
+// After a trainee has both taken the Final Exam (any result) AND had their
+// interview marked "completed" by admin, block every page behind a
+// full-screen, non-dismissible modal until they submit feedback at least
+// once. Skipped on flow pages (exam/interview/monthly test/results/feedback
+// itself) and for admin/mod, who never take the exam/interview themselves.
+(function() {
+  const FB_GATE_EXEMPT_PAGES = [
+    'feedback', 'exam', 'taketest', 'monthlytest',
+    'interview', 'admin', 'tracker', 'results'
+  ];
+
+  function shouldGateFeedback(user) {
+    if (!user) return false;
+    const udata = getUsersDB()[user] || {};
+    if (udata.role === 'admin' || udata.role === 'mod') return false;
+    const ex = JSON.parse(localStorage.getItem('wmt_exam_' + user) || '{}');
+    const examDone = ex.score !== undefined || ex.passed || ex.disqualified;
+    if (!examDone) return false;
+    const iv = JSON.parse(localStorage.getItem('wmt_interview_' + user) || 'null');
+    if (!iv || iv.status !== 'completed') return false;
+    return !localStorage.getItem('wmt_feedback_' + user);
+  }
+
+  function renderFeedbackGate() {
+    const rawPage = window.location.pathname.split('/').pop() || 'index.html';
+    const page = rawPage.replace(/\.html$/i, '');
+    if (FB_GATE_EXEMPT_PAGES.includes(page)) return;
+    const user = localStorage.getItem('wmt_user');
+    if (!shouldGateFeedback(user)) return;
+    if (document.getElementById('fbGateOverlay')) return;
+
+    let contentRating = 0, trainerRating = 0;
+
+    const overlay = document.createElement('div');
+    overlay.id = 'fbGateOverlay';
+    overlay.className = 'fb-gate-overlay';
+    overlay.innerHTML = `
+      <div class="fb-gate-box">
+        <div class="fb-gate-icon">💬</div>
+        <div class="fb-gate-title">Please share your feedback to continue</div>
+        <div class="fb-gate-sub">You've completed the Final Exam and your Interview. Take a minute to rate the training content and your trainer before continuing.</div>
+        <div class="fb-gate-section">
+          <div class="fb-gate-label">📚 Training Content</div>
+          <div class="fb-stars" id="fbGateContentStars"></div>
+        </div>
+        <div class="fb-gate-section">
+          <div class="fb-gate-label">🎓 Trainer &amp; Interview Experience</div>
+          <div class="fb-stars" id="fbGateTrainerStars"></div>
+        </div>
+        <textarea id="fbGateComment" class="fb-gate-textarea" rows="3" placeholder="Additional comments (optional)…"></textarea>
+        <div class="fb-gate-error" id="fbGateError"></div>
+        <button class="btn btn-primary fb-gate-submit" onclick="window._submitFeedbackGate()">Submit Feedback</button>
+      </div>`;
+    document.body.appendChild(overlay);
+    document.body.style.overflow = 'hidden';
+
+    function paintStars(id, val, onSelect) {
+      const el = document.getElementById(id);
+      el.innerHTML = '';
+      for (let i = 1; i <= 5; i++) {
+        const s = document.createElement('span');
+        s.className = 'fb-star' + (i <= val ? ' filled' : '');
+        s.textContent = i <= val ? '★' : '☆';
+        s.onclick = () => onSelect(i);
+        el.appendChild(s);
+      }
+    }
+    const selectContent = i => { contentRating = i; paintStars('fbGateContentStars', contentRating, selectContent); };
+    const selectTrainer = i => { trainerRating = i; paintStars('fbGateTrainerStars', trainerRating, selectTrainer); };
+    paintStars('fbGateContentStars', 0, selectContent);
+    paintStars('fbGateTrainerStars', 0, selectTrainer);
+
+    window._submitFeedbackGate = function() {
+      const err = document.getElementById('fbGateError');
+      if (!contentRating && !trainerRating) {
+        err.textContent = 'Please give at least one rating before submitting.';
+        return;
+      }
+      const data = {
+        contentRating,
+        contentComment: document.getElementById('fbGateComment').value.trim(),
+        trainerRating,
+        trainerComment: '',
+        submittedAt: new Date().toISOString()
+      };
+      window.dbWrite('wmt_feedback_' + user, JSON.stringify(data));
+      overlay.remove();
+      document.body.style.overflow = '';
+    };
+  }
+
+  document.addEventListener('DOMContentLoaded', renderFeedbackGate);
+  window.addEventListener('load', renderFeedbackGate);
+})();
+
 // ===== MODULE READING PROGRESS & SECTION NAV =====
 (function initModuleProgress() {
   // Only run on module pages (they have a #quizContainer)
