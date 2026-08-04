@@ -203,17 +203,8 @@
 <script src="firebase-config.js?v=4"></script>
 <script src="module-common.js?v=2"></script>
 <script>
-// ===== QUESTION BANK (55 questions) =====
+// ===== QUESTION BANK (42 questions) =====
 const QUESTION_BANK = [
-  // ABOUT WG
-  { q: "What is the legal company name behind WeGolden?", opts: ["WeGolden Ltd.","WeCopy Fintech Inc.","WG Global Corp.","MasterTrade Holdings"], _c: "MQ==", module: 0 },
-  { q: "In which city is WeGolden's headquarters located?", opts: ["Dubai","Singapore","Vancouver","Montevideo"], _c: "Mg==", module: 0 },
-  { q: "In which year was WeGolden founded?", opts: ["2019","2020","2021","2022"], _c: "Mg==", module: 0 },
-  { q: "How many global offices does WeGolden currently have?", opts: ["2","3","4","5"], _c: "Mg==", module: 0 },
-  { q: "Which of the following is a WeGolden office location?", opts: ["Tokyo, Japan","Sydney, Australia","Montevideo, Uruguay","London, UK"], _c: "Mg==", module: 0 },
-  { q: "What is WeGolden's stated vision?", opts: ["To become the #1 forex broker","To become a Top 5 Prop Firm providing Instant Funding globally","To launch a crypto exchange by 2027","To open 10 offices worldwide"], _c: "MQ==", module: 0 },
-  { q: "WeGolden is an official Season 2026 partner of which football club?", opts: ["Lamphun Warrior FC","Vancouver FC","Bangkok United","Toronto FC"], _c: "MQ==", module: 0 },
-  { q: "WeGolden sponsors Lamphun Warrior FC in which country?", opts: ["Vietnam","Indonesia","Malaysia","Thailand"], _c: "Mw==", module: 0 },
 
   // MODULE 1 — Products
   { q: "What is the profit target for Challenge Phase 1?", opts: ["5%","8%","10%","6%"], _c: "MQ==", module: 1 },
@@ -289,13 +280,7 @@ function saveExamState(data) {
 function getActiveQBank() {
   const stored = localStorage.getItem('wmt_exam_qbank_v2');
   if (stored) {
-    const parsed = JSON.parse(stored);
-    // Auto-reset if stored bank is missing module-0 (About WG) questions
-    if (!parsed.some(q => (q.module || 0) === 0)) {
-      dbWrite('wmt_exam_qbank_v2', JSON.stringify(QUESTION_BANK));
-      return QUESTION_BANK;
-    }
-    return parsed;
+    return JSON.parse(stored);
   }
   dbWrite('wmt_exam_qbank_v2', JSON.stringify(QUESTION_BANK));
   return QUESTION_BANK;
@@ -317,7 +302,7 @@ function _ansQ(q) {
 }
 
 // ===== ADMIN EXAM MANAGEMENT =====
-const EQ_MODULE_NAMES = ['About WG','Products','Trading Rules','Profit & Payouts','Payment Methods','Financial Products'];
+const EQ_MODULE_NAMES = [null,'Products','Trading Rules','Profit & Payouts','Payment Methods','Financial Products'];
 function getExamQBank() {
   const stored = JSON.parse(localStorage.getItem('wmt_exam_qbank_v2') || 'null');
   if (!stored) return null;
@@ -367,7 +352,7 @@ function _eqModal(title, q, idx, isNew) {
     <h3 style="margin-bottom:16px;">${title}</h3>
     <div class="form-group"><label>Module</label>
       <select id="eeM" style="width:100%;background:var(--bg-secondary);border:1px solid var(--border);color:var(--text-primary);padding:8px 12px;border-radius:8px;">
-        ${[0,1,2,3,4,5].map(n=>`<option value="${n}" ${q&&q.module===n?'selected':''}>${n} — ${EQ_MODULE_NAMES[n]}</option>`).join('')}
+        ${[1,2,3,4,5].map(n=>`<option value="${n}" ${q&&q.module===n?'selected':''}>${n} — ${EQ_MODULE_NAMES[n]}</option>`).join('')}
       </select></div>
     <div class="form-group"><label>Question</label>
       <textarea id="eeQ" rows="3" style="width:100%;background:var(--bg-secondary);border:1px solid var(--border);color:var(--text-primary);padding:10px;border-radius:8px;font-size:0.88rem;resize:vertical;">${q?q.q:''}</textarea></div>
