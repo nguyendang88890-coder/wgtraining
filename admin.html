@@ -737,6 +737,7 @@ async function runAutoUpgrade() {
   localStorage.setItem('wmt_users_db', JSON.stringify(allUsers));
 
   if (window.FDB) {
+    await _authReady;
     await Promise.all(upgraded.map(({ uname }) =>
       window.FDB.ref('users/' + uname).update({ employeeType: 'old' })
         .catch(e => console.warn('[WG] autoUpgrade Firebase error:', uname, e.message))
@@ -1010,6 +1011,7 @@ async function fixAllDepartments() {
   localStorage.setItem('wmt_users_db', JSON.stringify(users));
 
   if (window.FDB) {
+    await _authReady;
     await Promise.all(changed.map(({ uname, fixed }) =>
       window.FDB.ref('users/' + uname).update({ department: fixed })
         .catch(e => console.warn('[WG] fixDept Firebase error:', uname, e.message))
@@ -1275,7 +1277,7 @@ function renderAdminPanel() {
   renderUsersTableBody();
 }
 
-function toggleModRole(uname) {
+async function toggleModRole(uname) {
   const users = getUsersDB();
   if (!users[uname] || users[uname].role === 'admin') return;
   const isMod = users[uname].role === 'mod';
@@ -1284,11 +1286,11 @@ function toggleModRole(uname) {
   const newRole = isMod ? 'trainee' : 'mod';
   users[uname].role = newRole;
   localStorage.setItem('wmt_users_db', JSON.stringify(users));
-  if (window.FDB) window.FDB.ref('users/' + uname).update({ role: newRole });
+  if (window.FDB) { await _authReady; window.FDB.ref('users/' + uname).update({ role: newRole }); }
   renderAdminPanel();
 }
 
-function toggleAdminRole(uname) {
+async function toggleAdminRole(uname) {
   const users = getUsersDB();
   if (!users[uname]) return;
   // Cannot change your own admin role
@@ -1301,7 +1303,7 @@ function toggleAdminRole(uname) {
   const newRole = isAdmin ? 'trainee' : 'admin';
   users[uname].role = newRole;
   localStorage.setItem('wmt_users_db', JSON.stringify(users));
-  if (window.FDB) window.FDB.ref('users/' + uname).update({ role: newRole });
+  if (window.FDB) { await _authReady; window.FDB.ref('users/' + uname).update({ role: newRole }); }
   renderAdminPanel();
 }
 
@@ -1336,6 +1338,7 @@ async function migrateLeaderNames() {
 
   // Apply to Firebase (per-user update — safe)
   if (window.FDB) {
+    await _authReady;
     const promises = updates.map(({ uname, newVal }) =>
       window.FDB.ref('users/' + uname).update({ leaderName: newVal })
     );
@@ -1583,7 +1586,7 @@ function resetAllQuizzes(uname) {
   renderAdminPanel();
 }
 
-function deleteUser(uname) {
+async function deleteUser(uname) {
   const _du = getUsersDB();
   // Protect all admin accounts — revoke admin role first
   if (_du[uname] && _du[uname].role === 'admin') {
@@ -1594,7 +1597,7 @@ function deleteUser(uname) {
   const users = getUsersDB();
   delete users[uname];
   localStorage.setItem('wmt_users_db', JSON.stringify(users));
-  if (window.FDB) window.FDB.ref('users/' + uname).remove();
+  if (window.FDB) { await _authReady; window.FDB.ref('users/' + uname).remove(); }
   ['wmt_progress_','wmt_exam_','wmt_interview_'].forEach(k => dbRemove(k + uname));
   for (let i = 1; i <= 5; i++) dbRemove(`wmt_quiz_${uname}_m${i}`);
   const list = JSON.parse(localStorage.getItem('wmt_interviews_list') || '[]');
@@ -2013,7 +2016,7 @@ async function saveEditUser() {
 
   Object.assign(users[uname], patch);
   localStorage.setItem('wmt_users_db', JSON.stringify(users));
-  if (window.FDB) window.FDB.ref('users/' + uname).update(patch);
+  if (window.FDB) { await _authReady; window.FDB.ref('users/' + uname).update(patch); }
   closeEditUser();
   renderAdminPanel();
 }
@@ -2246,8 +2249,11 @@ async function saveResetPw() {
   Object.assign(users[uname], rec);
   delete users[uname].password;
   localStorage.setItem('wmt_users_db', JSON.stringify(users));
-  if (window.FDB) window.FDB.ref('users/' + uname).update({ ...rec, password: null })
-    .catch(e => console.warn('[WG] resetPw Firebase error:', e.message));
+  if (window.FDB) {
+    await _authReady;
+    window.FDB.ref('users/' + uname).update({ ...rec, password: null })
+      .catch(e => console.warn('[WG] resetPw Firebase error:', e.message));
+  }
   closeResetPwModal();
   alert('✅ Password for "' + uname + '" has been reset successfully.');
 }

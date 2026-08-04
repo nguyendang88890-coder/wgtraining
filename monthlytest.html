@@ -1138,10 +1138,13 @@ function getNotifPrefs(u) {
   return stored ? Object.assign({}, defaults, stored) : defaults;
 }
 
-function saveNotifPrefs(u, prefs) {
+async function saveNotifPrefs(u, prefs) {
   localStorage.setItem(NOTIF_PREFS_KEY(u), JSON.stringify(prefs));
-  if (window.FDB) window.FDB.ref('notif_prefs/' + u).set(prefs)
-    .catch(e => console.warn('[WG] notifPrefs sync error:', e.message));
+  if (window.FDB) {
+    await _authReady;
+    window.FDB.ref('notif_prefs/' + u).set(prefs)
+      .catch(e => console.warn('[WG] notifPrefs sync error:', e.message));
+  }
 }
 
 function fmtLocalTime(iso, tz) {
@@ -2613,7 +2616,7 @@ function renderHistTable() {
     </tbody></table></div>`;
 }
 
-function deleteSubmission(un, month) {
+async function deleteSubmission(un, month) {
   const sub = getSubmission(un, month);
   if (!sub) { alert('No submission found.'); return; }
   const confirmed = confirm(
@@ -2628,7 +2631,7 @@ function deleteSubmission(un, month) {
   localStorage.removeItem(`wmt_sub_${un}_${month}`);
 
   // Remove from Firebase
-  if (window.FDB) FDB.ref(`submissions/${un}/${month}`).remove().catch(() => {});
+  if (window.FDB) { await _authReady; FDB.ref(`submissions/${un}/${month}`).remove().catch(() => {}); }
 
   // Remove score from monthly_scores
   const ms = getMS();

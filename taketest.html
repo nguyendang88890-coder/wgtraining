@@ -178,6 +178,7 @@ const urlMonth = new URLSearchParams(location.search).get('month');
 document.addEventListener('DOMContentLoaded', async function() {
   if (window.FDB && CUR_USER) {
     try {
+      await _authReady;
       // Step 1: sync user profile first so testGroup is up-to-date before fetching gentest
       await FDB.ref(`users/${CUR_USER}`).once('value').then(s => {
         if (!s.exists()) return;
@@ -569,6 +570,7 @@ async function doSubmit(auto) {
   // are applied to this submission, not the stale cached version.
   if (window.FDB) {
     try {
+      await _authReady;
       const snap = await FDB.ref(`gentest/${MY_GROUP}/${_currentMonth}`).once('value');
       if (snap.exists()) {
         const fresh = snap.val();

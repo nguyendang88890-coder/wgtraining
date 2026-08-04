@@ -540,8 +540,16 @@ async function doRegister() {
   // Per-user set — only writes the new user, never touches other accounts
   localStorage.setItem('wmt_users_db', JSON.stringify(users));
   if (window.FDB) {
-    window.FDB.ref('users/' + u).set(newUser)
-      .catch(e => console.warn('[WG] register Firebase error:', e.message));
+    await _authReady; // must not fire before anonymous auth settles — rules require auth != null
+    try {
+      await window.FDB.ref('users/' + u).set(newUser);
+    } catch (e) {
+      console.warn('[WG] register Firebase error:', e.message);
+      err.textContent = 'Could not save your account online. Please check your connection and try again.';
+      delete users[u];
+      localStorage.setItem('wmt_users_db', JSON.stringify(users));
+      return;
+    }
   }
 
   // Auto-login
@@ -591,7 +599,7 @@ function openDashboardProfileModal() {
   setTimeout(() => document.getElementById('dpmEmail').focus(), 100);
 }
 
-function saveDashboardProfile() {
+async function saveDashboardProfile() {
   const user  = localStorage.getItem('wmt_user');
   const users = getUsersDB();
   if (!users[user]) return;
@@ -602,6 +610,7 @@ function saveDashboardProfile() {
   // Per-user update — never overwrites other users' data
   localStorage.setItem('wmt_users_db', JSON.stringify(users));
   if (window.FDB) {
+    await _authReady;
     window.FDB.ref('users/' + user).update({ email, fullName })
       .catch(e => console.warn('[WG] saveDashboardProfile Firebase error:', e.message));
   }
@@ -654,8 +663,11 @@ async function saveChangePw() {
   Object.assign(users[user], rec);
   delete users[user].password;
   localStorage.setItem('wmt_users_db', JSON.stringify(users));
-  if (window.FDB) window.FDB.ref('users/' + user).update({ ...rec, password: null })
-    .catch(e => console.warn('[WG] changePw Firebase error:', e.message));
+  if (window.FDB) {
+    await _authReady;
+    window.FDB.ref('users/' + user).update({ ...rec, password: null })
+      .catch(e => console.warn('[WG] changePw Firebase error:', e.message));
+  }
   document.getElementById('cpSuccess').style.display = 'block';
   document.getElementById('cpCurrent').value = '';
   document.getElementById('cpNew').value = '';
@@ -718,8 +730,11 @@ async function forgotSave() {
   Object.assign(users[un], rec);
   delete users[un].password;
   localStorage.setItem('wmt_users_db', JSON.stringify(users));
-  if (window.FDB) window.FDB.ref('users/' + un).update({ ...rec, password: null })
-    .catch(e => console.warn('[WG] forgotPw Firebase error:', e.message));
+  if (window.FDB) {
+    await _authReady;
+    window.FDB.ref('users/' + un).update({ ...rec, password: null })
+      .catch(e => console.warn('[WG] forgotPw Firebase error:', e.message));
+  }
   document.getElementById('fpStep2').style.display   = 'none';
   document.getElementById('fpSuccess').style.display = 'block';
   setTimeout(hideForgotPw, 2000);
@@ -901,9 +916,12 @@ function _getNotifPrefs(u) {
   const def = { enabled: false, permission: 'default', reminders: ['24h','1h','start','2hClose'], timezone: Intl.DateTimeFormat().resolvedOptions().timeZone };
   return Object.assign({}, def, JSON.parse(localStorage.getItem('wmt_notif_prefs_' + u) || 'null') || {});
 }
-function _saveNotifPrefs(u, p) {
+async function _saveNotifPrefs(u, p) {
   localStorage.setItem('wmt_notif_prefs_' + u, JSON.stringify(p));
-  if (window.FDB) window.FDB.ref('notif_prefs/' + u).set(p).catch(() => {});
+  if (window.FDB) {
+    await _authReady;
+    window.FDB.ref('notif_prefs/' + u).set(p).catch(() => {});
+  }
 }
 function _fmtLocalTime(iso, tz) {
   if (!iso) return '—';
@@ -1164,6 +1182,7 @@ async function autoUpgradeCheck(loginUser) {
   localStorage.setItem('wmt_users_db', JSON.stringify(allUsers));
 
   if (window.FDB) {
+    await _authReady;
     await Promise.all(upgraded.map(({ uname }) =>
       window.FDB.ref('users/' + uname).update({ employeeType: 'old' })
         .catch(e => console.warn('[WG] autoUpgrade Firebase sync error:', uname, e.message))
