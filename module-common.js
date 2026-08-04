@@ -528,6 +528,212 @@ function getSidebarHTML(activeModule) {
     </div>`;
 }
 
+// ===== GLOBAL NOTIFICATION BELL (all trainee pages) =====
+// Lightweight version of the full bell on Dashboard/Monthly Test — shows
+// upcoming/active monthly test reminders + new-schedule announcements, with
+// a link to Monthly Test for full reminder settings. Auto-skips pages that
+// already render their own bell (index.html, monthlytest.html), pages
+// without a standard top bar (taketest.html, tracker.html), and admin/mod
+// users (they don't take the monthly test themselves).
+(function() {
+  function shouldShowGlobalBell() {
+    if (document.getElementById('notifBellDash') || document.getElementById('notifBell')) return false;
+    if (!document.querySelector('.top-bar-actions')) return false;
+    const user = localStorage.getItem('wmt_user');
+    if (!user) return false;
+    const udata = getUsersDB()[user] || {};
+    return udata.role !== 'admin' && udata.role !== 'mod';
+  }
+
+  function _gMC() { return JSON.parse(localStorage.getItem('wmt_monthly_config') || '{}'); }
+  function _gIsBDCS(udata) {
+    const g = (udata.testGroup || 'auto').toLowerCase();
+    if (g === 'bdcs')   return true;
+    if (g === 'others') return false;
+    const d = (udata.department || '').toLowerCase();
+    return d === 'bd' || d === 'cs' || d.includes('business dev') || d.includes('customer serv') || d.includes('sales');
+  }
+  function _gFmtMonth(m) {
+    if (!m) return '—';
+    const [y, mo] = m.split('-');
+    return new Date(+y, +mo - 1).toLocaleString('en-GB', { month: 'long', year: 'numeric' });
+  }
+  function _gFmtLocalTime(iso, tz) {
+    if (!iso) return '—';
+    try { return new Date(iso).toLocaleString('en-GB', { day:'2-digit', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit', timeZone: tz, timeZoneName:'short' }); }
+    catch { return new Date(iso).toLocaleString('en-GB', { day:'2-digit', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit' }); }
+  }
+  function _gFmtDT(iso) {
+    if (!iso) return '—';
+    return new Date(iso).toLocaleString('en-GB', { day:'2-digit', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit', timeZoneName:'short' });
+  }
+  function _gGetNotifPrefs(u) {
+    const def = { enabled: false, permission: 'default', reminders: ['24h','1h','start','2hClose'], timezone: Intl.DateTimeFormat().resolvedOptions().timeZone, lastSeenAnnounceAt: null };
+    return Object.assign({}, def, JSON.parse(localStorage.getItem('wmt_notif_prefs_' + u) || 'null') || {});
+  }
+  async function _gSaveNotifPrefs(u, p) {
+    localStorage.setItem('wmt_notif_prefs_' + u, JSON.stringify(p));
+    if (window.FDB) {
+      await _authReady;
+      window.FDB.ref('notif_prefs/' + u).set(p).catch(() => {});
+    }
+  }
+  function _gGetUpcomingTests(u) {
+    const mc = _gMC(), users = getUsersDB();
+    const udata = users[u] || {};
+    const bdcs = _gIsBDCS(udata);
+    const now = Date.now();
+    return Object.keys(mc).sort().reverse().map(m => {
+      const cfg = mc[m];
+      const start = bdcs ? cfg.startDateBDCS : cfg.startDateOthers;
+      const end   = bdcs ? cfg.deadlineBDCS  : cfg.deadlineOthers;
+      const startTs = start ? new Date(start).getTime() : null;
+      const endTs   = end   ? new Date(end).getTime()   : null;
+      let status = 'none';
+      if (startTs) {
+        if (now < startTs)               status = 'upcoming';
+        else if (!endTs || now <= endTs) status = 'active';
+        else                             status = 'expired';
+      }
+      return { m, start, end, status };
+    }).filter(t => t.status === 'upcoming' || t.status === 'active');
+  }
+  function _gGetUnseenAnnouncements(u) {
+    const prefs  = _gGetNotifPrefs(u);
+    const seenAt = prefs.lastSeenAnnounceAt ? new Date(prefs.lastSeenAnnounceAt).getTime() : 0;
+    const list   = window.getScheduleAnnouncements ? window.getScheduleAnnouncements() : [];
+    return list.filter(a => new Date(a.createdAt).getTime() > seenAt);
+  }
+
+  function updateGlobalBellBadge(u) {
+    const count = _gGetUpcomingTests(u).length + _gGetUnseenAnnouncements(u).length;
+    const badge = document.getElementById('gNotifBadge');
+    if (!badge) return;
+    badge.textContent = count;
+    badge.classList.toggle('hidden', count === 0);
+  }
+
+  function renderGlobalNotifPanel(u) {
+    const panel = document.getElementById('gNotifPanel');
+    if (!panel || panel.classList.contains('hidden')) return;
+    const prefs = _gGetNotifPrefs(u);
+    const tz    = prefs.timezone || Intl.DateTimeFormat().resolvedOptions().timeZone;
+    const tests = _gGetUpcomingTests(u);
+    const unseenIds = new Set(_gGetUnseenAnnouncements(u).map(a => a.createdAt));
+    const announcements = (window.getScheduleAnnouncements ? window.getScheduleAnnouncements() : []).slice(-5).reverse();
+
+    const announceSection = announcements.length ? `
+      <div class="notif-section-hdr">🆕 New Schedule</div>
+      ${announcements.map(a => `
+        <div class="notif-test-row">
+          <div style="display:flex;justify-content:space-between;align-items:center;">
+            <span class="notif-test-month">${a.title || _gFmtMonth(a.month)}</span>
+            ${unseenIds.has(a.createdAt) ? '<span style="color:var(--danger);font-size:0.7rem;font-weight:800;">● NEW</span>' : ''}
+          </div>
+          <div class="notif-test-time">Scheduled ${_gFmtDT(a.createdAt)}</div>
+        </div>`).join('')}
+    ` : '';
+
+    const testRows = tests.length ? tests.map(t => {
+      const statusBadge = t.status === 'active'
+        ? `<span style="color:var(--success);font-size:0.75rem;font-weight:700;">🟢 Active</span>`
+        : `<span style="color:#6496ff;font-size:0.75rem;font-weight:700;">🔵 Upcoming</span>`;
+      return `<div class="notif-test-row">
+        <div style="display:flex;justify-content:space-between;align-items:center;">
+          <span class="notif-test-month">${_gFmtMonth(t.m)}</span>${statusBadge}
+        </div>
+        <div class="notif-test-time">
+          🟢 Opens: <strong>${_gFmtLocalTime(t.start, tz)}</strong><br>
+          🔴 Closes: <strong>${_gFmtLocalTime(t.end, tz)}</strong>
+        </div>
+      </div>`;
+    }).join('') : `<div style="color:var(--text-muted);font-size:0.83rem;padding:10px 0;">No upcoming or active tests.</div>`;
+
+    panel.innerHTML = `
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
+        <strong style="font-size:0.95rem;">🔔 Monthly Test</strong>
+        <button onclick="toggleGlobalNotifPanel()" style="background:none;border:none;color:var(--text-muted);font-size:1.1rem;cursor:pointer;line-height:1;">✕</button>
+      </div>
+      <div class="notif-tz-row">🌍 <strong>${tz}</strong></div>
+      ${announceSection}
+      <div class="notif-section-hdr">Upcoming Tests</div>
+      ${testRows}
+      <a href="monthlytest.html" style="display:block;text-align:center;margin-top:14px;padding:10px;background:rgba(207,155,33,0.08);border:1px solid var(--border-gold);border-radius:8px;color:var(--gold);font-size:0.8rem;font-weight:700;text-decoration:none;">🔔 Manage reminders → Monthly Test</a>`;
+  }
+
+  window._refreshGlobalBell = function() {
+    const u = localStorage.getItem('wmt_user');
+    if (u) updateGlobalBellBadge(u);
+  };
+
+  window.toggleGlobalNotifPanel = function() {
+    const panel = document.getElementById('gNotifPanel');
+    const bell  = document.getElementById('gNotifBell');
+    if (!panel || !bell) return;
+    const open = panel.classList.toggle('hidden');
+    bell.classList.toggle('active', !open);
+    const u = localStorage.getItem('wmt_user');
+    if (!open) {
+      renderGlobalNotifPanel(u);
+      if (_gGetUnseenAnnouncements(u).length) {
+        const prefs = _gGetNotifPrefs(u);
+        prefs.lastSeenAnnounceAt = new Date().toISOString();
+        _gSaveNotifPrefs(u, prefs);
+        updateGlobalBellBadge(u);
+      }
+    }
+  };
+
+  let _gAnnounceListenerInitial = true;
+  function startGlobalAnnounceListener(u) {
+    if (!window.FDB) return;
+    window.FDB.ref('schedule_announcements').on('value', snap => {
+      // First event is the initial load — already reflected via syncFromFirebase, skip
+      if (_gAnnounceListenerInitial) { _gAnnounceListenerInitial = false; return; }
+      if (!snap.exists()) return;
+      localStorage.setItem('wmt_schedule_announcements', JSON.stringify(snap.val()));
+      updateGlobalBellBadge(u);
+      const prefs = _gGetNotifPrefs(u);
+      if (prefs.enabled && ('Notification' in window) && Notification.permission === 'granted') {
+        const list = window.getScheduleAnnouncements();
+        const latest = list[list.length - 1];
+        if (latest) new Notification('📅 WG Monthly Test', { body: 'New test scheduled: ' + (latest.title || _gFmtMonth(latest.month)), tag: 'wmt-announce-' + latest.createdAt });
+      }
+    });
+  }
+
+  function injectGlobalBell() {
+    if (!shouldShowGlobalBell()) return;
+    const actionsEl = document.querySelector('.top-bar-actions');
+    const wrap = document.createElement('div');
+    wrap.className = 'notif-bell-wrap';
+    wrap.innerHTML = `
+      <button class="notif-bell-btn" id="gNotifBell" onclick="toggleGlobalNotifPanel()" title="Monthly Test Notifications">
+        🔔 <span class="notif-badge hidden" id="gNotifBadge">0</span>
+      </button>`;
+    actionsEl.prepend(wrap);
+
+    const panel = document.createElement('div');
+    panel.className = 'notif-panel hidden';
+    panel.id = 'gNotifPanel';
+    document.body.appendChild(panel);
+
+    const u = localStorage.getItem('wmt_user');
+    updateGlobalBellBadge(u);
+    startGlobalAnnounceListener(u);
+
+    document.addEventListener('click', e => {
+      const p = document.getElementById('gNotifPanel');
+      const bell = document.getElementById('gNotifBell');
+      if (p && !p.classList.contains('hidden') && !p.contains(e.target) && bell && !bell.contains(e.target)) {
+        p.classList.add('hidden'); bell.classList.remove('active');
+      }
+    }, true);
+  }
+
+  document.addEventListener('DOMContentLoaded', injectGlobalBell);
+})();
+
 // ===== MODULE READING PROGRESS & SECTION NAV =====
 (function initModuleProgress() {
   // Only run on module pages (they have a #quizContainer)
@@ -612,6 +818,7 @@ window.addEventListener('load', async function() {
   }
   updateSidebarProgress();
   initModProposalBtn();
+  if (typeof window._refreshGlobalBell === 'function') window._refreshGlobalBell();
 });
 
 // ===== MODERATOR CONTENT PROPOSAL =====
