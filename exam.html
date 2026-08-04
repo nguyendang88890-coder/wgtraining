@@ -203,8 +203,53 @@
 <script src="firebase-config.js?v=4"></script>
 <script src="module-common.js?v=2"></script>
 <script>
-// ===== QUESTION BANK (empty — to be filled in later) =====
+// ===== QUESTION BANK (40 questions) =====
 const QUESTION_BANK = [
+  // MODULE 1 — Overview
+  { q: "What type of company is WeGolden?", opts: ["An insurance provider","A real estate firm","A global fintech company","A regional bank"], _c: "Mg==", module: 1 },
+  { q: "Which of these is one of WeGolden's core business areas?", opts: ["Freight logistics","Life insurance","Derivatives brokerage","Mortgage lending"], _c: "Mg==", module: 1 },
+  { q: "Which of these is a WeGolden representative office?", opts: ["Brazil","Australia","Germany","Vietnam"], _c: "Mw==", module: 1 },
+  { q: "Which of the following is one of WeGolden's top-tier liquidity providers?", opts: ["Coinbase","Robinhood","Revolut","HSBC"], _c: "Mw==", module: 1 },
+  { q: "What is WeGolden's MSB registration number?", opts: ["HT00524061","31000318885103","FSP No. 53890","2025123101"], _c: "MQ==", module: 1 },
+  { q: "The MSB License requires compliance with which act?", opts: ["Bank Secrecy Act","Dodd-Frank Act","GDPR","Sarbanes-Oxley Act"], _c: "MA==", module: 1 },
+  { q: "Which of these is a Comoros License authorization?", opts: ["Insurance brokerage","Consumer lending","Clearing House Activities","Stock exchange listing"], _c: "Mg==", module: 1 },
+  { q: "Which regulator is responsible for licensing investment firms, advisors, and brokers in South Africa?", opts: ["SEC","The Comoros authority","FinCEN","FSCA"], _c: "Mw==", module: 1 },
+  // MODULE 2 — Trading Accounts
+  { q: "Which account type charges a commission on every trade?", opts: ["Standard","ECN","None of them","Cent"], _c: "MQ==", module: 2 },
+  { q: "What execution style is emphasized for the ECN account?", opts: ["Ultra-fast, direct market access","Delayed execution","Fixed price execution","Manual dealing desk"], _c: "MA==", module: 2 },
+  { q: "Who is the Standard Account best suited for?", opts: ["Only scalpers","Only institutional traders","Beginner and retail traders","Only EA traders"], _c: "Mg==", module: 2 },
+  { q: "What is the Stop Out level for Standard and ECN accounts?", opts: ["10%","0%","50%","20%"], _c: "Mw==", module: 2 },
+  { q: "Which platforms support the Cent Account?", opts: ["Web only","MT4 only","A proprietary app only","MT5 Desktop, Web, and Mobile"], _c: "Mw==", module: 2 },
+  { q: "What deposit/withdrawal method does the Cent Account use?", opts: ["Any cryptocurrency","Wire transfer only","Credit card only","USDT deposits and withdrawals only"], _c: "Mw==", module: 2 },
+  { q: "What is a limitation of the ECN Account?", opts: ["Commission is charged on each trade","No liquidity access","No leverage is available","Requires a $10,000 minimum deposit"], _c: "MA==", module: 2 },
+  { q: "What is a limitation of the Standard Account compared to the ECN Account?", opts: ["No MT5 support","Lower leverage","Wider spreads","Higher commission"], _c: "Mg==", module: 2 },
+  // MODULE 3 — Financial Products & Leverage
+  { q: "What is the floating leverage for Gold at $5,000–$10,000 equity?", opts: ["1:200","1:30","1:500","1:100"], _c: "MA==", module: 3 },
+  { q: "What leverage applies to Indices across all equity tiers under the floating model?", opts: ["1:10","1:100","1:30","1:1000"], _c: "MQ==", module: 3 },
+  { q: "What happens to FX/Gold leverage 15 minutes before and after a news release?", opts: ["It reduces to 1:30","It stays unchanged","Trading is halted","It increases to 1:1000"], _c: "MA==", module: 3 },
+  { q: "Which account types use \"Fixed\" leverage rather than \"Floating\"?", opts: ["All accounts","Standard and ECN accounts","None","Master and Investor accounts"], _c: "Mw==", module: 3 },
+  { q: "Under the UZ/KGZ configuration, what leverage applies to FX at $10,000–$50,000 equity?", opts: ["1:100","1:30","1:1000","1:500"], _c: "MA==", module: 3 },
+  { q: "What is the maximum leverage for Cryptos on Master/Investor (fixed) accounts?", opts: ["1:500","1:1000","1:100","1:10"], _c: "Mw==", module: 3 },
+  { q: "What is the maximum number of open orders allowed per account, per the account comparison table?", opts: ["100","Unlimited","25","50"], _c: "Mw==", module: 3 },
+  { q: "What execution types are used across Standard, ECN, Master, and Investor accounts?", opts: ["Instant execution only","Only Market Order","Market Order and Pending Order","Only Pending Order"], _c: "Mg==", module: 3 },
+  // MODULE 4 — IB Policies & Reward
+  { q: "What is the IB Reward for the ECN Account Low Commission (LC, default) tier?", opts: ["USD 8 / lot","USD 16 / lot","USD 3.5 / lot","USD 20 / lot"], _c: "Mg==", module: 4 },
+  { q: "What fee does the ECN High Commission (HC) tier charge on major Forex pairs and metals?", opts: ["USD 5 / lot","USD 8 / lot","USD 20 / lot","USD 3.5 / lot"], _c: "Mg==", module: 4 },
+  { q: "What percentage of ECN commission does the IB receive as reward?", opts: ["50%","70%","30%","100%"], _c: "MQ==", module: 4 },
+  { q: "What is the IB Reward on Master/Investor (Copy Trading) accounts for Forex & Gold?", opts: ["USD 16 / lot","USD 20 / lot","USD 5 / lot","USD 8 / lot"], _c: "MA==", module: 4 },
+  { q: "What percentage does a Master IB earn from direct Sub-Sub-IBs' income?", opts: ["1%","10%","0%","5%"], _c: "MA==", module: 4 },
+  { q: "What qualifying net deposit amount is required for the \"Silver\" IB ranking?", opts: ["$5,000","$2,500","$25,000","$10,000"], _c: "MA==", module: 4 },
+  { q: "How many new funded clients are required for the \"Platinum\" IB ranking?", opts: ["8 – 15","2 – 4","16 – 25","25+"], _c: "Mg==", module: 4 },
+  { q: "Net deposits, for IB reward calculation purposes, are defined as:", opts: ["Total deposits minus withdrawals","Total deposits only","Total profit","Total trading volume"], _c: "MA==", module: 4 },
+  // MODULE 5 — Deposit & Withdrawal
+  { q: "Which payment gateway can users prioritize for faster transactions?", opts: ["Credit card","Cheque","Wire transfer only","USDT"], _c: "Mw==", module: 5 },
+  { q: "What security measure protects transactions according to the policy?", opts: ["Manual approval by the IB","Only SMS OTP","No security measures are mentioned","Multi-layer authentication and data encryption"], _c: "Mw==", module: 5 },
+  { q: "What must Bank Transfer deposits/withdrawals use?", opts: ["A bank account under the same account holder's name","A company-shared account","A joint account only","Any third-party account"], _c: "MA==", module: 5 },
+  { q: "What is available to clients for full transparency, per the withdrawal policy?", opts: ["Only monthly statements","Transaction history and status updates","Only for VIP accounts","No records are kept"], _c: "MQ==", module: 5 },
+  { q: "Besides USDT, which method is highlighted for deposits/withdrawals?", opts: ["Cash pickup","Cheque deposit","Money order","Bank Transfer (QR Code)"], _c: "Mw==", module: 5 },
+  { q: "What monitoring is in place for transactions?", opts: ["24/7 transaction monitoring","No monitoring","Monthly audits only","Quarterly review"], _c: "MA==", module: 5 },
+  { q: "Under what circumstance might WeGolden apply extra fees to an account?", opts: ["Weekend transactions","Suspected abuse via excessive deposits/withdrawals","First-time withdrawals","Every transaction over $100"], _c: "MQ==", module: 5 },
+  { q: "Deposit and withdrawal processing complies with which requirement?", opts: ["Identity verification (KYC)","Tax reporting only","Only AML checks for large amounts","No compliance checks"], _c: "MA==", module: 5 },
 ];
 
 // ===== EXAM STATE =====

@@ -124,7 +124,7 @@
       <div class="quiz-section">
         <div class="quiz-header">
           <h3>📝 Module 1 Quiz</h3>
-          <span class="quiz-counter" id="quizCounterTop">0 Questions</span>
+          <span class="quiz-counter" id="quizCounterTop">6 Questions</span>
         </div>
         <div class="quiz-progress-dots" id="quizDots"></div>
         <div id="quizContainer"></div>
@@ -150,7 +150,44 @@ document.getElementById('sidebar').innerHTML = getSidebarHTML(1);
 updateSidebarProgress();
 checkCompleted(1);
 
-const questions = [];
+const questions = [
+  {
+    q: "When was WeGolden established?",
+    opts: ["December 31, 2024", "December 31, 2025", "January 1, 2025", "March 1, 2025"],
+    _c: "MQ==",
+    explain: "WeGolden was established on December 31, 2025."
+  },
+  {
+    q: "Where is WeGolden headquartered?",
+    opts: ["Dubai, UAE", "Vancouver, Canada", "Johannesburg, South Africa", "Singapore"],
+    _c: "Mg==",
+    explain: "WeGolden's headquarters is located in Johannesburg, South Africa."
+  },
+  {
+    q: "What is the FSCA license number?",
+    opts: ["FSP No. 53890", "No. HT00524061", "31000318885103", "FSP No. 12345"],
+    _c: "MA==",
+    explain: "The FSCA (Financial Sector Conduct Authority, South Africa) license number is FSP No. 53890."
+  },
+  {
+    q: "Which regulator issued WeGolden's MSB License?",
+    opts: ["SEC", "FinCEN", "CFTC", "FINRA"],
+    _c: "MQ==",
+    explain: "The MSB License is issued by the U.S. Financial Crimes Enforcement Network (FinCEN) and complies with the Bank Secrecy Act."
+  },
+  {
+    q: "Which of the following is NOT one of the FSCA's stated objectives?",
+    opts: ["Ensure stability of the financial industry", "Protect clients and investors", "Maximize company profits", "Promote competition for investors' benefit"],
+    _c: "Mg==",
+    explain: "The FSCA's objectives focus on industry stability, client protection, market integrity, and competition — not maximizing company profit."
+  },
+  {
+    q: "What does the Comoros License (No. HT00524061) authorize?",
+    opts: ["Only retail banking", "International brokerage & clearing house services", "Insurance underwriting", "Real estate transactions"],
+    _c: "MQ==",
+    explain: "The Comoros License authorizes International Brokerage Services, Clearing House Activities, Financial Intermediation, and Payment & Clearing Services."
+  }
+];
 
 const quiz = new ModuleQuiz(1, questions);
 quiz.render();

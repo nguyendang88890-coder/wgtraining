@@ -162,7 +162,7 @@
       <div class="quiz-section">
         <div class="quiz-header">
           <h3>📝 Module 3 Quiz</h3>
-          <span class="quiz-counter" id="quizCounterTop">0 Questions</span>
+          <span class="quiz-counter" id="quizCounterTop">6 Questions</span>
         </div>
         <div class="quiz-progress-dots" id="quizDots"></div>
         <div id="quizContainer"></div>
@@ -188,7 +188,44 @@ document.getElementById('sidebar').innerHTML = getSidebarHTML(3);
 updateSidebarProgress();
 checkCompleted(3);
 
-const questions = [];
+const questions = [
+  {
+    q: "Which of these is NOT among WeGolden's financial products?",
+    opts: ["Forex", "Cryptocurrencies", "Real Estate", "U.S. Stocks"],
+    _c: "Mg==",
+    explain: "WeGolden offers Forex, Precious Metals, Cryptocurrencies, Energy, Indices, and U.S. Stocks — not real estate."
+  },
+  {
+    q: "What is the floating leverage for FX at $0–$1,000 equity?",
+    opts: ["1:100", "1:500", "1:1000", "1:30"],
+    _c: "Mg==",
+    explain: "At the lowest equity tier ($0–$1,000), FX and Gold both get the highest floating leverage of 1:1000."
+  },
+  {
+    q: "What is the leverage for Cryptos across all equity tiers under the floating model?",
+    opts: ["1:10", "1:100", "1:500", "1:1000"],
+    _c: "MA==",
+    explain: "Cryptos (and Shares) stay fixed at 1:10 leverage regardless of equity tier, unlike FX/Gold which float down as equity rises."
+  },
+  {
+    q: "The Fixed Leverage 1:500 configuration applies specifically to which countries?",
+    opts: ["Vietnam & Thailand", "Uzbekistan & Kyrgyzstan", "Indonesia & Philippines", "Canada & Cyprus"],
+    _c: "MQ==",
+    explain: "A dedicated fixed-leverage configuration of 1:500 for Gold applies only to Uzbekistan (UZ) and Kyrgyzstan (KGZ)."
+  },
+  {
+    q: "Under the UZ/KGZ fixed leverage configuration, which asset is fixed at 1:500?",
+    opts: ["FX", "Gold", "Indices", "Shares"],
+    _c: "MQ==",
+    explain: "Only Gold is fixed at 1:500 for UZ/KGZ — all other assets keep following the standard floating leverage model."
+  },
+  {
+    q: "What is the maximum leverage for FX on Master/Investor (fixed leverage) accounts?",
+    opts: ["1:10", "1:30", "1:100", "1:1000"],
+    _c: "Mg==",
+    explain: "Fixed leverage for Master and Investor accounts caps FX, Gold, Silver, Indices, and Energies at 1:100 (Cryptos/Shares at 1:10)."
+  }
+];
 
 const quiz = new ModuleQuiz(3, questions);
 quiz.render();

@@ -187,7 +187,7 @@
       <div class="quiz-section">
         <div class="quiz-header">
           <h3>📝 Module 2 Quiz</h3>
-          <span class="quiz-counter" id="quizCounterTop">0 Questions</span>
+          <span class="quiz-counter" id="quizCounterTop">6 Questions</span>
         </div>
         <div class="quiz-progress-dots" id="quizDots"></div>
         <div id="quizContainer"></div>
@@ -213,7 +213,44 @@ document.getElementById('sidebar').innerHTML = getSidebarHTML(2);
 updateSidebarProgress();
 checkCompleted(2);
 
-const questions = [];
+const questions = [
+  {
+    q: "Which account type offers raw spreads from 0.0 pip?",
+    opts: ["Standard", "ECN", "Cent", "Investor"],
+    _c: "MQ==",
+    explain: "The ECN Account offers raw spreads from 0.0 pip with commission-based pricing, designed for professional traders."
+  },
+  {
+    q: "What is the minimum deposit for a Cent Account?",
+    opts: ["USD 3", "USD 10", "USD 50", "USD 100"],
+    _c: "MA==",
+    explain: "The Cent Account has a minimum deposit of just USD 3, making it ideal for new traders and strategy testing."
+  },
+  {
+    q: "What is the base currency conversion for the Cent Account?",
+    opts: ["10 Cent = 1 USD", "100 Cent = 1 USD", "1,000 Cent = 1 USD", "1 Cent = 1 USD"],
+    _c: "MQ==",
+    explain: "The Cent Account uses Cent as its base currency, where 100 Cent = 1 USD."
+  },
+  {
+    q: "Does the Standard Account charge a commission?",
+    opts: ["Yes, always", "No, it's commission-free", "Only on withdrawals", "Only on large trades"],
+    _c: "MQ==",
+    explain: "The Standard Account is commission-free — trading costs are incorporated into the (floating) spread instead."
+  },
+  {
+    q: "What is the Margin Call level for Standard and ECN accounts?",
+    opts: ["100%", "120%", "150%", "200%"],
+    _c: "Mg==",
+    explain: "Both Standard and ECN accounts share a Margin Call level of 150% and a Stop Out level of 20%."
+  },
+  {
+    q: "Which account type is best suited for a brand-new trader who wants to test strategies with minimal risk?",
+    opts: ["ECN Account", "Standard Account", "Cent Account", "Master Account"],
+    _c: "Mg==",
+    explain: "The Cent Account is designed for new traders, strategy/EA testing, and risk management practice, with low financial risk."
+  }
+];
 
 const quiz = new ModuleQuiz(2, questions);
 quiz.render();

@@ -99,7 +99,7 @@
       <div class="quiz-section">
         <div class="quiz-header">
           <h3>📝 Module 5 Quiz</h3>
-          <span class="quiz-counter" id="quizCounterTop">0 Questions</span>
+          <span class="quiz-counter" id="quizCounterTop">6 Questions</span>
         </div>
         <div class="quiz-progress-dots" id="quizDots"></div>
         <div id="quizContainer"></div>
@@ -125,7 +125,44 @@ document.getElementById('sidebar').innerHTML = getSidebarHTML(5);
 updateSidebarProgress();
 checkCompleted(5);
 
-const questions = [];
+const questions = [
+  {
+    q: "Which payment gateway can users prioritize for faster transactions?",
+    opts: ["USDT", "Credit card", "Cheque", "Wire transfer only"],
+    _c: "MA==",
+    explain: "Users can prioritize the USDT gateway for faster deposits and withdrawals, alongside Bank Transfer (QR Code)."
+  },
+  {
+    q: "For USDT withdrawals, funds must be sent to:",
+    opts: ["Any wallet address the client provides", "The same wallet address used for deposits", "A company-designated wallet", "A new wallet each time"],
+    _c: "MQ==",
+    explain: "USDT withdrawals must be made to the same wallet address used for deposits — a key anti-fraud transaction rule."
+  },
+  {
+    q: "Who covers deposit and withdrawal gateway fees for normal clients?",
+    opts: ["The client", "WeGolden", "The IB", "A third-party processor"],
+    _c: "MQ==",
+    explain: "WeGolden covers all deposit and withdrawal gateway fees — no fees are charged to normal clients."
+  },
+  {
+    q: "How long does it take for a withdrawal to be completed?",
+    opts: ["24 hours", "5 minutes", "3 business days", "1 hour"],
+    _c: "MQ==",
+    explain: "Withdrawals are completed within 5 minutes, sent directly to the user's registered bank account or USDT wallet."
+  },
+  {
+    q: "What compliance requirement applies to all deposit/withdrawal transactions?",
+    opts: ["KYC (identity verification)", "Credit check", "Tax filing", "None"],
+    _c: "MA==",
+    explain: "All transactions comply with identity verification (KYC) requirements."
+  },
+  {
+    q: "When might WeGolden apply fees to an account?",
+    opts: ["Never — fees are always free", "On every transaction", "For accounts with little/no trading activity or suspected abuse", "Only for withdrawals over $10,000"],
+    _c: "Mg==",
+    explain: "WeGolden may apply fees to accounts with little/no trading activity or suspected abuse through excessive deposits and withdrawals."
+  }
+];
 
 const quiz = new ModuleQuiz(5, questions);
 quiz.render();
