@@ -121,6 +121,7 @@ function _fbPath(key) {
   if (key === 'wmt_interviews_list')     return 'interviews_list';
   if (key === 'wmt_qbank_bdcs')          return 'qbank/bdcs';
   if (key === 'wmt_qbank_others')        return 'qbank/others';
+  if (key === 'wmt_schedule_announcements') return 'schedule_announcements';
 
   // Per-user: wmt_progress_{user}
   const progressMatch = key.match(/^wmt_progress_(.+)$/);
@@ -185,6 +186,22 @@ window.dbRemove = async function(key) {
   }
 };
 
+// ── Monthly test schedule announcements ──────────────────────────────────
+// A lightweight global feed (separate from the per-user "remind me before
+// deadline" prefs) that records every time an admin schedules a brand-new
+// month's test, so trainee/mod dashboards can surface "new test scheduled"
+// instead of only reminding as the deadline approaches.
+window.getScheduleAnnouncements = function() {
+  return JSON.parse(localStorage.getItem('wmt_schedule_announcements') || '[]');
+};
+
+window.addScheduleAnnouncement = function(month, title) {
+  const list = window.getScheduleAnnouncements();
+  list.push({ month, title, createdAt: new Date().toISOString() });
+  // Keep only the most recent 20 so the feed never grows unbounded.
+  window.dbWrite('wmt_schedule_announcements', JSON.stringify(list.slice(-20)));
+};
+
 // ── Sync from Firebase → localStorage ─────────────────────────────────────
 // Call `await syncFromFirebase()` on page load so every device gets fresh data.
 // After this resolves, all reads can use localStorage as normal (fast + sync).
@@ -203,6 +220,7 @@ window.syncFromFirebase = async function() {
       { fb: 'interviews_list',  ls: 'wmt_interviews_list' },
       { fb: 'qbank/bdcs',       ls: 'wmt_qbank_bdcs' },
       { fb: 'qbank/others',     ls: 'wmt_qbank_others' },
+      { fb: 'schedule_announcements', ls: 'wmt_schedule_announcements' },
     ];
 
     await Promise.all(globalKeys.map(async ({ fb, ls }) => {

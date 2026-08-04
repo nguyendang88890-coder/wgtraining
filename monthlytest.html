@@ -1132,10 +1132,24 @@ function getNotifPrefs(u) {
     enabled: false,
     permission: 'default',
     reminders: ['24h', '1h', 'start', '2hClose'],
-    timezone: Intl.DateTimeFormat().resolvedOptions().timeZone
+    timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+    lastSeenAnnounceAt: null
   };
   const stored = JSON.parse(localStorage.getItem(NOTIF_PREFS_KEY(u)) || 'null');
   return stored ? Object.assign({}, defaults, stored) : defaults;
+}
+
+// New-schedule announcements the user hasn't seen yet (bell panel opened since).
+function getUnseenAnnouncements(u) {
+  const prefs  = getNotifPrefs(u);
+  const seenAt = prefs.lastSeenAnnounceAt ? new Date(prefs.lastSeenAnnounceAt).getTime() : 0;
+  return window.getScheduleAnnouncements().filter(a => new Date(a.createdAt).getTime() > seenAt);
+}
+
+function markAnnouncementsSeen(u) {
+  const prefs = getNotifPrefs(u);
+  prefs.lastSeenAnnounceAt = new Date().toISOString();
+  saveNotifPrefs(u, prefs);
 }
 
 async function saveNotifPrefs(u, prefs) {
@@ -1240,17 +1254,25 @@ function toggleNotifPanel() {
   const bell  = document.getElementById('notifBell');
   const open  = panel.classList.toggle('hidden');
   bell.classList.toggle('active', !open);
-  if (!open) renderNotifPanel();
+  if (!open) {
+    renderNotifPanel();
+    if (getUnseenAnnouncements(CUR_USER).length) {
+      markAnnouncementsSeen(CUR_USER);
+      updateNotifBell();
+    }
+  }
 }
 
 function updateNotifBell() {
   const u = CUR_USER;
   if (!u) return;
   const tests = getUpcomingTestsForUser(u);
+  const unseen = getUnseenAnnouncements(u);
+  const count = tests.length + unseen.length;
   const badge = document.getElementById('notifBadge');
   if (!badge) return;
-  badge.textContent = tests.length;
-  badge.classList.toggle('hidden', tests.length === 0);
+  badge.textContent = count;
+  badge.classList.toggle('hidden', count === 0);
 }
 
 function renderNotifPanel() {
@@ -1261,6 +1283,21 @@ function renderNotifPanel() {
   const tz    = prefs.timezone || Intl.DateTimeFormat().resolvedOptions().timeZone;
   const tests = getUpcomingTestsForUser(u);
   const perm  = ('Notification' in window) ? Notification.permission : 'unsupported';
+
+  /* --- New schedule announcements (most recent 5) --- */
+  const unseenIds = new Set(getUnseenAnnouncements(u).map(a => a.createdAt));
+  const announcements = window.getScheduleAnnouncements().slice(-5).reverse();
+  const announceSection = announcements.length ? `
+    <div class="notif-section-hdr">🆕 New Schedule</div>
+    ${announcements.map(a => `
+      <div class="notif-test-row">
+        <div style="display:flex;justify-content:space-between;align-items:center;">
+          <span class="notif-test-month">${a.title || fmtMonth(a.month)}</span>
+          ${unseenIds.has(a.createdAt) ? '<span style="color:var(--danger);font-size:0.7rem;font-weight:800;">● NEW</span>' : ''}
+        </div>
+        <div class="notif-test-time">Scheduled ${fmtDT(a.createdAt)}</div>
+      </div>`).join('')}
+  ` : '';
 
   /* --- Upcoming test rows --- */
   const testRows = tests.length
@@ -1333,6 +1370,7 @@ function renderNotifPanel() {
       <button onclick="toggleNotifPanel()" style="background:none;border:none;color:var(--text-muted);font-size:1.1rem;cursor:pointer;line-height:1;">✕</button>
     </div>
     ${tzRow}
+    ${announceSection}
     <div class="notif-section-hdr">Upcoming Tests</div>
     ${testRows}
     ${notifSection}`;
@@ -1344,6 +1382,24 @@ function disableNotifications() {
   prefs.enabled = false;
   saveNotifPrefs(u, prefs);
   renderNotifPanel();
+}
+
+let _scheduleAnnounceListenerInitial = true;
+function startScheduleAnnounceListener() {
+  if (!window.FDB) return;
+  window.FDB.ref('schedule_announcements').on('value', snap => {
+    // First event is the initial load — already reflected via syncFromFirebase, skip
+    if (_scheduleAnnounceListenerInitial) { _scheduleAnnounceListenerInitial = false; return; }
+    if (!snap.exists()) return;
+    localStorage.setItem('wmt_schedule_announcements', JSON.stringify(snap.val()));
+    updateNotifBell();
+    const u = CUR_USER;
+    const prefs = getNotifPrefs(u);
+    if (prefs.enabled && ('Notification' in window) && Notification.permission === 'granted') {
+      const latest = window.getScheduleAnnouncements().slice(-1)[0];
+      if (latest) new Notification('📅 WG Monthly Test', { body: 'New test scheduled: ' + (latest.title || fmtMonth(latest.month)), tag: 'wmt-announce-' + latest.createdAt });
+    }
+  });
 }
 
 function initNotifications() {
@@ -1364,6 +1420,7 @@ function initNotifications() {
   if (prefs.enabled && ('Notification' in window) && Notification.permission === 'granted') {
     scheduleReminderNotifs(u);
   }
+  if (!IS_ADMIN) startScheduleAnnounceListener();
   // Close panel on outside click
   document.addEventListener('click', e => {
     const panel = document.getElementById('notifPanel');
@@ -1539,6 +1596,7 @@ function saveTestConfig() {
 
   // Auto-generate test when creating new month config
   if (isNew) {
+    window.addScheduleAnnouncement(month, title || fmtMonth(month));
     const r = generateTest(month);
     const genMsgs = [];
     if (r.bdcs && !r.bdcs.error)   genMsgs.push(`🏢 BD/CS: ${r.bdcs.mcq} MCQ (${r.bdcs.liet} Liet) + ${r.bdcs.essay} Essay`);

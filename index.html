@@ -913,8 +913,26 @@ function _isBDCS(udata) {
   return d === 'bd' || d === 'cs' || d.includes('business dev') || d.includes('customer serv') || d.includes('sales');
 }
 function _getNotifPrefs(u) {
-  const def = { enabled: false, permission: 'default', reminders: ['24h','1h','start','2hClose'], timezone: Intl.DateTimeFormat().resolvedOptions().timeZone };
+  const def = { enabled: false, permission: 'default', reminders: ['24h','1h','start','2hClose'], timezone: Intl.DateTimeFormat().resolvedOptions().timeZone, lastSeenAnnounceAt: null };
   return Object.assign({}, def, JSON.parse(localStorage.getItem('wmt_notif_prefs_' + u) || 'null') || {});
+}
+
+// New-schedule announcements the user hasn't seen yet (bell panel opened since).
+function _getUnseenAnnouncements(u) {
+  const prefs  = _getNotifPrefs(u);
+  const seenAt = prefs.lastSeenAnnounceAt ? new Date(prefs.lastSeenAnnounceAt).getTime() : 0;
+  return window.getScheduleAnnouncements().filter(a => new Date(a.createdAt).getTime() > seenAt);
+}
+
+function _markAnnouncementsSeen(u) {
+  const p = _getNotifPrefs(u);
+  p.lastSeenAnnounceAt = new Date().toISOString();
+  _saveNotifPrefs(u, p);
+}
+
+function _fmtDT(iso) {
+  if (!iso) return '—';
+  return new Date(iso).toLocaleString('en-GB', { day:'2-digit', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit', timeZoneName:'short' });
 }
 async function _saveNotifPrefs(u, p) {
   localStorage.setItem('wmt_notif_prefs_' + u, JSON.stringify(p));
@@ -1001,13 +1019,15 @@ function _toggleDashNotifReminderKey(u, key) {
 
 function _updateDashNotifBell(u) {
   const tests  = _getUpcomingTests(u);
+  const unseen = _getUnseenAnnouncements(u);
+  const count  = tests.length + unseen.length;
   const bell   = document.getElementById('notifBellDash');
   const badge  = document.getElementById('notifBadgeDash');
   if (!bell) return;
-  if (tests.length > 0) {
+  if (count > 0) {
     bell.classList.remove('hidden');
-    badge.textContent = tests.length;
-    badge.classList.toggle('hidden', tests.length === 0);
+    badge.textContent = count;
+    badge.classList.remove('hidden');
   } else {
     bell.classList.add('hidden');
   }
@@ -1019,7 +1039,13 @@ function toggleDashNotifPanel() {
   const u     = localStorage.getItem('wmt_user');
   const open  = panel.classList.toggle('hidden');
   bell.classList.toggle('active', !open);
-  if (!open) renderDashNotifPanel(u);
+  if (!open) {
+    renderDashNotifPanel(u);
+    if (_getUnseenAnnouncements(u).length) {
+      _markAnnouncementsSeen(u);
+      _updateDashNotifBell(u);
+    }
+  }
 }
 
 function renderDashNotifPanel(u) {
@@ -1029,6 +1055,20 @@ function renderDashNotifPanel(u) {
   const tz    = prefs.timezone || Intl.DateTimeFormat().resolvedOptions().timeZone;
   const tests = _getUpcomingTests(u);
   const perm  = ('Notification' in window) ? Notification.permission : 'unsupported';
+
+  const unseenIds = new Set(_getUnseenAnnouncements(u).map(a => a.createdAt));
+  const announcements = window.getScheduleAnnouncements().slice(-5).reverse();
+  const announceSection = announcements.length ? `
+    <div style="font-size:0.7rem;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.07em;margin-bottom:6px;">🆕 New Schedule</div>
+    ${announcements.map(a => `
+      <div style="padding:10px 0;border-bottom:1px solid rgba(255,255,255,0.06);">
+        <div style="display:flex;justify-content:space-between;align-items:center;">
+          <span style="font-weight:700;color:var(--gold);font-size:0.88rem;">${a.title || _fmtMonth(a.month)}</span>
+          ${unseenIds.has(a.createdAt) ? '<span style="color:var(--danger);font-size:0.7rem;font-weight:800;">● NEW</span>' : ''}
+        </div>
+        <div style="font-size:0.79rem;color:var(--text-secondary);margin-top:4px;">Scheduled ${_fmtDT(a.createdAt)}</div>
+      </div>`).join('')}
+  ` : '';
 
   const testRows = tests.length
     ? tests.map(t => {
@@ -1098,6 +1138,7 @@ function renderDashNotifPanel(u) {
     <div style="display:flex;align-items:center;gap:8px;padding:8px 12px;background:rgba(100,150,255,0.07);border:1px solid rgba(100,150,255,0.2);border-radius:8px;margin-bottom:14px;font-size:0.78rem;color:var(--text-secondary);">
       🌍 <strong>${tz}</strong>
     </div>
+    ${announceSection}
     <div style="font-size:0.7rem;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.07em;margin-bottom:6px;">Upcoming Tests</div>
     ${testRows}
     ${ctrl}`;
@@ -1132,6 +1173,23 @@ function renderMtReminderBanner(u) {
     </div>`;
 }
 
+let _dashAnnounceListenerInitial = true;
+function _startDashScheduleAnnounceListener(user) {
+  if (!window.FDB) return;
+  window.FDB.ref('schedule_announcements').on('value', snap => {
+    // First event is the initial load — already reflected via syncFromFirebase, skip
+    if (_dashAnnounceListenerInitial) { _dashAnnounceListenerInitial = false; return; }
+    if (!snap.exists()) return;
+    localStorage.setItem('wmt_schedule_announcements', JSON.stringify(snap.val()));
+    _updateDashNotifBell(user);
+    const p = _getNotifPrefs(user);
+    if (p.enabled && ('Notification' in window) && Notification.permission === 'granted') {
+      const latest = window.getScheduleAnnouncements().slice(-1)[0];
+      if (latest) new Notification('📅 WG Monthly Test', { body: 'New test scheduled: ' + (latest.title || _fmtMonth(latest.month)), tag: 'wmt-announce-' + latest.createdAt });
+    }
+  });
+}
+
 function initDashboardNotifications(user) {
   const udata = getUsersDB()[user] || {};
   if (udata.role === 'admin' || udata.role === 'mod') return; // admin/mod skip reminder
@@ -1144,6 +1202,7 @@ function initDashboardNotifications(user) {
   renderMtReminderBanner(user);
   // Schedule browser notifications if already enabled
   if (p.enabled && ('Notification' in window) && Notification.permission === 'granted') _scheduleNotifs(user);
+  _startDashScheduleAnnounceListener(user);
   // Close panel on outside click
   document.addEventListener('click', e => {
     const panel = document.getElementById('notifPanelDash');
