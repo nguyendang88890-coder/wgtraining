@@ -652,6 +652,8 @@ function renderTeamTable() {
       examBadge = `<span class="exam-badge passed">✓ Passed ${Math.round((ex.score/(ex.total||30))*100)}%</span>`;
     } else if (ex.disqualified) {
       examBadge = `<span class="exam-badge disqualified">✗ Disqualified</span>`;
+    } else if (ex.status === 'pending_grading') {
+      examBadge = `<span class="exam-badge" style="background:rgba(100,150,255,0.15);color:#6496ff;">⏳ Pending Grading</span>`;
     } else if (ex.score !== undefined) {
       const lockout = ex.fail1Date && !ex.fail2Date && !ex.passed &&
         (Date.now() - new Date(ex.fail1Date).getTime()) < 3 * 24 * 60 * 60 * 1000;

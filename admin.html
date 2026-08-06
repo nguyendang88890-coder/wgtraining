@@ -587,6 +587,23 @@
   </div>
 </div>
 
+<!-- Exam Grading Modal (essay Final Exam) -->
+<div class="modal-overlay" id="examGradeModal">
+  <div class="modal-box" style="max-width:640px;max-height:88vh;overflow-y:auto;">
+    <h3 id="examGradeTitle">📝 Grade Final Exam</h3>
+    <div id="examGradeQuestions"></div>
+    <div style="background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:10px;padding:12px 16px;margin-top:6px;font-size:0.88rem;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;">
+      <span>Total: <strong id="examGradeTotal">0</strong> / <strong id="examGradeMax">0</strong> pts (<strong id="examGradePct">0%</strong>)</span>
+      <span style="color:var(--text-muted);">Pass threshold: <strong id="examGradeThreshold">60%</strong></span>
+    </div>
+    <div class="error-msg" id="examGradeError"></div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeExamGrade()">Cancel</button>
+      <button class="btn btn-primary" onclick="saveExamGrade()">✅ Finalize Grade</button>
+    </div>
+  </div>
+</div>
+
 <!-- Edit User Modal -->
 <div class="modal-overlay" id="editUserModal">
   <div class="modal-box" style="max-width:480px;">
@@ -1131,11 +1148,14 @@ function renderUsersTableBody() {
     const modPct   = Math.round((doneCnt / 5) * 100);
 
     let examBadge = '';
-    const hasExamData = ex.score !== undefined || ex.passed || ex.disqualified;
+    const isPendingGrade = ex.status === 'pending_grading';
+    const hasExamData = ex.score !== undefined || ex.passed || ex.disqualified || isPendingGrade;
     if (ex.passed) {
       examBadge = `<span class="exam-badge passed">✓ Passed ${Math.round((ex.score/(ex.total||30))*100)}%</span>`;
     } else if (ex.disqualified) {
       examBadge = `<span class="exam-badge disqualified">✗ Disqualified</span>`;
+    } else if (isPendingGrade) {
+      examBadge = `<span class="exam-badge" style="background:rgba(100,150,255,0.15);color:#6496ff;">⏳ Pending Grading</span>`;
     } else if (ex.score !== undefined) {
       const lockoutActive = ex.fail1Date && !ex.fail2Date && !ex.passed && (() => {
         const diff = Date.now() - new Date(ex.fail1Date).getTime();
@@ -1147,7 +1167,11 @@ function renderUsersTableBody() {
     }
     const examCell = `<div>
       ${examBadge}
-      ${hasExamData ? `<div style="margin-top:5px;"><button class="btn-xs exam" onclick="openExamReset('${uname}')" style="font-size:0.68rem;padding:3px 8px;">📝 Manage</button></div>` : ''}
+      <div style="margin-top:5px;display:flex;gap:4px;flex-wrap:wrap;">
+        ${isPendingGrade ? `<button class="btn-xs exam" onclick="openExamGrade('${uname}')" style="font-size:0.68rem;padding:3px 8px;background:rgba(100,150,255,0.12);border-color:rgba(100,150,255,0.4);color:#6496ff;">📝 Grade</button>` : ''}
+        ${hasExamData && !isPendingGrade ? `<button class="btn-xs exam" onclick="openExamReset('${uname}')" style="font-size:0.68rem;padding:3px 8px;">📝 Manage</button>` : ''}
+        ${isPendingGrade ? `<button class="btn-xs exam" onclick="openExamReset('${uname}')" style="font-size:0.68rem;padding:3px 8px;">↺ Cancel</button>` : ''}
+      </div>
     </div>`;
 
     const ivColors = { pending:'var(--warning)', confirmed:'var(--success)', completed:'#6496ff', cancelled:'var(--danger)', failed:'var(--danger)' };
@@ -1765,7 +1789,10 @@ function openExamReset(uname) {
   const fmt = d => d ? new Date(d).toLocaleString('en-GB', {day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'}) : '—';
   let statusHTML = `<div style="color:var(--text-muted);font-size:0.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px;">Current Status — <strong style="color:var(--text-primary)">${uname}</strong></div>`;
 
-  if (ex.passed) {
+  if (ex.status === 'pending_grading') {
+    statusHTML += `<div>⏳ <strong style="color:#6496ff">Awaiting Grading</strong> — Attempt ${ex.pendingAttemptNumber||1}, submitted ${fmt(ex.submittedAt)}</div>`;
+    statusHTML += `<div style="color:var(--text-muted);font-size:0.8rem;">Use the "📝 Grade" button on the user table to grade this submission.</div>`;
+  } else if (ex.passed) {
     statusHTML += `<div>✅ <strong style="color:var(--success)">Passed</strong> — ${Math.round((ex.score/(ex.total||30))*100)}% (${fmt(ex.passDate)})</div>`;
   } else if (ex.disqualified) {
     statusHTML += `<div>🚫 <strong style="color:var(--danger)">Disqualified (used both attempts)</strong></div>`;
@@ -1789,7 +1816,15 @@ function openExamReset(uname) {
   // Build action options
   const opts = [];
 
-  if (ex.disqualified) {
+  if (ex.status === 'pending_grading') {
+    opts.push({
+      value: 'full_reset',
+      icon: '🗑️',
+      color: 'var(--danger)',
+      label: 'Cancel this submission',
+      sub: 'Discard the pending essay answers. User can retake this attempt from scratch.'
+    });
+  } else if (ex.disqualified) {
     opts.push({
       value: 'restore_attempt1',
       icon: '↺',
@@ -1900,6 +1935,112 @@ function saveExamReset() {
   // Remind admin that user must refresh their page
   setTimeout(() => {
     alert(`✅ Exam reset for "${uname}".\n\n📌 Ask user "${uname}" to refresh (F5) exam.html for changes to take effect.`);
+  }, 200);
+}
+
+// ===== EXAM GRADING MODAL (essay Final Exam) =====
+let _examGradeCtx = null;
+
+function openExamGrade(uname) {
+  const ex = getExamData(uname);
+  if (ex.status !== 'pending_grading' || !Array.isArray(ex.questions)) return;
+  _examGradeCtx = { uname, ex };
+
+  document.getElementById('examGradeTitle').textContent =
+    `📝 Grade Final Exam — ${uname} (Attempt ${ex.pendingAttemptNumber || 1})`;
+  document.getElementById('examGradeError').textContent = '';
+
+  document.getElementById('examGradeQuestions').innerHTML = ex.questions.map((q, i) => {
+    const answer = (ex.answers && ex.answers[i]) ? ex.answers[i] : '';
+    const safeAnswer = answer.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    return `<div style="background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:10px;padding:14px 16px;margin-bottom:12px;">
+      <div style="font-weight:700;font-size:0.87rem;margin-bottom:8px;">Q${i+1}. ${q.q} <span style="color:var(--text-muted);font-weight:400;">(Module ${q.module})</span></div>
+      ${q.rubric ? `<div style="font-size:0.78rem;color:var(--text-muted);background:rgba(207,155,33,0.06);border-left:3px solid var(--border-gold);padding:8px 10px;margin-bottom:10px;border-radius:0 6px 6px 0;">📋 Answer Guide: ${q.rubric}</div>` : ''}
+      <div style="font-size:0.85rem;color:var(--text-secondary);white-space:pre-wrap;background:rgba(0,0,0,0.15);border:1px solid var(--border);border-radius:8px;padding:10px 12px;margin-bottom:10px;">${safeAnswer || '<em style="color:var(--text-muted);">(no answer)</em>'}</div>
+      <label style="font-size:0.82rem;display:flex;align-items:center;gap:8px;">
+        Score (0–${q.maxPoints}):
+        <input type="number" id="examGradeScore${i}" min="0" max="${q.maxPoints}" step="0.5" value="0"
+          oninput="updateExamGradeTotal()"
+          style="width:90px;padding:6px 10px;background:var(--bg-secondary);border:1px solid var(--border);border-radius:6px;color:var(--text-primary);">
+      </label>
+    </div>`;
+  }).join('');
+
+  document.getElementById('examGradeThreshold').textContent = (ex.passThreshold || 60) + '%';
+  updateExamGradeTotal();
+  document.getElementById('examGradeModal').classList.add('show');
+}
+
+function updateExamGradeTotal() {
+  if (!_examGradeCtx) return;
+  const { ex } = _examGradeCtx;
+  let earned = 0, max = 0;
+  ex.questions.forEach((q, i) => {
+    const raw = parseFloat(document.getElementById('examGradeScore'+i).value);
+    const v = isNaN(raw) ? 0 : Math.min(Math.max(raw, 0), q.maxPoints);
+    earned += v;
+    max += q.maxPoints;
+  });
+  const pct = max ? Math.round(earned / max * 100) : 0;
+  document.getElementById('examGradeTotal').textContent = earned;
+  document.getElementById('examGradeMax').textContent = max;
+  document.getElementById('examGradePct').textContent = pct + '%';
+}
+
+function closeExamGrade() {
+  document.getElementById('examGradeModal').classList.remove('show');
+  _examGradeCtx = null;
+}
+
+function saveExamGrade() {
+  if (!_examGradeCtx) return;
+  const { uname, ex } = _examGradeCtx;
+
+  let earned = 0, max = 0;
+  const scores = ex.questions.map((q, i) => {
+    const raw = parseFloat(document.getElementById('examGradeScore'+i).value);
+    const v = isNaN(raw) ? 0 : Math.min(Math.max(raw, 0), q.maxPoints);
+    earned += v; max += q.maxPoints;
+    return v;
+  });
+  const pct = max ? Math.round(earned / max * 100) : 0;
+  const passThreshold = ex.passThreshold || 60;
+  const passed = pct >= passThreshold;
+  const attemptNumber = ex.pendingAttemptNumber || 1;
+
+  if (!confirm(`Finalize grade for "${uname}": ${pct}% (threshold ${passThreshold}%) — ${passed ? 'PASS' : 'FAIL'}?\n\nThis cannot be undone from here — use Manage Exam afterwards if you need to adjust.`)) return;
+
+  const now = new Date().toISOString();
+  const updated = { ...ex };
+  updated.scores = scores;
+  updated.score = earned;
+  updated.total = max;
+  updated.status = 'graded';
+  updated.attempts = attemptNumber;
+  delete updated.pendingAttemptNumber;
+
+  if (passed) {
+    updated.passed = true;
+    updated.passScore = pct;
+    updated.passDate = now;
+  } else {
+    updated.gradedAttempts = attemptNumber;
+    if (attemptNumber === 1) {
+      updated.fail1Date = now;
+      updated.fail1Score = pct;
+    } else {
+      updated.fail2Date = now;
+      updated.fail2Score = pct;
+      updated.disqualified = true;
+    }
+  }
+
+  dbWrite('wmt_exam_' + uname, JSON.stringify(updated));
+  closeExamGrade();
+  renderAdminPanel();
+
+  setTimeout(() => {
+    alert(`✅ Grade saved for "${uname}": ${pct}% — ${passed ? 'PASSED' : 'FAILED'}.\n\n📌 Ask them to refresh (F5) their Dashboard or Final Exam page.`);
   }, 200);
 }
 

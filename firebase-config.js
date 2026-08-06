@@ -115,6 +115,7 @@ function _fbPath(key) {
   // Global collections
   if (key === 'wmt_users_db')            return 'users';
   if (key === 'wmt_exam_qbank')          return 'exam_qbank';
+  if (key === 'wmt_exam_qbank_v2')       return 'exam_qbank_v2';
   if (key === 'wmt_monthly_config')      return 'monthly_config';
   if (key === 'wmt_monthly_scores')      return 'monthly_scores';
   if (key === 'wmt_proposals')           return 'proposals';
@@ -214,6 +215,7 @@ window.syncFromFirebase = async function() {
     const globalKeys = [
       { fb: 'users',            ls: 'wmt_users_db' },
       { fb: 'exam_qbank',       ls: 'wmt_exam_qbank' },
+      { fb: 'exam_qbank_v2',    ls: 'wmt_exam_qbank_v2' },
       { fb: 'monthly_config',   ls: 'wmt_monthly_config' },
       { fb: 'monthly_scores',   ls: 'wmt_monthly_scores' },
       { fb: 'proposals',        ls: 'wmt_proposals' },

@@ -14,6 +14,9 @@
 .exam-q-opts  { display:grid;grid-template-columns:1fr 1fr;gap:4px 16px;margin-top:10px; }
 .exam-q-opt   { font-size:0.8rem;color:var(--text-muted);padding:2px 0; }
 .exam-q-opt.correct { color:var(--success);font-weight:700; }
+.exam-q-rubric { font-size:0.8rem;color:var(--text-muted);background:rgba(207,155,33,0.06);border-left:3px solid var(--border-gold);padding:8px 12px;margin-top:10px;border-radius:0 6px 6px 0;line-height:1.6; }
+.essay-answer-box { width:100%;box-sizing:border-box;padding:14px 16px;background:var(--bg-secondary);border:1px solid var(--border);border-radius:10px;color:var(--text-primary);font-size:0.92rem;font-family:inherit;line-height:1.6;resize:vertical; }
+.essay-answer-box:focus { outline:none;border-color:var(--border-gold); }
 .btn-xs { padding:4px 11px;font-size:0.74rem;border-radius:6px;font-weight:600;cursor:pointer;border:1px solid;transition:all .15s;white-space:nowrap; }
 .btn-xs.eq-edit   { background:rgba(255,215,0,0.08);border-color:rgba(255,215,0,0.3);color:var(--gold); }
 .btn-xs.eq-edit:hover { background:rgba(255,215,0,0.16); }
@@ -84,6 +87,18 @@
         </div>
       </div>
 
+      <!-- Blocked: Pending Grading -->
+      <div id="pendingGradingView" class="hidden">
+        <div class="result-hero">
+          <div class="result-icon">⏳</div>
+          <h2>Exam Submitted — Awaiting Grading</h2>
+          <p>Your Final Exam answers have been submitted and are being reviewed by your trainer. You'll be able to see your result here once grading is complete.</p>
+          <div style="margin-top:24px;">
+            <a href="index.html" class="btn btn-secondary">← Back to Dashboard</a>
+          </div>
+        </div>
+      </div>
+
       <!-- Blocked: Lockout -->
       <div id="lockoutView" class="hidden">
         <div class="result-hero">
@@ -102,11 +117,11 @@
       <div id="introView">
         <div class="exam-header">
           <h2>📝 WeGolden Final Exam</h2>
-          <p>Test your knowledge across all 5 training modules. Answer 30 randomized questions.</p>
+          <p>Test your knowledge across all 5 training modules. Answer 10 randomized essay questions in your own words.</p>
           <div class="exam-stats">
             <div class="exam-stat">
-              <div class="exam-stat-value">30</div>
-              <div class="exam-stat-label">Questions</div>
+              <div class="exam-stat-value">10</div>
+              <div class="exam-stat-label">Essay Questions</div>
             </div>
             <div class="exam-stat">
               <div class="exam-stat-value">60%</div>
@@ -126,11 +141,12 @@
         <div class="content-section">
           <h3>📋 Before You Start</h3>
           <ul>
-            <li>30 questions will be selected randomly from a large question bank</li>
-            <li><strong>Attempt 1</strong> — Minimum pass score: <strong>60%</strong> (18 out of 30 correct)</li>
-            <li><strong>Attempt 2</strong> — Minimum pass score: <strong>80%</strong> (24 out of 30 correct)</li>
+            <li>10 essay questions will be selected randomly from a larger question bank — answer each in your own words</li>
+            <li>This is a written exam: your trainer will read and manually grade your answers after you submit</li>
+            <li><strong>Attempt 1</strong> — Minimum pass score: <strong>60%</strong> of total points</li>
+            <li><strong>Attempt 2</strong> — Minimum pass score: <strong>80%</strong> of total points</li>
             <li>You have <strong>2 attempts</strong> total</li>
-            <li>If you fail attempt 1, you must wait <strong>3 days</strong> before retrying</li>
+            <li>If you fail attempt 1, you must wait <strong>3 days</strong> after grading before retrying</li>
             <li>If you fail attempt 2, you will be <strong>permanently disqualified</strong></li>
             <li>Make sure you have completed all 5 modules before taking this exam</li>
           </ul>
@@ -173,10 +189,10 @@
         </div>
 
         <div class="exam-content">
-          <div class="exam-question-num" id="examQuestionNum">Question 1 of 30</div>
-          <div id="examQuestionText" class="question-text" style="font-size:1.05rem;margin-bottom:20px;"></div>
-          <ul class="options-list" id="examOptions"></ul>
-          <div class="feedback-box" id="examFeedback"></div>
+          <div class="exam-question-num" id="examQuestionNum">Question 1 of 10</div>
+          <div id="examQuestionText" class="question-text" style="font-size:1.05rem;margin-bottom:14px;"></div>
+          <div id="examRubricBox" class="exam-q-rubric hidden" style="margin-bottom:14px;"></div>
+          <textarea id="examAnswerInput" class="essay-answer-box" rows="8" placeholder="Type your answer here…" oninput="onExamEssayInput(this.value)"></textarea>
         </div>
 
         <div style="display:flex;align-items:center;justify-content:space-between;margin-top:20px;gap:12px;flex-wrap:wrap;">
@@ -203,54 +219,64 @@
 <script src="firebase-config.js?v=4"></script>
 <script src="module-common.js?v=2"></script>
 <script>
-// ===== QUESTION BANK (40 questions) =====
+// ===== QUESTION BANK (20 essay questions, 4 per module) =====
+// Each attempt draws EXAM_QUESTIONS_PER_ATTEMPT questions; maxPoints is kept
+// uniform (10) across every question purely so earned-points already equals
+// the percentage when the draw size is 10 — makes admin grading arithmetic
+// trivial. Not a hard requirement of the format, just a deliberate choice.
 const QUESTION_BANK = [
   // MODULE 1 — Overview
-  { q: "What type of company is WeGolden?", opts: ["An insurance provider","A real estate firm","A global fintech company","A regional bank"], _c: "Mg==", module: 1 },
-  { q: "Which of these is one of WeGolden's core business areas?", opts: ["Freight logistics","Life insurance","Derivatives brokerage","Mortgage lending"], _c: "Mg==", module: 1 },
-  { q: "Which of these is a WeGolden representative office?", opts: ["Brazil","Australia","Germany","Vietnam"], _c: "Mw==", module: 1 },
-  { q: "Which of the following is one of WeGolden's top-tier liquidity providers?", opts: ["Coinbase","Robinhood","Revolut","HSBC"], _c: "Mw==", module: 1 },
-  { q: "What is WeGolden's MSB registration number?", opts: ["HT00524061","31000318885103","FSP No. 53890","2025123101"], _c: "MQ==", module: 1 },
-  { q: "The MSB License requires compliance with which act?", opts: ["Bank Secrecy Act","Dodd-Frank Act","GDPR","Sarbanes-Oxley Act"], _c: "MA==", module: 1 },
-  { q: "Which of these is a Comoros License authorization?", opts: ["Insurance brokerage","Consumer lending","Clearing House Activities","Stock exchange listing"], _c: "Mg==", module: 1 },
-  { q: "Which regulator is responsible for licensing investment firms, advisors, and brokers in South Africa?", opts: ["SEC","The Comoros authority","FinCEN","FSCA"], _c: "Mw==", module: 1 },
+  { q: "Describe what type of company WeGolden is and its three main business lines.", module: 1, maxPoints: 10,
+    rubric: "Should mention: a global fintech company; the three business lines are derivatives brokerage, U.S. equities trading, and providing an advanced trading platform." },
+  { q: "Where is WeGolden headquartered, and name at least four of its representative office locations.", module: 1, maxPoints: 10,
+    rubric: "Headquarters: Johannesburg, South Africa. Representative offices (any 4+): Canada, Cyprus, Thailand, Vietnam, Dubai, Indonesia, Philippines." },
+  { q: "Name WeGolden's three primary regulatory licenses and the authority/country behind each.", module: 1, maxPoints: 10,
+    rubric: "FSCA License (FSP No. 53890) — South Africa; MSB License — FinCEN (USA); Comoros License (No. HT00524061)." },
+  { q: "What are the main objectives of the FSCA (Financial Sector Conduct Authority)?", module: 1, maxPoints: 10,
+    rubric: "Ensure stability and smooth operation of the financial industry; protect clients and investors; maintain/enhance market integrity; promote competition for investors' benefit." },
+
   // MODULE 2 — Trading Accounts
-  { q: "Which account type charges a commission on every trade?", opts: ["Standard","ECN","None of them","Cent"], _c: "MQ==", module: 2 },
-  { q: "What execution style is emphasized for the ECN account?", opts: ["Ultra-fast, direct market access","Delayed execution","Fixed price execution","Manual dealing desk"], _c: "MA==", module: 2 },
-  { q: "Who is the Standard Account best suited for?", opts: ["Only scalpers","Only institutional traders","Beginner and retail traders","Only EA traders"], _c: "Mg==", module: 2 },
-  { q: "What is the Stop Out level for Standard and ECN accounts?", opts: ["10%","0%","50%","20%"], _c: "Mw==", module: 2 },
-  { q: "Which platforms support the Cent Account?", opts: ["Web only","MT4 only","A proprietary app only","MT5 Desktop, Web, and Mobile"], _c: "Mw==", module: 2 },
-  { q: "What deposit/withdrawal method does the Cent Account use?", opts: ["Any cryptocurrency","Wire transfer only","Credit card only","USDT deposits and withdrawals only"], _c: "Mw==", module: 2 },
-  { q: "What is a limitation of the ECN Account?", opts: ["Commission is charged on each trade","No liquidity access","No leverage is available","Requires a $10,000 minimum deposit"], _c: "MA==", module: 2 },
-  { q: "What is a limitation of the Standard Account compared to the ECN Account?", opts: ["No MT5 support","Lower leverage","Wider spreads","Higher commission"], _c: "Mg==", module: 2 },
+  { q: "Compare the ECN Account and Standard Account in terms of spread/commission structure and who each is suitable for.", module: 2, maxPoints: 10,
+    rubric: "ECN: raw spreads from 0.0 pip, commission-based, suited to professional/scalping/EA/high-volume traders. Standard: floating spreads, no commission (cost built into spread), suited to beginner/retail/swing traders." },
+  { q: "Explain the Cent Account — its account currency, minimum deposit, and who it is best suited for.", module: 2, maxPoints: 10,
+    rubric: "Base currency is Cent (100 Cent = 1 USD); minimum deposit USD 3; USDT deposits/withdrawals only; best for new traders, strategy/EA testing, and risk-management practice." },
+  { q: "What are the Margin Call and Stop Out levels shared by the ECN and Standard accounts?", module: 2, maxPoints: 10,
+    rubric: "Margin Call: 150%. Stop Out: 20%. Same for both account types." },
+  { q: "State one key limitation of the ECN Account and one key limitation of the Standard Account.", module: 2, maxPoints: 10,
+    rubric: "ECN: commission charged on each trade, less suitable for inexperienced traders. Standard: wider spreads than the ECN account." },
+
   // MODULE 3 — Financial Products & Leverage
-  { q: "What is the floating leverage for Gold at $5,000–$10,000 equity?", opts: ["1:200","1:30","1:500","1:100"], _c: "MA==", module: 3 },
-  { q: "What leverage applies to Indices across all equity tiers under the floating model?", opts: ["1:10","1:100","1:30","1:1000"], _c: "MQ==", module: 3 },
-  { q: "What happens to FX/Gold leverage 15 minutes before and after a news release?", opts: ["It reduces to 1:30","It stays unchanged","Trading is halted","It increases to 1:1000"], _c: "MA==", module: 3 },
-  { q: "Which account types use \"Fixed\" leverage rather than \"Floating\"?", opts: ["All accounts","Standard and ECN accounts","None","Master and Investor accounts"], _c: "Mw==", module: 3 },
-  { q: "Under the UZ/KGZ configuration, what leverage applies to FX at $10,000–$50,000 equity?", opts: ["1:100","1:30","1:1000","1:500"], _c: "MA==", module: 3 },
-  { q: "What is the maximum leverage for Cryptos on Master/Investor (fixed) accounts?", opts: ["1:500","1:1000","1:100","1:10"], _c: "Mw==", module: 3 },
-  { q: "What is the maximum number of open orders allowed per account, per the account comparison table?", opts: ["100","Unlimited","25","50"], _c: "Mw==", module: 3 },
-  { q: "What execution types are used across Standard, ECN, Master, and Investor accounts?", opts: ["Instant execution only","Only Market Order","Market Order and Pending Order","Only Pending Order"], _c: "Mg==", module: 3 },
+  { q: "List the categories of financial products WeGolden offers, with an example instrument for each.", module: 3, maxPoints: 10,
+    rubric: "Forex (major/minor/cross pairs), Precious Metals (Gold, Silver), Cryptocurrencies (BTC, ETH, XRP), Energy (WTI, Brent), Indices (SP500, NQ100), U.S. Stocks (NASDAQ, NYSE)." },
+  { q: "Explain how floating leverage for FX/Gold changes as a client's equity increases.", module: 3, maxPoints: 10,
+    rubric: "$0–1,000: 1:1000; $1,000–5,000: 1:500; $5,000–10,000: 1:200; $10,000–50,000: 1:100; ≥$50,000: 1:30 — leverage decreases as equity rises." },
+  { q: "What special leverage rule applies to clients in Uzbekistan and Kyrgyzstan, and to which instrument?", module: 3, maxPoints: 10,
+    rubric: "Gold is fixed at 1:500 regardless of equity tier; all other instruments follow the standard floating leverage model; applies only to UZ and KGZ." },
+  { q: "What is the maximum (fixed) leverage for FX/Gold and for Cryptos/Shares on Master and Investor Accounts?", module: 3, maxPoints: 10,
+    rubric: "FX, Gold, Silver, Indices, Energies: 1:100. Cryptos and Shares: 1:10." },
+
   // MODULE 4 — IB Policies & Reward
-  { q: "What is the IB Reward for the ECN Account Low Commission (LC, default) tier?", opts: ["USD 8 / lot","USD 16 / lot","USD 3.5 / lot","USD 20 / lot"], _c: "Mg==", module: 4 },
-  { q: "What fee does the ECN High Commission (HC) tier charge on major Forex pairs and metals?", opts: ["USD 5 / lot","USD 8 / lot","USD 20 / lot","USD 3.5 / lot"], _c: "Mg==", module: 4 },
-  { q: "What percentage of ECN commission does the IB receive as reward?", opts: ["50%","70%","30%","100%"], _c: "MQ==", module: 4 },
-  { q: "What is the IB Reward on Master/Investor (Copy Trading) accounts for Forex & Gold?", opts: ["USD 16 / lot","USD 20 / lot","USD 5 / lot","USD 8 / lot"], _c: "MA==", module: 4 },
-  { q: "What percentage does a Master IB earn from direct Sub-Sub-IBs' income?", opts: ["1%","10%","0%","5%"], _c: "MA==", module: 4 },
-  { q: "What qualifying net deposit amount is required for the \"Silver\" IB ranking?", opts: ["$5,000","$2,500","$25,000","$10,000"], _c: "MA==", module: 4 },
-  { q: "How many new funded clients are required for the \"Platinum\" IB ranking?", opts: ["8 – 15","2 – 4","16 – 25","25+"], _c: "Mg==", module: 4 },
-  { q: "Net deposits, for IB reward calculation purposes, are defined as:", opts: ["Total deposits minus withdrawals","Total deposits only","Total profit","Total trading volume"], _c: "MA==", module: 4 },
+  { q: "Explain the difference in IB reward between the High Spread (HS) and Low Spread (LS) Standard account sub-types.", module: 4, maxPoints: 10,
+    rubric: "HS (\"i\" suffix): USD 16/lot IB reward, wider spreads. LS (\"m\" suffix, default): USD 8/lot IB reward, tighter spreads." },
+  { q: "What is the Minimum Holding Time requirement for IB Rewards, and what happens in cases of trading violations such as latency arbitrage?", module: 4, maxPoints: 10,
+    rubric: "Positions must stay open longer than 120 seconds to count for IB reward. Violations result in all profits being confiscated and all IB rewards from the violating trades being deducted." },
+  { q: "Describe the Multi-Level Commission Policy for a Master IB.", module: 4, maxPoints: 10,
+    rubric: "A Master IB receives 10% of income generated by direct Sub-IBs and 1% of income generated by direct Sub-Sub-IBs." },
+  { q: "What net deposit and trading volume requirements must an IB meet to reach the \"Gold\" and \"Diamond\" Monthly Reward tiers, and what cash reward does each pay?", module: 4, maxPoints: 10,
+    rubric: "Gold: $10,000 net deposits, 75 lots, 8–15 new funded clients → $250. Diamond: $50,000 net deposits, 300 lots, 25+ new funded clients → $1,000." },
+
   // MODULE 5 — Deposit & Withdrawal
-  { q: "Which payment gateway can users prioritize for faster transactions?", opts: ["Credit card","Cheque","Wire transfer only","USDT"], _c: "Mw==", module: 5 },
-  { q: "What security measure protects transactions according to the policy?", opts: ["Manual approval by the IB","Only SMS OTP","No security measures are mentioned","Multi-layer authentication and data encryption"], _c: "Mw==", module: 5 },
-  { q: "What must Bank Transfer deposits/withdrawals use?", opts: ["A bank account under the same account holder's name","A company-shared account","A joint account only","Any third-party account"], _c: "MA==", module: 5 },
-  { q: "What is available to clients for full transparency, per the withdrawal policy?", opts: ["Only monthly statements","Transaction history and status updates","Only for VIP accounts","No records are kept"], _c: "MQ==", module: 5 },
-  { q: "Besides USDT, which method is highlighted for deposits/withdrawals?", opts: ["Cash pickup","Cheque deposit","Money order","Bank Transfer (QR Code)"], _c: "Mw==", module: 5 },
-  { q: "What monitoring is in place for transactions?", opts: ["24/7 transaction monitoring","No monitoring","Monthly audits only","Quarterly review"], _c: "MA==", module: 5 },
-  { q: "Under what circumstance might WeGolden apply extra fees to an account?", opts: ["Weekend transactions","Suspected abuse via excessive deposits/withdrawals","First-time withdrawals","Every transaction over $100"], _c: "MQ==", module: 5 },
-  { q: "Deposit and withdrawal processing complies with which requirement?", opts: ["Identity verification (KYC)","Tax reporting only","Only AML checks for large amounts","No compliance checks"], _c: "MA==", module: 5 },
+  { q: "What are the two main payment methods for deposits/withdrawals, and what rule applies to the withdrawal destination for each?", module: 5, maxPoints: 10,
+    rubric: "USDT and Bank Transfer (QR Code). USDT withdrawals must go to the same wallet used for deposit; bank deposits/withdrawals must use an account under the same account holder's name." },
+  { q: "How long does WeGolden take to process a withdrawal, and who covers the transaction gateway fees?", module: 5, maxPoints: 10,
+    rubric: "Withdrawals are completed within 5 minutes. WeGolden covers all deposit/withdrawal gateway fees — no fees for normal clients (WeGolden may charge fees for low-activity or suspected-abuse accounts)." },
+  { q: "Explain the Savings program's minimum investment requirement and what happens if a client withdraws before the plan matures.", module: 5, maxPoints: 10,
+    rubric: "Minimum investment is 5,000 USD for all plans; the interest rate is fixed for the entire term; early withdrawal is allowed but incurs an Early Withdrawal Penalty specific to the selected plan." },
+  { q: "Compare the \"Excellence Premier\" and \"Excellence Short-Term\" savings plans in terms of lock period, interest rate, and early withdrawal penalty.", module: 5, maxPoints: 10,
+    rubric: "Excellence Premier: 360-day lock, 3.00% interest, no early withdrawal penalty (N/A). Excellence Short-Term: 30-day lock, 0.20% interest, 15 USD early withdrawal penalty." },
 ];
+
+const EXAM_QUESTIONS_PER_ATTEMPT = 10;
 
 // ===== EXAM STATE =====
 let examQuestions = [];
@@ -268,15 +294,30 @@ function saveExamState(data) {
   dbWrite('wmt_exam_' + getUser(), JSON.stringify(data));
 }
 
-// Persist question bank to localStorage on first load (allows admin edits)
+// Persist question bank to localStorage on first load (allows admin edits).
+// Single source of truth for both the admin/mod views and the exam-taking
+// flow — earlier versions had two separate readers here, one of which
+// (getExamQBank) carried a stale "reset if no module-0 question" check left
+// over from before Module 0 (About WG) was merged into Module 1; since no
+// bank has had a module-0 question since that merge, it was silently
+// resetting admin edits back to the default bank on every single read.
 function getActiveQBank() {
   const stored = localStorage.getItem('wmt_exam_qbank_v2');
   if (stored) {
-    return JSON.parse(stored);
+    const parsed = JSON.parse(stored);
+    // One-time migration: a bank saved before the MCQ→Essay format change
+    // still has an `opts` array per question, which the new UI can't render.
+    // The two shapes are structurally incompatible, so replace it outright.
+    if (parsed.length && parsed[0].opts !== undefined) {
+      saveExamQBank(QUESTION_BANK);
+      return QUESTION_BANK;
+    }
+    return parsed;
   }
   dbWrite('wmt_exam_qbank_v2', JSON.stringify(QUESTION_BANK));
   return QUESTION_BANK;
 }
+function saveExamQBank(d) { dbWrite('wmt_exam_qbank_v2', JSON.stringify(d)); }
 
 function shuffle(arr) {
   const a = [...arr];
@@ -287,28 +328,12 @@ function shuffle(arr) {
   return a;
 }
 
-// Decode obfuscated answer for admin display (supports both _c and legacy correct)
-function _ansQ(q) {
-  if (q._c !== undefined) return parseInt(atob(q._c));
-  return typeof q.correct === 'number' ? q.correct : -1;
-}
-
 // ===== ADMIN EXAM MANAGEMENT =====
-const EQ_MODULE_NAMES = [null,'Products','Trading Rules','Profit & Payouts','Payment Methods','Financial Products'];
-function getExamQBank() {
-  const stored = JSON.parse(localStorage.getItem('wmt_exam_qbank_v2') || 'null');
-  if (!stored) return null;
-  if (!stored.some(q => (q.module || 0) === 0)) {
-    saveExamQBank(QUESTION_BANK);
-    return QUESTION_BANK;
-  }
-  return stored;
-}
-function saveExamQBank(d) { dbWrite('wmt_exam_qbank_v2', JSON.stringify(d)); }
+const EQ_MODULE_NAMES = [null,'Overview','Trading Accounts','Financial Products & Leverage','IB Policies & Reward','Deposit & Withdrawal'];
+function getExamQBank() { return getActiveQBank(); }
 
 function renderAdminExamView() {
   const bank = getExamQBank();
-  if (!bank) { renderAdminExamView._init(); return; }
   document.getElementById('eqCount').textContent = bank.length;
   const byMod = {};
   bank.forEach((q, i) => { const m = q.module||0; if (!byMod[m]) byMod[m]=[]; byMod[m].push({...q, _i:i}); });
@@ -318,23 +343,15 @@ function renderAdminExamView() {
       <div class="exam-q-item">
         <div class="exam-q-hdr">
           <span class="exam-q-num">#${q._i+1}</span>
-          <span class="exam-q-text">${q.q}</span>
+          <span class="exam-q-text">${q.q} <span style="color:var(--text-muted);font-weight:400;">(${q.maxPoints||10} pts)</span></span>
           <div style="display:flex;gap:6px;flex-shrink:0;">
             <button class="btn-xs eq-edit" onclick="openEditQuestion(${q._i})">✎ Edit</button>
             <button class="btn-xs eq-del"  onclick="deleteQuestion(${q._i})">✕</button>
           </div>
         </div>
-        <div class="exam-q-opts">
-          ${q.opts.map((opt,oi)=>`<div class="exam-q-opt ${oi===_ansQ(q)?'correct':''}">
-            ${oi===_ansQ(q)?'✓':'○'} ${String.fromCharCode(65+oi)}. ${opt}
-          </div>`).join('')}
-        </div>
+        ${q.rubric ? `<div class="exam-q-rubric">📋 Answer Guide: ${q.rubric}</div>` : ''}
       </div>`).join('')}`).join('');
 }
-renderAdminExamView._init = function() {
-  saveExamQBank(QUESTION_BANK);
-  renderAdminExamView();
-};
 
 function _eqModal(title, q, idx, isNew) {
   const ex = document.getElementById('eqModal'); if (ex) ex.remove();
@@ -348,12 +365,10 @@ function _eqModal(title, q, idx, isNew) {
       </select></div>
     <div class="form-group"><label>Question</label>
       <textarea id="eeQ" rows="3" style="width:100%;background:var(--bg-secondary);border:1px solid var(--border);color:var(--text-primary);padding:10px;border-radius:8px;font-size:0.88rem;resize:vertical;">${q?q.q:''}</textarea></div>
-    ${['A','B','C','D'].map((l,i)=>`<div class="form-group"><label>Answer ${l}</label>
-      <input type="text" id="eeO${l}" value="${q&&q.opts[i]?q.opts[i]:''}" placeholder="Enter answer ${l}…"></div>`).join('')}
-    <div class="form-group"><label>Correct Answer</label>
-      <select id="eeC" style="width:100%;background:var(--bg-secondary);border:1px solid var(--border);color:var(--text-primary);padding:8px 12px;border-radius:8px;">
-        ${['A','B','C','D'].map((l,i)=>`<option value="${i}" ${q&&_ansQ(q)===i?'selected':''}>${l}</option>`).join('')}
-      </select></div>
+    <div class="form-group"><label>Max Points</label>
+      <input type="number" id="eeP" min="1" step="0.5" value="${q&&q.maxPoints!==undefined?q.maxPoints:10}"></div>
+    <div class="form-group"><label>Answer Guide / Rubric <span style="color:var(--text-muted);font-weight:400;">(shown to the trainee while answering, and used by admin when grading)</span></label>
+      <textarea id="eeR" rows="3" style="width:100%;background:var(--bg-secondary);border:1px solid var(--border);color:var(--text-primary);padding:10px;border-radius:8px;font-size:0.88rem;resize:vertical;">${q&&q.rubric?q.rubric:''}</textarea></div>
     <div class="modal-footer">
       <button class="btn btn-secondary" onclick="document.getElementById('eqModal').remove()">Cancel</button>
       <button class="btn btn-primary" onclick="${isNew?'saveNewQ()':'saveEditQ('+idx+')'}">💾 ${isNew?'Add':'Save'}</button>
@@ -365,10 +380,9 @@ function _eqModal(title, q, idx, isNew) {
 function openEditQuestion(i) { const b=getExamQBank(); if(b) _eqModal(`✎ Edit Question #${i+1}`,b[i],i,false); }
 function openAddQuestion()   { _eqModal('+ Add New Question',null,null,true); }
 function _readModal() {
-  const ci = +document.getElementById('eeC').value;
   return { module:+document.getElementById('eeM').value, q:document.getElementById('eeQ').value.trim(),
-    opts:['A','B','C','D'].map(l=>document.getElementById('eeO'+l).value.trim()),
-    _c: btoa(String(ci)) };
+    maxPoints: +document.getElementById('eeP').value || 10,
+    rubric: document.getElementById('eeR').value.trim() };
 }
 function saveEditQ(i) {
   const v=_readModal(); if(!v.q){alert('Please enter the question.');return;}
@@ -405,14 +419,10 @@ function renderModExamView() {
       <div class="exam-q-item">
         <div class="exam-q-hdr">
           <span class="exam-q-num">#${q._i+1}</span>
-          <span class="exam-q-text">${q.q}</span>
+          <span class="exam-q-text">${q.q} <span style="color:var(--text-muted);font-weight:400;">(${q.maxPoints||10} pts)</span></span>
           <button class="btn-xs eq-edit" onclick="openProposeEditQ(${q._i})">💡 Propose</button>
         </div>
-        <div class="exam-q-opts">
-          ${q.opts.map((opt,oi)=>`<div class="exam-q-opt ${oi===_ansQ(q)?'correct':''}">
-            ${oi===_ansQ(q)?'✓':'○'} ${String.fromCharCode(65+oi)}. ${opt}
-          </div>`).join('')}
-        </div>
+        ${q.rubric ? `<div class="exam-q-rubric">📋 Answer Guide: ${q.rubric}</div>` : ''}
       </div>`).join('')}`).join('');
 }
 
@@ -430,12 +440,10 @@ function _proposeModal(title, q, idx, isNew) {
       </select></div>
     <div class="form-group"><label>Question</label>
       <textarea id="ppQ" rows="3" style="${inputStyle}resize:vertical;">${q?q.q:''}</textarea></div>
-    ${['A','B','C','D'].map((l,i)=>`<div class="form-group"><label>Answer ${l}</label>
-      <input type="text" id="ppO${l}" value="${q&&q.opts[i]?q.opts[i]:''}" placeholder="Enter answer ${l}…" style="${inputStyle}"></div>`).join('')}
-    <div class="form-group"><label>Correct Answer</label>
-      <select id="ppC" style="${inputStyle}">
-        ${['A','B','C','D'].map((l,i)=>`<option value="${i}" ${q&&q.correct===i?'selected':''}>${l}</option>`).join('')}
-      </select></div>
+    <div class="form-group"><label>Max Points</label>
+      <input type="number" id="ppP" min="1" step="0.5" value="${q&&q.maxPoints!==undefined?q.maxPoints:10}" style="${inputStyle}"></div>
+    <div class="form-group"><label>Answer Guide / Rubric</label>
+      <textarea id="ppR" rows="3" style="${inputStyle}resize:vertical;">${q&&q.rubric?q.rubric:''}</textarea></div>
     <div class="form-group"><label>Reason / Notes for Admin</label>
       <textarea id="ppNote" rows="2" placeholder="Explain the reason for your proposal…" style="${inputStyle}resize:vertical;"></textarea></div>
     <div class="modal-footer">
@@ -460,8 +468,8 @@ function submitExamProposal(idx, isNew) {
   if (!q) { alert('Please enter the question content.'); return; }
   const proposed = {
     module: +document.getElementById('ppM').value, q,
-    opts: ['A','B','C','D'].map(l => document.getElementById('ppO'+l).value.trim()),
-    correct: +document.getElementById('ppC').value
+    maxPoints: +document.getElementById('ppP').value || 10,
+    rubric: document.getElementById('ppR').value.trim()
   };
   const note = document.getElementById('ppNote').value.trim();
   const bank = getActiveQBank();
@@ -509,7 +517,7 @@ window.addEventListener('load', async function() {
   for (let i = 1; i <= 5; i++) {
     if (p[`module${i}_done`]) doneCnt++;
   }
-  if (doneCnt < 7) {
+  if (doneCnt < 5) {
     document.getElementById('moduleWarning').classList.remove('hidden');
     const btn = document.getElementById('startExamBtn');
     btn.disabled = true;
@@ -525,6 +533,14 @@ window.addEventListener('load', async function() {
   if (es.disqualified) {
     document.getElementById('introView').classList.add('hidden');
     document.getElementById('disqualifiedView').classList.remove('hidden');
+    return;
+  }
+
+  // Check pending grading — essay answers must be graded by admin before a
+  // new attempt (or the lockout/disqualified outcome) can be determined.
+  if (es.status === 'pending_grading') {
+    document.getElementById('introView').classList.add('hidden');
+    document.getElementById('pendingGradingView').classList.remove('hidden');
     return;
   }
 
@@ -575,9 +591,9 @@ function startExam() {
     alert('The exam question bank is empty. Please contact admin — questions have not been added yet.');
     return;
   }
-  // Select up to 30 random questions from active bank
-  examQuestions = shuffle(bank).slice(0, 30);
-  examAnswers = new Array(examQuestions.length).fill(null);
+  // Select up to EXAM_QUESTIONS_PER_ATTEMPT random essay questions from the active bank
+  examQuestions = shuffle(bank).slice(0, EXAM_QUESTIONS_PER_ATTEMPT);
+  examAnswers = new Array(examQuestions.length).fill('');
   examCurrent = 0;
 
   document.getElementById('attemptLabel').textContent = `Attempt ${examAttempt}/2`;
@@ -589,46 +605,29 @@ function startExam() {
 function renderExamQuestion(idx) {
   examCurrent = idx;
   const q = examQuestions[idx];
-  const answered = examAnswers[idx] !== null;
 
   document.getElementById('examQuestionNum').textContent = `Question ${idx+1} of ${examQuestions.length}`;
   document.getElementById('examProgressFill').style.width = `${((idx+1)/examQuestions.length)*100}%`;
   document.getElementById('examQuestionText').textContent = q.q;
 
-  const optsList = document.getElementById('examOptions');
-  const correctIdx = _ans(q);
-  optsList.innerHTML = q.opts.map((opt, oi) => {
-    let cls = '';
-    if (answered) {
-      if (oi === correctIdx) cls = 'correct';
-      else if (oi === examAnswers[idx]) cls = 'wrong';
-    } else if (oi === examAnswers[idx]) cls = 'selected';
-    return `<li class="option-item ${cls}" onclick="${answered ? '' : `selectExamOption(${oi})`}">
-      <span class="option-letter">${String.fromCharCode(65+oi)}</span>
-      ${opt}
-    </li>`;
-  }).join('');
-
-  const fb = document.getElementById('examFeedback');
-  if (answered) {
-    fb.className = `feedback-box show ${examAnswers[idx] === correctIdx ? 'correct' : 'wrong'}`;
-    fb.textContent = examAnswers[idx] === correctIdx
-      ? '✓ Correct!'
-      : `✗ Incorrect. Correct answer: ${q.opts[correctIdx]}`;
+  const rubricBox = document.getElementById('examRubricBox');
+  if (q.rubric) {
+    rubricBox.textContent = '📋 Answer Guide: ' + q.rubric;
+    rubricBox.classList.remove('hidden');
   } else {
-    fb.className = 'feedback-box';
-    fb.textContent = '';
+    rubricBox.classList.add('hidden');
   }
+
+  document.getElementById('examAnswerInput').value = examAnswers[idx];
 
   document.getElementById('examPrevBtn').disabled = idx === 0;
   document.getElementById('examNextBtn').disabled = idx === examQuestions.length - 1;
-  document.getElementById('examNavInfo').textContent = `${examAnswers.filter(a => a !== null).length} of ${examQuestions.length} answered`;
+  document.getElementById('examNavInfo').textContent = `${examAnswers.filter(a => a.trim() !== '').length} of ${examQuestions.length} answered`;
 }
 
-function selectExamOption(optIdx) {
-  if (examAnswers[examCurrent] !== null) return;
-  examAnswers[examCurrent] = optIdx;
-  renderExamQuestion(examCurrent);
+function onExamEssayInput(val) {
+  examAnswers[examCurrent] = val;
+  document.getElementById('examNavInfo').textContent = `${examAnswers.filter(a => a.trim() !== '').length} of ${examQuestions.length} answered`;
 }
 
 function examNav(dir) {
@@ -639,55 +638,34 @@ function examNav(dir) {
 }
 
 function submitExam() {
-  const unanswered = examAnswers.filter(a => a === null).length;
+  const unanswered = examAnswers.filter(a => a.trim() === '').length;
   if (unanswered > 0) {
     const warn = document.getElementById('unansweredWarn');
     warn.style.display = 'block';
     warn.textContent = `⚠️ You have ${unanswered} unanswered question(s). Please answer all before submitting.`;
     return;
   }
+  if (!confirm('Submit your Final Exam? Your trainer will grade your answers manually — you cannot edit them after submitting.')) return;
 
-  // Calculate score
-  let correct = 0;
-  examAnswers.forEach((a, i) => { if (a === _ans(examQuestions[i])) correct++; });
-  const score = Math.round((correct / examQuestions.length) * 100);
-
-  // Save results
+  // Essay answers can't be auto-scored — save as "pending grading" and let
+  // the admin finalize pass/fail once they've read and scored each answer.
   const es = getExamState();
   const now = new Date().toISOString();
-  const attemptNumber = (es.attempts || 0) + 1;
-  const passThreshold = attemptNumber === 1 ? 60 : 80;
-  const passed = score >= passThreshold;
+  const pendingAttemptNumber = (es.gradedAttempts || 0) + 1;
+  const passThreshold = pendingAttemptNumber === 1 ? 60 : 80;
 
-  const rawCorrect = examAnswers.filter(function(a,i){ return a === _ans(examQuestions[i]); }).length;
-  es.score = rawCorrect;
-  es.total = examQuestions.length;
-  es.attempts = attemptNumber;
+  es.status = 'pending_grading';
+  es.pendingAttemptNumber = pendingAttemptNumber;
   es.passThreshold = passThreshold;
-  if (passed) {
-    es.passed = true;
-    es.passScore = score;
-    es.passDate = now;
-  } else {
-    if (!es.fail1Date) {
-      es.fail1Date = now;
-      es.fail1Score = score;
-    } else {
-      es.fail2Date = now;
-      es.fail2Score = score;
-      es.disqualified = true;
-    }
-  }
+  es.submittedAt = now;
+  es.questions = examQuestions.map(q => ({ q: q.q, module: q.module, maxPoints: q.maxPoints, rubric: q.rubric }));
+  es.answers = examAnswers.slice();
+  // Clear any previous final score — it no longer reflects the pending attempt
+  delete es.score;
+  delete es.total;
   saveExamState(es);
 
-  // Save score to progress
-  const p = getProgress();
-  p.examScore = score;
-  p.examPassed = passed;
-  saveProgress(p);
-
-  // Redirect to results
-  window.location.href = `results.html?score=${score}&passed=${passed}`;
+  window.location.href = 'results.html';
 }
 </script>
 </body>

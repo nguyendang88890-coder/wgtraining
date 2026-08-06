@@ -267,9 +267,10 @@ function renderTracker() {
     totalMod += doneCount;
 
     // Exam
-    const examOK  = exam.passed === true;
-    const examDQ  = exam.disqualified === true;
-    const examAtt = exam.attempts || 0;
+    const examOK      = exam.passed === true;
+    const examDQ      = exam.disqualified === true;
+    const examAtt     = exam.attempts || 0;
+    const examPending = exam.status === 'pending_grading';
     if (examOK) examPassed++;
 
     // Interview
@@ -290,11 +291,13 @@ function renderTracker() {
       status = 'Exam Passed'; statusBadge = 'badge-done';
     } else if (examAtt >= 2 && !examOK && !examDQ) {
       status = 'Exam Failed'; statusBadge = 'badge-fail';
+    } else if (examPending) {
+      status = 'Exam Grading'; statusBadge = 'badge-pend';
     } else {
       status = 'In Progress'; statusBadge = 'badge-pend';
     }
 
-    return { un, ud, modDone, modScore, doneCount, exam, examOK, examDQ, examAtt, iv, ivStatus, ivComplete, pct, status, statusBadge, idx: idx + 1 };
+    return { un, ud, modDone, modScore, doneCount, exam, examOK, examDQ, examAtt, examPending, iv, ivStatus, ivComplete, pct, status, statusBadge, idx: idx + 1 };
   });
 
   // Update stat cards
@@ -327,6 +330,8 @@ function renderTracker() {
     let examCell;
     if (r.examDQ) {
       examCell = `<span class="badge badge-dq">DQ</span>`;
+    } else if (r.examPending) {
+      examCell = `<span class="badge badge-pend">⏳ Grading</span>`;
     } else if (r.examOK) {
       examCell = `<span class="badge badge-pass">✓ PASS</span><br><span class="cell-sub">${r.exam.score ?? '—'}/${r.exam.total ?? '—'}</span><br><span class="cell-sub">${fmtD(r.exam.passDate)}</span>`;
     } else if (r.examAtt > 0) {

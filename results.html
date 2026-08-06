@@ -57,7 +57,7 @@ body { background: #0a0a16; color: #e0e0e0; font-family: 'Segoe UI', sans-serif;
 })();
 
 // These will be populated after sync
-let user, examData, _userData, isExisted, score, total, attempts, failDate, passed, pct;
+let user, examData, _userData, isExisted, score, total, attempts, failDate, passed, pct, passThreshold;
 
 function _loadState() {
   user      = localStorage.getItem('wmt_user') || 'trainee';
@@ -65,18 +65,19 @@ function _loadState() {
   _userData = JSON.parse(localStorage.getItem('wmt_users_db') || '{}')[user] || {};
   isExisted = (_userData.employeeType || 'new') === 'old';
   score     = examData.score || 0;
-  total     = examData.total || 30;
+  total     = examData.total || 100;
   attempts  = examData.attempts || 0;
-  failDate  = examData.failDate || null;
+  failDate  = examData.fail1Date || null;
   passed    = examData.passed || false;
-  pct       = Math.round((score / total) * 100);
+  passThreshold = examData.passThreshold || 60;
+  pct       = total ? Math.round((score / total) * 100) : 0;
 }
 
 function getDaysLeft() {
   if (!failDate) return 0;
   const diff = Date.now() - new Date(failDate).getTime();
   const daysElapsed = diff / (1000 * 60 * 60 * 24);
-  return Math.max(0, Math.ceil(5 - daysElapsed));
+  return Math.max(0, Math.ceil(3 - daysElapsed));
 }
 
 function renderPass() {
@@ -87,7 +88,7 @@ function renderPass() {
       <div class="result-title pass">Congratulations! You Passed!</div>
       <div class="score-display">
         <div class="score-number">${pct}%</div>
-        <div class="score-label">${score} / ${total} correct answers</div>
+        <div class="score-label">${score} / ${total} points</div>
       </div>
       <div class="result-msg">
         Outstanding! You have successfully completed the WeGolden training examination.<br>
@@ -106,7 +107,7 @@ function renderPass() {
     <div class="result-title pass">Congratulations! You Passed!</div>
     <div class="score-display">
       <div class="score-number">${pct}%</div>
-      <div class="score-label">${score} / ${total} correct answers</div>
+      <div class="score-label">${score} / ${total} points</div>
     </div>
     <div class="result-msg">
       Outstanding! You have successfully completed the WeGolden training examination.<br>
@@ -123,13 +124,12 @@ function renderPass() {
 
 function renderFail1() {
   const daysLeft = getDaysLeft();
-  const hoursLeft = Math.ceil(getDaysLeft() * 24);
   return `
     <div class="result-icon">😔</div>
     <div class="result-title fail">Not Quite There Yet</div>
     <div class="score-display">
       <div class="score-number" style="color:#ff6b6b">${pct}%</div>
-      <div class="score-label">${score} / ${total} correct — Need 70% to pass</div>
+      <div class="score-label">${score} / ${total} points — Needed ${passThreshold}% to pass</div>
     </div>
     <div class="result-msg">
       You didn't pass this time, but don't worry! Review the training materials carefully and try again after the lockout period.
@@ -144,9 +144,8 @@ function renderFail1() {
     <div style="margin-top:24px;padding:16px;background:rgba(255,215,0,0.04);border-radius:10px;font-size:13px;color:#aaa;line-height:1.8">
       💡 <strong style="color:#FFD700">Tips for your retry:</strong><br>
       • Re-read all 5 modules thoroughly<br>
-      • Pay special attention to Trading Rules (Module 2)<br>
-      • Review Profit Sharing percentages (Module 3)<br>
-      • Practice the Profit Consistency formula with examples
+      • Practice writing full answers, not just short phrases — the exam is graded manually<br>
+      • Use the Answer Guide shown with each question to make sure your answer covers every point it asks for
     </div>
     <a href="index.html" class="btn-back">← Back to Dashboard</a>
   `;
@@ -158,10 +157,10 @@ function renderDisqualified() {
     <div class="result-title disqualified">Disqualified</div>
     <div class="score-display" style="border-color:rgba(100,100,100,0.3)">
       <div class="score-number" style="color:#666">${pct}%</div>
-      <div class="score-label">${score} / ${total} correct — 2 attempts used</div>
+      <div class="score-label">${score} / ${total} points — 2 attempts used</div>
     </div>
     <div class="result-msg">
-      You have used both exam attempts without achieving the passing score of 70%.<br>
+      You have used both exam attempts without achieving the required passing score.<br>
       Your candidacy for this onboarding cycle has been closed.
     </div>
     <div class="disq-section">
@@ -169,6 +168,18 @@ function renderDisqualified() {
         If you believe there was an error or wish to appeal, please contact:<br>
         <strong style="color:#aaa">training@wemastertrade.com</strong>
       </div>
+    </div>
+    <a href="index.html" class="btn-back">← Back to Dashboard</a>
+  `;
+}
+
+function renderPendingGrading() {
+  return `
+    <div class="result-icon">⏳</div>
+    <div class="result-title" style="color:#6496ff;">Exam Submitted — Awaiting Grading</div>
+    <div class="result-msg">
+      Your Final Exam answers have been submitted and are now being reviewed by your trainer.<br>
+      You'll be able to see your result here once grading is complete — check back on your Dashboard.
     </div>
     <a href="index.html" class="btn-back">← Back to Dashboard</a>
   `;
@@ -207,7 +218,9 @@ function renderInterviewCTA() {
 // Render based on state (called after sync)
 function renderResults() {
   _loadState();
-  if (!examData.score && !passed) {
+  if (examData.status === 'pending_grading') {
+    document.getElementById('resultContent').innerHTML = renderPendingGrading();
+  } else if (!examData.score && !passed) {
     document.getElementById('resultContent').innerHTML = '<div class="result-msg">No exam data found. Please complete the final exam first.</div><a href="exam.html" class="btn-back">Go to Exam →</a>';
   } else if (passed) {
     document.getElementById('resultContent').innerHTML = renderPass();
