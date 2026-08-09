@@ -191,7 +191,6 @@
         <div class="exam-content">
           <div class="exam-question-num" id="examQuestionNum">Question 1 of 10</div>
           <div id="examQuestionText" class="question-text" style="font-size:1.05rem;margin-bottom:14px;"></div>
-          <div id="examRubricBox" class="exam-q-rubric hidden" style="margin-bottom:14px;"></div>
           <textarea id="examAnswerInput" class="essay-answer-box" rows="8" placeholder="Type your answer here…" oninput="onExamEssayInput(this.value)"></textarea>
         </div>
 
@@ -367,7 +366,7 @@ function _eqModal(title, q, idx, isNew) {
       <textarea id="eeQ" rows="3" style="width:100%;background:var(--bg-secondary);border:1px solid var(--border);color:var(--text-primary);padding:10px;border-radius:8px;font-size:0.88rem;resize:vertical;">${q?q.q:''}</textarea></div>
     <div class="form-group"><label>Max Points</label>
       <input type="number" id="eeP" min="1" step="0.5" value="${q&&q.maxPoints!==undefined?q.maxPoints:10}"></div>
-    <div class="form-group"><label>Answer Guide / Rubric <span style="color:var(--text-muted);font-weight:400;">(shown to the trainee while answering, and used by admin when grading)</span></label>
+    <div class="form-group"><label>Answer Guide / Rubric <span style="color:var(--text-muted);font-weight:400;">(admin-only — used for grading, never shown to the trainee)</span></label>
       <textarea id="eeR" rows="3" style="width:100%;background:var(--bg-secondary);border:1px solid var(--border);color:var(--text-primary);padding:10px;border-radius:8px;font-size:0.88rem;resize:vertical;">${q&&q.rubric?q.rubric:''}</textarea></div>
     <div class="modal-footer">
       <button class="btn btn-secondary" onclick="document.getElementById('eqModal').remove()">Cancel</button>
@@ -610,14 +609,10 @@ function renderExamQuestion(idx) {
   document.getElementById('examProgressFill').style.width = `${((idx+1)/examQuestions.length)*100}%`;
   document.getElementById('examQuestionText').textContent = q.q;
 
-  const rubricBox = document.getElementById('examRubricBox');
-  if (q.rubric) {
-    rubricBox.textContent = '📋 Answer Guide: ' + q.rubric;
-    rubricBox.classList.remove('hidden');
-  } else {
-    rubricBox.classList.add('hidden');
-  }
-
+  // Rubric is intentionally NOT shown here — it's an answer key (exact facts/
+  // figures), not just a topic hint, so revealing it during the exam would let
+  // trainees copy it verbatim instead of answering from actual knowledge.
+  // Admin still sees it when grading (admin.html's openExamGrade).
   document.getElementById('examAnswerInput').value = examAnswers[idx];
 
   document.getElementById('examPrevBtn').disabled = idx === 0;
