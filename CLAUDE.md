@@ -1,9 +1,13 @@
 # WG Training Portal
 
-Training portal cho nhân viên WeGolden. Static HTML/CSS/JS thuần, không build step — backend là Firebase Realtime Database (project `wmt-training-portal`).
+Training portal cho nhân viên WeGolden (bản Global, thương hiệu WeGolden — không phải WeMasterTrade). Static HTML/CSS/JS thuần, không build step — backend là Firebase Realtime Database (project `wgtraining-a669d`, **độc lập** với project Firebase của web WMT cũ (`wmt-training-portal`, có ~140 user thật của web khác) — không bao giờ trỏ nhầm hoặc migrate dữ liệu giữa 2 project này).
 
-- `firebase-config.js`: cấu hình Firebase + lớp đồng bộ `localStorage` ⇄ Firebase (`dbWrite`, `dbRemove`, `syncFromFirebase`). Đọc dữ liệu ở phía app luôn qua `localStorage` (nhanh, đồng bộ); ghi qua `window.dbWrite`/`window.dbRemove` để tự động đẩy lên Firebase.
-- `module-common.js`: logic dùng chung giữa các trang module học (module1-7.html).
-- Các trang chính: `index.html` (dashboard học viên), `admin.html`, `leader.html`, `exam.html`, `monthlytest.html`, `interview.html`, `tracker.html`, `results.html`, `taketest.html`.
+- `firebase-config.js`: cấu hình Firebase + lớp đồng bộ `localStorage` ⇄ Firebase (`dbWrite`, `dbRemove`, `syncFromFirebase`). Đọc dữ liệu ở phía app luôn qua `localStorage` (nhanh, đồng bộ); ghi qua `window.dbWrite`/`window.dbRemove` (không dùng `window.FDB.ref(...).set()` trực tiếp) để tự động đẩy lên Firebase và tránh race condition với Anonymous Auth (`_authReady`).
+- `module-common.js`: logic & UI dùng chung (sidebar, quiz engine MCQ, chuông thông báo, feedback gate...) cho hầu hết các trang — nạp sau `firebase-config.js`.
+- 5 module đào tạo: `module1.html` (Overview) → `module5.html` (Deposit & Withdrawal, gồm cả Savings Feature). Mỗi module có mini-quiz **trắc nghiệm** (giữ nguyên MCQ).
+- **Final Exam (`exam.html`) là dạng tự luận (Essay)**, không phải trắc nghiệm — trainee viết câu trả lời, admin chấm điểm thủ công qua `admin.html` (modal "Grade Exam"). Nộp bài xong vào trạng thái `pending_grading`, không tính lượt thi cho tới khi admin chấm xong. Ngưỡng đậu: 60% (lần 1) / 80% (lần 2), khoá 3 ngày sau khi rớt lần 1, loại sau lần 2. Answer Guide (rubric) **chỉ admin thấy khi chấm**, không hiện cho trainee lúc làm bài.
+- Trainee đã hoàn thành Final Exam + Interview (`completed`) nhưng chưa gửi feedback sẽ bị chặn bởi modal bắt buộc đánh giá (feedback gate, logic trong `module-common.js` + `index.html`) ở mọi trang cho tới khi họ submit.
+- Các trang chính khác: `index.html` (dashboard học viên), `admin.html`, `leader.html`, `monthlytest.html`, `interview.html`, `tracker.html`, `results.html`, `taketest.html`, `feedback.html`.
+- Deploy: push lên `main` → GitHub Actions tự SSH vào VPS chạy `git pull` (deploy key giới hạn quyền qua forced command trong `authorized_keys`) → phục vụ tại `training.wegolden.com` qua Nginx + Certbot.
 - Chạy local: `npx serve -p 3030 .` (đã cấu hình sẵn trong `.claude/launch.json`).
 - Đây là project độc lập, không dùng chung `.env`/database với bất kỳ project nào khác trên máy. Firebase API key trong `firebase-config.js` là client-side config (không phải secret), bảo mật thực sự nằm ở Firebase Security Rules trên console.
