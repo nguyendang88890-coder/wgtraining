@@ -375,7 +375,10 @@
         <div class="section-title">Overview</div>
         <div class="admin-stats" id="adminStats"></div>
 
-        <div class="section-title">Registered Users</div>
+        <div class="section-title" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;">
+          <span>Registered Users</span>
+          <button class="btn btn-primary" onclick="openAddUser()" style="padding:8px 16px;font-size:0.85rem;">➕ Add User</button>
+        </div>
         <div class="filter-bar" id="filterBar">
           <input type="text" id="filterSearch" placeholder="🔍 Username, email, working name, leader…" oninput="applyUserFilters()">
           <select id="filterDept" onchange="applyUserFilters()">
@@ -698,6 +701,58 @@
       <button class="btn btn-secondary" onclick="closeEditUser()">Cancel</button>
       <button class="btn btn-primary"   onclick="saveEditUser()">Save Changes</button>
     </div>
+  </div>
+</div>
+
+<!-- Add User Modal (admin-created accounts) -->
+<div class="modal-overlay" id="addUserModal">
+  <div class="modal-box" style="max-width:480px;">
+    <h3>➕ Add New User</h3>
+    <div style="font-size:0.78rem;color:var(--text-muted);margin-bottom:16px;">Username and a temporary password are generated automatically — you'll get them to share with the user after saving.</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:0 16px;">
+      <div class="form-group">
+        <label>Full Name</label>
+        <input type="text" id="auFullName" placeholder="e.g. Manar Gad">
+      </div>
+      <div class="form-group">
+        <label>Work Name</label>
+        <input type="text" id="auWorkName" placeholder="e.g. Manar">
+      </div>
+      <div class="form-group" style="grid-column:1/-1">
+        <label>Work Email</label>
+        <input type="email" id="auEmail" placeholder="e.g. manar@wegolden.com">
+      </div>
+      <div class="form-group">
+        <label>Department</label>
+        <input type="text" id="auDepartment" placeholder="e.g. Sales">
+      </div>
+      <div class="form-group">
+        <label>Position</label>
+        <input type="text" id="auPosition" placeholder="e.g. Sales Executive">
+      </div>
+    </div>
+    <div class="error-msg" id="addUserError"></div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeAddUser()">Cancel</button>
+      <button class="btn btn-primary"   onclick="saveAddUser()">Create Account</button>
+    </div>
+  </div>
+</div>
+
+<!-- Add User — credentials result -->
+<div class="modal-overlay" id="addUserSuccessModal">
+  <div class="modal-box" style="max-width:420px;text-align:center;">
+    <div style="font-size:2rem;margin-bottom:8px;">✅</div>
+    <h3 style="margin-bottom:10px;">Account Created</h3>
+    <p style="font-size:0.82rem;color:var(--text-muted);margin-bottom:16px;">Share these credentials with the user through a separate channel (chat/email) — the password will not be shown again.</p>
+    <div style="background:var(--bg-secondary);border:1px solid var(--border);border-radius:10px;padding:16px;text-align:left;margin-bottom:16px;">
+      <div style="font-size:0.75rem;color:var(--text-muted);margin-bottom:4px;">Username</div>
+      <div style="font-weight:700;font-size:1rem;margin-bottom:12px;" id="auResultUsername"></div>
+      <div style="font-size:0.75rem;color:var(--text-muted);margin-bottom:4px;">Temporary Password</div>
+      <div style="font-weight:700;font-size:1rem;font-family:monospace;" id="auResultPassword"></div>
+    </div>
+    <button class="btn btn-primary" style="width:100%;" onclick="copyAddUserCreds()">📋 Copy Username + Password</button>
+    <button class="btn btn-secondary" style="width:100%;margin-top:8px;" onclick="closeAddUserSuccess()">Done</button>
   </div>
 </div>
 
@@ -2162,6 +2217,110 @@ async function saveEditUser() {
   renderAdminPanel();
 }
 
+// ===== ADD USER (admin-created accounts) =====
+function openAddUser() {
+  document.getElementById('auFullName').value   = '';
+  document.getElementById('auWorkName').value   = '';
+  document.getElementById('auEmail').value      = '';
+  document.getElementById('auDepartment').value = '';
+  document.getElementById('auPosition').value   = '';
+  document.getElementById('addUserError').textContent = '';
+  document.getElementById('addUserModal').classList.add('show');
+  setTimeout(() => document.getElementById('auFullName').focus(), 100);
+}
+function closeAddUser() { document.getElementById('addUserModal').classList.remove('show'); }
+function closeAddUserSuccess() { document.getElementById('addUserSuccessModal').classList.remove('show'); }
+
+// Derive a username from the work email's local part, de-duplicated against
+// existing accounts (manar, manar2, manar3…) so admin never has to type one.
+function _generateUsernameFromEmail(email, existingUsers) {
+  let base = email.split('@')[0].toLowerCase().replace(/[^a-z0-9_]/g, '').slice(0, 20);
+  if (base.length < 3) base = (base + '000').slice(0, 3);
+  let candidate = base, n = 2;
+  while (existingUsers[candidate] || candidate === 'admin') {
+    const suffix = String(n);
+    candidate = base.slice(0, 20 - suffix.length) + suffix;
+    n++;
+  }
+  return candidate;
+}
+
+// Random temporary password — admin copies it once and shares it with the
+// user out of band; the user can change it afterwards (Change Password).
+function _generateTempPassword() {
+  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789';
+  const bytes = new Uint8Array(10);
+  crypto.getRandomValues(bytes);
+  return Array.from(bytes, b => chars[b % chars.length]).join('');
+}
+
+async function saveAddUser() {
+  const err = document.getElementById('addUserError');
+  err.textContent = '';
+
+  const fullName   = document.getElementById('auFullName').value.trim();
+  const workName    = document.getElementById('auWorkName').value.trim();
+  const email       = document.getElementById('auEmail').value.trim();
+  const department  = document.getElementById('auDepartment').value.trim();
+  const position    = document.getElementById('auPosition').value.trim();
+
+  if (!fullName)  { err.textContent = 'Please enter Full Name.'; return; }
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { err.textContent = 'Please enter a valid Work Email.'; return; }
+  if (!department) { err.textContent = 'Please enter Department.'; return; }
+  if (!position)  { err.textContent = 'Please enter Position.'; return; }
+
+  const users    = getUsersDB();
+  const username = _generateUsernameFromEmail(email, users);
+  const password = _generateTempPassword();
+
+  const newUser = {
+    ...(await createPasswordRecord(password)),
+    role:         'trainee',
+    fullName,
+    workName,
+    email,
+    department,
+    position,
+    employeeType: 'new',
+    leaderName:   '',
+    isLeader:     false,
+    testGroup:    'auto',
+    createdAt:    new Date().toISOString()
+  };
+
+  users[username] = newUser;
+  // Per-user set — only writes the new account, never touches other users
+  localStorage.setItem('wmt_users_db', JSON.stringify(users));
+  if (window.FDB) {
+    await _authReady; // must not fire before anonymous auth settles — rules require auth != null
+    try {
+      await window.FDB.ref('users/' + username).set(newUser);
+    } catch (e) {
+      console.warn('[WG] addUser Firebase error:', e.message);
+      err.textContent = 'Could not save the new account online. Please check your connection and try again.';
+      delete users[username];
+      localStorage.setItem('wmt_users_db', JSON.stringify(users));
+      return;
+    }
+  }
+
+  closeAddUser();
+  renderAdminPanel();
+
+  document.getElementById('auResultUsername').textContent = username;
+  document.getElementById('auResultPassword').textContent = password;
+  document.getElementById('addUserSuccessModal').classList.add('show');
+}
+
+function copyAddUserCreds() {
+  const u = document.getElementById('auResultUsername').textContent;
+  const p = document.getElementById('auResultPassword').textContent;
+  const text = `Username: ${u}\nPassword: ${p}`;
+  navigator.clipboard.writeText(text)
+    .then(() => alert('✅ Copied to clipboard!'))
+    .catch(() => alert(`Could not copy automatically.\n\n${text}`));
+}
+
 // ===== RESCHEDULE TAB =====
 function getRS(u) { return JSON.parse(localStorage.getItem('wmt_monthly_reschedule_'+u) || '{}'); }
 function saveRS(u,d) { dbWrite('wmt_monthly_reschedule_'+u, JSON.stringify(d)); }
@@ -2403,12 +2562,15 @@ document.getElementById('editUserModal').addEventListener('click',   function(e)
 document.getElementById('confirmModal').addEventListener('click',    function(e) { if (e.target===this) closeConfirmModal(); });
 document.getElementById('examResetModal').addEventListener('click',  function(e) { if (e.target===this) closeExamReset(); });
 document.getElementById('resetPwModal').addEventListener('click',    function(e) { if (e.target===this) closeResetPwModal(); });
+document.getElementById('addUserModal').addEventListener('click',    function(e) { if (e.target===this) closeAddUser(); });
+document.getElementById('addUserSuccessModal').addEventListener('click', function(e) { if (e.target===this) closeAddUserSuccess(); });
 
 document.addEventListener('keydown', function(e) {
-  if (e.key === 'Escape') { closeEditUser(); closeConfirmModal(); closeExamReset(); closeResetPwModal(); }
+  if (e.key === 'Escape') { closeEditUser(); closeConfirmModal(); closeExamReset(); closeResetPwModal(); closeAddUser(); closeAddUserSuccess(); }
   if (e.key === 'Enter') {
     if (document.getElementById('editUserModal').classList.contains('show')) saveEditUser();
     if (document.getElementById('confirmModal').classList.contains('show'))  saveConfirmInterview();
+    if (document.getElementById('addUserModal').classList.contains('show'))  saveAddUser();
   }
 });
 
