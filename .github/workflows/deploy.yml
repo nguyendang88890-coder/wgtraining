@@ -13,8 +13,11 @@ jobs:
           mkdir -p ~/.ssh
           echo "${{ secrets.VPS_SSH_KEY_B64 }}" | base64 -d > ~/.ssh/deploy_key
           chmod 600 ~/.ssh/deploy_key
-          # The VPS key is restricted to a forced command (git pull only),
-          # so whatever is sent here is ignored server-side — kept for clarity.
+          # The VPS key is restricted to a forced command
+          # (/usr/local/bin/deploy-training.sh): it pulls the repo kept OUTSIDE the
+          # web root, then rsyncs only the site files into the docroot, so .git and
+          # repo-internal files are never served. Whatever command is sent here is
+          # ignored server-side — kept for clarity.
           ssh -o StrictHostKeyChecking=accept-new -i ~/.ssh/deploy_key \
             "${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}" \
-            "cd /var/www/training.wegolden.com && git pull"
+            "/usr/local/bin/deploy-training.sh"
