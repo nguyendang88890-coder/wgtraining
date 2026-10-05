@@ -354,6 +354,7 @@ function getProgress() {
 function _loginErrorText(e) {
   switch (e && e.code) {
     case 'auth/invalid-credential':
+    case 'auth/invalid-login-credentials':
     case 'auth/wrong-password':
     case 'auth/user-not-found':
     case 'auth/invalid-email':
@@ -504,7 +505,7 @@ async function saveChangePw() {
   try {
     await window.changeOwnPassword(cur, nw);
   } catch (e) {
-    const wrong = ['auth/wrong-password', 'auth/invalid-credential', 'auth/invalid-login-credentials'];
+    const wrong = ['auth/wrong-password', 'auth/invalid-credential', 'auth/invalid-login-credentials'];  // SDK versions differ
     err.textContent = wrong.includes(e.code) ? 'Current password is incorrect.'
       : e.code === 'auth/too-many-requests' ? 'Too many attempts. Please wait a few minutes.'
       : e.code === 'auth/requires-recent-login' ? 'Please sign out and sign in again, then retry.'

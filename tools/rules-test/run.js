@@ -106,6 +106,7 @@ const SUBMIT = (over = {}) => ({
   fs.writeFileSync(seedFile, JSON.stringify(seedData()));
   execSync(`npx --yes firebase-tools database:set / "${seedFile}" --project staging --force`, { cwd: REPO_ROOT, stdio: 'inherit' });
 
+  if (process.argv.includes('--seed-only')) { console.log('Seeded staging with baseline data.'); process.exit(0); }
   const A = ACTORS;
 
   // ───────────────────────── anonymous (no credentials at all) ─────────────────────────
@@ -264,7 +265,8 @@ const SUBMIT = (over = {}) => ({
   console.log('\n[moderator "rtmod"]');
   await check('read all users',                           'allow', rd('mod', 'users'));
   await check('read any exam',                            'allow', rd('mod', 'exam/rta'));
-  await check('read any interview',                       'allow', rd('mod', 'interview'));
+  await check('read any user’s interview',                'allow', rd('mod', 'interview/rta'));
+  await check('list ALL interviews at once (not needed)', 'deny',  rd('mod', 'interview'));
   await check('read all monthly_scores',                  'allow', rd('mod', 'monthly_scores'));
   await check('read any feedback',                        'deny',  rd('mod', 'feedback/rta'));
   await check('read qbank (answer keys)',                 'deny',  rd('mod', 'qbank'));
@@ -282,7 +284,7 @@ const SUBMIT = (over = {}) => ({
   console.log('\n[administrator "rtadmin"]');
   await check('read all users',                           'allow', rd('admin', 'users'));
   await check('read qbank',                               'allow', rd('admin', 'qbank'));
-  await check('read any feedback',                        'allow', rd('admin', 'feedback'));
+  await check('read any user’s feedback',                 'allow', rd('admin', 'feedback/rta'));
   await check('read proposals',                           'allow', rd('admin', 'proposals'));
   await check('change a user’s role',                     'allow', wr('admin', 'users/rtb/role', 'mod'));
   await check('invalid role value (superuser)',           'deny',  wr('admin', 'users/rtb/role', 'superuser'));
