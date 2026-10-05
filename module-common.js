@@ -55,13 +55,16 @@ function adminPushUserMigration() {
   console.info('[WG] adminPushUserMigration: patched missing fields via per-user update().');
 }
 
-// Auth guard
+// Auth guard: a cached username is only a hint (so signed-out visitors bounce at
+// once); the real check is the Firebase Auth session + uidmap, verified async.
 (function() {
   const user = localStorage.getItem('wmt_user');
   const users = getUsersDB();
   if (!user || !users[user]) {
     window.location.href = 'index.html';
+    return;
   }
+  if (typeof window.requireSession === 'function') window.requireSession();
 })();
 
 function getProgress() {
@@ -115,8 +118,9 @@ function checkCompleted(moduleId) {
   }
 }
 
-function doLogout() {
-  localStorage.removeItem('wmt_user');
+async function doLogout() {
+  if (typeof window.logoutUser === 'function') await window.logoutUser();
+  else localStorage.removeItem('wmt_user');
   window.location.href = 'index.html';
 }
 
@@ -137,8 +141,8 @@ function openProfileModal() {
         <input type="text" value="${user}" disabled style="opacity:.45;cursor:not-allowed;">
       </div>
       <div class="form-group">
-        <label>Email</label>
-        <input type="email" id="pmEmail" value="${u.email||''}" placeholder="your@email.com">
+        <label>Login Email</label>
+        <input type="email" id="pmEmail" value="${u.email||''}" disabled style="opacity:.45;cursor:not-allowed;" title="This is your sign-in email. Contact your administrator to change it.">
       </div>
       <div class="form-group">
         <label>Full Name</label>
@@ -152,26 +156,27 @@ function openProfileModal() {
     </div>`;
   modal.addEventListener('click', e => { if (e.target === modal) modal.classList.remove('show'); });
   document.body.appendChild(modal);
-  setTimeout(() => document.getElementById('pmEmail').focus(), 100);
+  setTimeout(() => document.getElementById('pmFullName').focus(), 100);
 }
 
-function saveProfileModal() {
+async function saveProfileModal() {
   const user  = localStorage.getItem('wmt_user');
   const users = getUsersDB();
   if (!users[user]) return;
-  const email    = document.getElementById('pmEmail').value.trim();
   const fullName = document.getElementById('pmFullName').value.trim();
-  users[user].email    = email;
   users[user].fullName = fullName;
-  // Per-user update — never overwrites other users' data
   localStorage.setItem('wmt_users_db', JSON.stringify(users));
-  if (window.FDB) {
-    window.FDB.ref('users/' + user).update({ email, fullName })
-      .catch(e => console.warn('[WG] saveProfileModal Firebase error:', e.message));
+  try {
+    // Owner may only change their own display name (Security Rules); email is
+    // the Firebase sign-in identity and is managed by an administrator.
+    await window.fbUpdate('users/' + user, { fullName });
+    const s = document.getElementById('pmSuccess');
+    s.style.display = 'block';
+    setTimeout(() => { s.style.display = 'none'; }, 2000);
+  } catch (e) {
+    console.warn('[WG] saveProfileModal Firebase error:', e.message);
+    alert('Could not save your profile. Please check your connection and try again.');
   }
-  const s = document.getElementById('pmSuccess');
-  s.style.display = 'block';
-  setTimeout(() => { s.style.display = 'none'; }, 2000);
 }
 
 function toggleSidebar() {
@@ -1014,7 +1019,6 @@ function submitModProposal(pageInfo) {
   }
 
   const user = localStorage.getItem('wmt_user') || 'mod';
-  const proposals = JSON.parse(localStorage.getItem('wmt_proposals') || '[]');
   const entry = {
     id:         Date.now().toString(),
     source:     'module',
@@ -1028,12 +1032,8 @@ function submitModProposal(pageInfo) {
     proposedAt: new Date().toISOString(),
     status:     'pending'
   };
-  proposals.push(entry);
-  if (typeof dbWrite === 'function') {
-    dbWrite('wmt_proposals', JSON.stringify(proposals));
-  } else {
-    localStorage.setItem('wmt_proposals', JSON.stringify(proposals));
-  }
+  window.submitProposal(entry)
+    .catch(e => { console.warn('[WG] proposal save failed:', e.message); alert('Could not submit the proposal. Please try again.'); });
 
   document.getElementById('modProposalModal')?.remove();
   // Brief success toast

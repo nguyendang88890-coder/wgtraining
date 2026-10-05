@@ -53,7 +53,8 @@ body { background: #0a0a16; color: #e0e0e0; font-family: 'Segoe UI', sans-serif;
 (function() {
   const u = localStorage.getItem('wmt_user');
   const users = JSON.parse(localStorage.getItem('wmt_users_db') || '{}');
-  if (!u || !users[u]) window.location.href = 'index.html';
+  if (!u || !users[u]) { window.location.href = 'index.html'; return; }
+  window.requireSession();
 })();
 
 // These will be populated after sync

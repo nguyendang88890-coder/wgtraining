@@ -1026,7 +1026,9 @@ function renderModUsersTab() {
 
 // Proposal helpers
 function getProposals()  { return JSON.parse(localStorage.getItem('wmt_proposals') || '[]'); }
-function addProposal(p)  { const ps = getProposals(); ps.push(p); dbWrite('wmt_proposals', JSON.stringify(ps)); }
+function addProposal(p)  {
+  window.submitProposal(p).catch(e => { console.warn('[WG] proposal save failed:', e.message); alert('Could not submit the proposal. Please try again.'); });
+}
 
 function _monthlyPropModal(title, group, q, idx, isNew) {
   const ex = document.getElementById('mPropModal'); if (ex) ex.remove();
@@ -3287,7 +3289,12 @@ function submitReschedule(m, minDate, maxDate) {
   const rs=getRS(CUR_USER);
   const rsStart = new Date(`${date}T${time}`).toISOString(); // store as UTC ISO
   rs[m]={ rsStart, newDate:date, newTime:time, reason, requestedAt:new Date().toISOString(), status:'pending', processedAt:null };
-  saveRS(CUR_USER,rs);
+  localStorage.setItem('wmt_monthly_reschedule_'+CUR_USER, JSON.stringify(rs));
+  // Child write for just this month: Security Rules let a trainee file a PENDING
+  // request but never approve one (status/rsDeadline stay admin-only).
+  const entry = { rsStart, newDate:date, newTime:time, reason, requestedAt:rs[m].requestedAt, status:'pending' };
+  window.fbSet(`reschedule/${CUR_USER}/${m}`, entry)
+    .catch(e => { console.warn('[WG] reschedule save failed:', e.message); alert('Could not send your request. Please try again.'); });
   renderTraineeReschedule();
 }
 

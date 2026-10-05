@@ -1,0 +1,12 @@
+{
+  "name": "wg-rules-test",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Attack-simulation tests for the Realtime Database Security Rules (runs against the STAGING project only).",
+  "scripts": {
+    "test": "node run.js"
+  },
+  "dependencies": {
+    "firebase": "^10.14.1"
+  }
+}

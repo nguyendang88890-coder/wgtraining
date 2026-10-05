@@ -123,25 +123,23 @@
       <p>Internal Training Portal</p>
     </div>
 
-    <div class="auth-tabs">
-      <button class="auth-tab active" onclick="switchTab('login')">Sign In</button>
-      <button class="auth-tab" onclick="switchTab('register')">Register</button>
-    </div>
-
-    <!-- Sign In Panel -->
+    <!-- Sign In Panel (accounts are created by an administrator) -->
     <div id="loginPanel" class="auth-panel active">
       <div class="form-group">
-        <label for="username">Username</label>
-        <input type="text" id="username" placeholder="Enter your username" autocomplete="username">
+        <label for="username">Email</label>
+        <input type="email" id="username" placeholder="Your work email" autocomplete="username">
       </div>
       <div class="form-group">
         <label for="password">Password</label>
         <input type="password" id="password" placeholder="Enter your password" autocomplete="current-password">
       </div>
-      <button class="btn btn-primary" onclick="doLogin()">Sign In</button>
+      <button class="btn btn-primary" id="loginBtn" onclick="doLogin()">Sign In</button>
       <div class="error-msg" id="loginError"></div>
       <div style="text-align:center;margin-top:10px;">
         <a href="#" onclick="showForgotPw();return false;" style="color:var(--text-muted);font-size:0.82rem;text-decoration:none;opacity:.8;">Forgot password?</a>
+      </div>
+      <div style="text-align:center;margin-top:16px;font-size:0.78rem;color:var(--text-muted);line-height:1.6;">
+        Don't have an account yet? Accounts are created by your administrator — please contact them to get access.
       </div>
     </div>
 
@@ -151,96 +149,16 @@
         <button onclick="hideForgotPw()" style="background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:1.1rem;padding:0;">←</button>
         <span style="font-weight:700;font-size:1rem;color:var(--text-primary);">Reset Password</span>
       </div>
-      <!-- Step 1: verify identity -->
       <div id="fpStep1">
+        <div style="font-size:0.82rem;color:var(--text-muted);line-height:1.6;margin-bottom:14px;">Enter your account email and we'll send you a link to set a new password.</div>
         <div class="form-group">
-          <label>Username</label>
-          <input type="text" id="fpUsername" placeholder="Your username" autocomplete="off">
-        </div>
-        <div class="form-group">
-          <label>Registered Email</label>
-          <input type="email" id="fpEmail" placeholder="Email linked to your account">
-          <div class="input-hint">Must match the email you registered with.</div>
+          <label>Account Email</label>
+          <input type="email" id="fpEmail" placeholder="Your work email" autocomplete="email">
         </div>
         <div class="error-msg" id="fpError"></div>
-        <button class="btn btn-primary" onclick="forgotVerify()">Verify Identity</button>
+        <button class="btn btn-primary" id="fpSendBtn" onclick="forgotSend()">Send Reset Link</button>
       </div>
-      <!-- Step 2: set new password -->
-      <div id="fpStep2" style="display:none;">
-        <div class="form-group">
-          <label>New Password</label>
-          <input type="password" id="fpNewPw" placeholder="Min 6 characters" autocomplete="new-password">
-        </div>
-        <div class="form-group">
-          <label>Confirm New Password</label>
-          <input type="password" id="fpConfirm" placeholder="Repeat new password" autocomplete="new-password">
-        </div>
-        <div class="error-msg" id="fpError2"></div>
-        <button class="btn btn-primary" onclick="forgotSave()">Set New Password</button>
-      </div>
-      <div id="fpSuccess" style="display:none;text-align:center;padding:16px 0;color:var(--success);font-weight:700;">✓ Password updated! Redirecting to login…</div>
-    </div>
-
-    <!-- Register Panel -->
-    <div id="registerPanel" class="auth-panel">
-      <div class="form-group">
-        <label for="regUsername">Username *</label>
-        <input type="text" id="regUsername" placeholder="Choose a username" autocomplete="off" maxlength="20">
-        <div class="input-hint">3–20 characters: letters, numbers, underscores only.</div>
-      </div>
-      <div class="form-group">
-        <label for="regFullName">Full Name <span style="font-weight:400;color:#5a5a7a">(optional)</span></label>
-        <input type="text" id="regFullName" placeholder="e.g. Nguyen Van A">
-      </div>
-      <div class="form-group">
-        <label for="regEmail">Email <span style="font-weight:400;color:#5a5a7a">(optional)</span></label>
-        <input type="email" id="regEmail" placeholder="e.g. you@example.com">
-      </div>
-      <div class="form-group">
-        <label for="regDepartment">Department <span style="font-weight:400;color:#5a5a7a">(optional)</span></label>
-        <input type="text" id="regDepartment" placeholder="e.g. Business Development">
-      </div>
-      <div class="form-group">
-        <label for="regPosition">Position <span style="font-weight:400;color:#5a5a7a">(optional)</span></label>
-        <input type="text" id="regPosition" placeholder="e.g. Sales Trainee">
-      </div>
-      <div class="form-group">
-        <label for="regLeaderName">Leader Name <span style="font-weight:400;color:#5a5a7a">(optional)</span></label>
-        <input type="text" id="regLeaderName" placeholder="e.g. alice — username of your team leader">
-        <div class="input-hint">Enter the username of your team leader if you have one.</div>
-      </div>
-      <div class="form-group">
-        <label>Employee Type *</label>
-        <input type="hidden" id="regEmpType" value="new">
-        <div class="emp-type-group">
-          <div class="emp-type-opt selected" id="empOptNew" onclick="selectEmpType('new')">
-            <span class="emp-icon">🆕</span>
-            <div>
-              <div class="emp-lbl">New Employee</div>
-              <div class="emp-sub">Training modules only</div>
-            </div>
-          </div>
-          <div class="emp-type-opt" id="empOptOld" onclick="selectEmpType('old')">
-            <span class="emp-icon">🏅</span>
-            <div>
-              <div class="emp-lbl">Existed Employee</div>
-              <div class="emp-sub">Full access incl. Monthly Test</div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="form-group">
-        <label for="regPassword">Password *</label>
-        <input type="password" id="regPassword" placeholder="Create a password" autocomplete="new-password">
-        <div class="input-hint">Minimum 6 characters.</div>
-      </div>
-      <div class="form-group">
-        <label for="regConfirm">Confirm Password *</label>
-        <input type="password" id="regConfirm" placeholder="Repeat your password" autocomplete="new-password">
-      </div>
-      <button class="btn btn-primary" onclick="doRegister()">Create Account</button>
-      <div class="error-msg"   id="regError"></div>
-      <div class="success-msg" id="regSuccess"></div>
+      <div id="fpSuccess" style="display:none;text-align:center;padding:16px 0;color:var(--success);font-weight:700;line-height:1.6;">✓ If that email belongs to an account, a reset link is on its way. Check your inbox (and spam folder).</div>
     </div>
   </div>
 </div>
@@ -432,135 +350,61 @@ function getProgress() {
   return JSON.parse(localStorage.getItem('wmt_progress_' + user) || '{}');
 }
 
-// ===== EMPLOYEE TYPE SELECTOR =====
-function selectEmpType(type) {
-  document.getElementById('regEmpType').value = type;
-  document.getElementById('empOptNew').classList.toggle('selected', type === 'new');
-  document.getElementById('empOptOld').classList.toggle('selected', type === 'old');
-}
-
-// ===== AUTH TABS =====
-function switchTab(tab) {
-  document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
-  document.querySelectorAll('.auth-panel').forEach(p => p.classList.remove('active'));
-  if (tab === 'login') {
-    document.querySelectorAll('.auth-tab')[0].classList.add('active');
-    document.getElementById('loginPanel').classList.add('active');
-  } else {
-    document.querySelectorAll('.auth-tab')[1].classList.add('active');
-    document.getElementById('registerPanel').classList.add('active');
+// ===== LOGIN (Firebase Auth: email + password) =====
+function _loginErrorText(e) {
+  switch (e && e.code) {
+    case 'auth/invalid-credential':
+    case 'auth/wrong-password':
+    case 'auth/user-not-found':
+    case 'auth/invalid-email':
+      return 'Invalid email or password. Please try again.';
+    case 'auth/too-many-requests':
+      return 'Too many attempts. Please wait a few minutes or reset your password.';
+    case 'auth/user-disabled':
+      return 'This account has been disabled. Please contact your administrator.';
+    case 'auth/network-request-failed':
+      return 'Network error. Please check your connection and try again.';
+    case 'wg/not-provisioned':
+      return e.message;
+    default:
+      return 'Could not sign in right now. Please try again.';
   }
 }
 
-// ===== LOGIN =====
+function showDashboardFor(username) {
+  document.getElementById('loginPage').classList.add('hidden');
+  document.getElementById('dashboardPage').classList.remove('hidden');
+  initDashboard(username);
+  autoUpgradeCheck(username);
+}
+
 async function doLogin() {
-  const btn = document.querySelector('#loginPanel .btn-primary');
+  const btn = document.getElementById('loginBtn');
   const err = document.getElementById('loginError');
+  const email = document.getElementById('username').value.trim();
+  const pw    = document.getElementById('password').value;
+  err.textContent = '';
+  if (!email || !pw) { err.textContent = 'Please enter your email and password.'; return; }
 
-  // Wait for Firebase sync to complete before checking credentials
-  if (btn) { btn.disabled = true; btn.textContent = '⏳ Connecting…'; }
-  await _syncReady;
-  if (btn) { btn.disabled = false; btn.textContent = 'Sign In'; }
-
-  const u = document.getElementById('username').value.trim().toLowerCase();
-  const p = document.getElementById('password').value;
-  const users = getUsersDB();
-
-  if (users[u] && await verifyPassword(p, users[u])) {
-    localStorage.setItem('wmt_user', u);
-    err.textContent = '';
-    document.getElementById('loginPage').classList.add('hidden');
-    document.getElementById('dashboardPage').classList.remove('hidden');
-    initDashboard(u);
-    autoUpgradeCheck(u);
-  } else {
-    err.textContent = 'Invalid username or password. Please try again.';
+  btn.disabled = true; btn.textContent = '⏳ Signing in…';
+  try {
+    const sess = await window.loginWithEmail(email, pw);
+    await syncFromFirebase();
+    document.getElementById('password').value = '';
+    showDashboardFor(sess.username);
+  } catch (e) {
+    err.textContent = _loginErrorText(e);
+  } finally {
+    btn.disabled = false; btn.textContent = 'Sign In';
   }
 }
 
 document.addEventListener('keydown', function(e) {
-  if (e.key === 'Enter') {
-    const loginVisible = !document.getElementById('loginPage').classList.contains('hidden');
-    if (loginVisible) {
-      const activePanel = document.querySelector('.auth-panel.active');
-      if (activePanel && activePanel.id === 'loginPanel') doLogin();
-      if (activePanel && activePanel.id === 'registerPanel') doRegister();
-    }
-  }
+  if (e.key !== 'Enter') return;
+  if (document.getElementById('loginPage').classList.contains('hidden')) return;
+  if (document.getElementById('forgotPanel').style.display === 'block') forgotSend();
+  else doLogin();
 });
-
-// ===== REGISTER =====
-async function doRegister() {
-  const u   = document.getElementById('regUsername').value.trim().toLowerCase();
-  const p   = document.getElementById('regPassword').value;
-  const c   = document.getElementById('regConfirm').value;
-  const err = document.getElementById('regError');
-  const ok  = document.getElementById('regSuccess');
-
-  err.textContent = '';
-  ok.textContent  = '';
-
-  if (!/^[a-z0-9_]{3,20}$/.test(u)) {
-    err.textContent = 'Username must be 3–20 characters: letters, numbers, underscores only.';
-    return;
-  }
-  if (u === 'admin') {
-    err.textContent = 'That username is reserved. Please choose another.';
-    return;
-  }
-  if (p.length < 6) {
-    err.textContent = 'Password must be at least 6 characters.';
-    return;
-  }
-  if (p !== c) {
-    err.textContent = 'Passwords do not match.';
-    return;
-  }
-
-  const users = getUsersDB();
-  if (users[u]) {
-    err.textContent = 'Username already taken. Please choose another.';
-    return;
-  }
-
-  const newUser = {
-    ...(await createPasswordRecord(p)),
-    role:         'trainee',
-    fullName:     document.getElementById('regFullName').value.trim(),
-    email:        document.getElementById('regEmail').value.trim(),
-    department:   document.getElementById('regDepartment').value.trim(),
-    position:     document.getElementById('regPosition').value.trim(),
-    employeeType: document.getElementById('regEmpType').value || 'new',
-    leaderName:   document.getElementById('regLeaderName').value.trim().toLowerCase(),
-    isLeader:     false,
-    testGroup:    'auto',
-    createdAt:    new Date().toISOString()
-  };
-  users[u] = newUser;
-  // Per-user set — only writes the new user, never touches other accounts
-  localStorage.setItem('wmt_users_db', JSON.stringify(users));
-  if (window.FDB) {
-    await _authReady; // must not fire before anonymous auth settles — rules require auth != null
-    try {
-      await window.FDB.ref('users/' + u).set(newUser);
-    } catch (e) {
-      console.warn('[WG] register Firebase error:', e.message);
-      err.textContent = 'Could not save your account online. Please check your connection and try again.';
-      delete users[u];
-      localStorage.setItem('wmt_users_db', JSON.stringify(users));
-      return;
-    }
-  }
-
-  // Auto-login
-  localStorage.setItem('wmt_user', u);
-  ok.textContent = '✓ Account created! Signing you in…';
-  setTimeout(() => {
-    document.getElementById('loginPage').classList.add('hidden');
-    document.getElementById('dashboardPage').classList.remove('hidden');
-    initDashboard(u);
-  }, 800);
-}
 
 // ===== PROFILE EDIT (trainee) =====
 function openDashboardProfileModal() {
@@ -581,8 +425,8 @@ function openDashboardProfileModal() {
         <input type="text" value="${user}" disabled style="opacity:.45;cursor:not-allowed;width:100%;padding:10px 14px;background:#FDF2DC;border:1px solid #E3D9BE;border-radius:8px;color:#0C0C0C;">
       </div>
       <div class="form-group">
-        <label>Email</label>
-        <input type="email" id="dpmEmail" value="${u.email||''}" placeholder="your@email.com" style="width:100%;padding:10px 14px;background:#FDF2DC;border:1px solid #E3D9BE;border-radius:8px;color:#0C0C0C;font-size:14px;box-sizing:border-box;">
+        <label>Login Email</label>
+        <input type="email" id="dpmEmail" value="${u.email||''}" disabled title="This is your sign-in email. Contact your administrator to change it." style="opacity:.45;cursor:not-allowed;width:100%;padding:10px 14px;background:#FDF2DC;border:1px solid #E3D9BE;border-radius:8px;color:#0C0C0C;font-size:14px;box-sizing:border-box;">
       </div>
       <div class="form-group">
         <label>Full Name</label>
@@ -596,27 +440,27 @@ function openDashboardProfileModal() {
     </div>`;
   modal.addEventListener('click', e => { if (e.target === modal) modal.classList.remove('show'); });
   document.body.appendChild(modal);
-  setTimeout(() => document.getElementById('dpmEmail').focus(), 100);
+  setTimeout(() => document.getElementById('dpmFullName').focus(), 100);
 }
 
 async function saveDashboardProfile() {
   const user  = localStorage.getItem('wmt_user');
   const users = getUsersDB();
   if (!users[user]) return;
-  const email    = document.getElementById('dpmEmail').value.trim();
   const fullName = document.getElementById('dpmFullName').value.trim();
-  users[user].email    = email;
   users[user].fullName = fullName;
-  // Per-user update — never overwrites other users' data
   localStorage.setItem('wmt_users_db', JSON.stringify(users));
-  if (window.FDB) {
-    await _authReady;
-    window.FDB.ref('users/' + user).update({ email, fullName })
-      .catch(e => console.warn('[WG] saveDashboardProfile Firebase error:', e.message));
+  try {
+    // Owner may only change their own display name (Security Rules); the email
+    // is the Firebase sign-in identity and is managed by an administrator.
+    await window.fbUpdate('users/' + user, { fullName });
+    const s = document.getElementById('dpmSuccess');
+    s.style.display = 'block';
+    setTimeout(() => { s.style.display = 'none'; }, 2000);
+  } catch (e) {
+    console.warn('[WG] saveDashboardProfile Firebase error:', e.message);
+    alert('Could not save your profile. Please check your connection and try again.');
   }
-  const s = document.getElementById('dpmSuccess');
-  s.style.display = 'block';
-  setTimeout(() => { s.style.display = 'none'; }, 2000);
 }
 
 // ===== CHANGE PASSWORD =====
@@ -649,24 +493,23 @@ function openChangePwModal() {
 }
 
 async function saveChangePw() {
-  const user  = localStorage.getItem('wmt_user');
-  const users = getUsersDB();
   const cur = document.getElementById('cpCurrent').value;
   const nw  = document.getElementById('cpNew').value;
   const cf  = document.getElementById('cpConfirm').value;
   const err = document.getElementById('cpError');
   err.textContent = '';
-  if (!users[user] || !(await verifyPassword(cur, users[user]))) { err.textContent = 'Current password is incorrect.'; return; }
+  if (!cur) { err.textContent = 'Please enter your current password.'; return; }
   if (nw.length < 6) { err.textContent = 'New password must be at least 6 characters.'; return; }
   if (nw !== cf)     { err.textContent = 'Passwords do not match.'; return; }
-  const rec = await createPasswordRecord(nw);
-  Object.assign(users[user], rec);
-  delete users[user].password;
-  localStorage.setItem('wmt_users_db', JSON.stringify(users));
-  if (window.FDB) {
-    await _authReady;
-    window.FDB.ref('users/' + user).update({ ...rec, password: null })
-      .catch(e => console.warn('[WG] changePw Firebase error:', e.message));
+  try {
+    await window.changeOwnPassword(cur, nw);
+  } catch (e) {
+    const wrong = ['auth/wrong-password', 'auth/invalid-credential', 'auth/invalid-login-credentials'];
+    err.textContent = wrong.includes(e.code) ? 'Current password is incorrect.'
+      : e.code === 'auth/too-many-requests' ? 'Too many attempts. Please wait a few minutes.'
+      : e.code === 'auth/requires-recent-login' ? 'Please sign out and sign in again, then retry.'
+      : 'Could not change the password. Please try again.';
+    return;
   }
   document.getElementById('cpSuccess').style.display = 'block';
   document.getElementById('cpCurrent').value = '';
@@ -683,10 +526,8 @@ function showForgotPw() {
   document.getElementById('loginPanel').style.display   = 'none';
   document.getElementById('forgotPanel').style.display  = 'block';
   document.getElementById('fpStep1').style.display      = 'block';
-  document.getElementById('fpStep2').style.display      = 'none';
   document.getElementById('fpSuccess').style.display    = 'none';
-  document.getElementById('fpUsername').value = '';
-  document.getElementById('fpEmail').value    = '';
+  document.getElementById('fpEmail').value    = document.getElementById('username').value.trim();
   document.getElementById('fpError').textContent = '';
 }
 
@@ -696,59 +537,38 @@ function hideForgotPw() {
   document.getElementById('fpSuccess').style.display   = 'none';
 }
 
-function forgotVerify() {
-  const un  = document.getElementById('fpUsername').value.trim().toLowerCase();
-  const em  = document.getElementById('fpEmail').value.trim().toLowerCase();
+// Firebase sends the reset link itself; the response is deliberately the same
+// whether or not the address has an account (no account enumeration).
+async function forgotSend() {
+  const em  = document.getElementById('fpEmail').value.trim();
   const err = document.getElementById('fpError');
+  const btn = document.getElementById('fpSendBtn');
   err.textContent = '';
-  if (!un || !em) { err.textContent = 'Please enter both username and email.'; return; }
-  const users = getUsersDB();
-  const u = users[un];
-  if (!u) { err.textContent = 'Username not found.'; return; }
-  if (!u.email) { err.textContent = 'No email registered for this account. Please contact admin to reset your password.'; return; }
-  if (u.email.trim().toLowerCase() !== em) { err.textContent = 'Email does not match the account.'; return; }
-  document.getElementById('fpUsername').dataset.verified = un;
-  document.getElementById('fpStep1').style.display = 'none';
-  document.getElementById('fpStep2').style.display = 'block';
-  document.getElementById('fpNewPw').value  = '';
-  document.getElementById('fpConfirm').value = '';
-  document.getElementById('fpError2').textContent = '';
-  setTimeout(() => document.getElementById('fpNewPw').focus(), 80);
-}
-
-async function forgotSave() {
-  const un  = document.getElementById('fpUsername').dataset.verified;
-  const nw  = document.getElementById('fpNewPw').value;
-  const cf  = document.getElementById('fpConfirm').value;
-  const err = document.getElementById('fpError2');
-  err.textContent = '';
-  if (!un) { err.textContent = 'Session expired. Please restart.'; return; }
-  if (nw.length < 6) { err.textContent = 'Password must be at least 6 characters.'; return; }
-  if (nw !== cf)     { err.textContent = 'Passwords do not match.'; return; }
-  const users = getUsersDB();
-  const rec = await createPasswordRecord(nw);
-  Object.assign(users[un], rec);
-  delete users[un].password;
-  localStorage.setItem('wmt_users_db', JSON.stringify(users));
-  if (window.FDB) {
-    await _authReady;
-    window.FDB.ref('users/' + un).update({ ...rec, password: null })
-      .catch(e => console.warn('[WG] forgotPw Firebase error:', e.message));
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(em)) { err.textContent = 'Please enter a valid email address.'; return; }
+  btn.disabled = true; btn.textContent = '⏳ Sending…';
+  try {
+    await window.sendResetEmail(em);
+    document.getElementById('fpStep1').style.display   = 'none';
+    document.getElementById('fpSuccess').style.display = 'block';
+  } catch (e) {
+    err.textContent = e.code === 'auth/too-many-requests' ? 'Too many requests. Please wait a few minutes and try again.'
+      : e.code === 'auth/network-request-failed' ? 'Network error. Please check your connection.'
+      : e.code === 'auth/invalid-email' ? 'Please enter a valid email address.'
+      : 'Could not send the reset link right now. Please try again later.';
+  } finally {
+    btn.disabled = false; btn.textContent = 'Send Reset Link';
   }
-  document.getElementById('fpStep2').style.display   = 'none';
-  document.getElementById('fpSuccess').style.display = 'block';
-  setTimeout(hideForgotPw, 2000);
 }
 
 // ===== LOGOUT =====
-function doLogout() {
-  localStorage.removeItem('wmt_user');
+async function doLogout() {
+  await window.logoutUser();
   document.getElementById('dashboardPage').classList.add('hidden');
   document.getElementById('loginPage').classList.remove('hidden');
   document.getElementById('username').value = '';
   document.getElementById('password').value = '';
   document.getElementById('loginError').textContent = '';
-  switchTab('login');
+  hideForgotPw();
 }
 
 function toggleSidebar() {
@@ -1321,9 +1141,9 @@ async function autoUpgradeCheck(loginUser) {
   localStorage.setItem('wmt_users_db', JSON.stringify(allUsers));
 
   if (window.FDB) {
-    await _authReady;
+    // Admins may upgrade anyone; a trainee may only flip their own new→old (Security Rules).
     await Promise.all(upgraded.map(({ uname }) =>
-      window.FDB.ref('users/' + uname).update({ employeeType: 'old' })
+      window.fbUpdate('users/' + uname, { employeeType: 'old' })
         .catch(e => console.warn('[WG] autoUpgrade Firebase sync error:', uname, e.message))
     ));
   }
@@ -1386,25 +1206,15 @@ function showAutoUpgradeModal(upgraded) {
   document.body.appendChild(modal);
 }
 
-// ===== SYNC READY GATE =====
-// doLogin() awaits this before checking credentials — prevents race condition
-// where user clicks Sign In before syncFromFirebase() has pulled the latest users.
-let _syncResolver;
-const _syncReady = new Promise(resolve => { _syncResolver = resolve; });
-
 // ===== SESSION CHECK =====
+// Firebase restores the signed-in user from its own storage; getSession() also
+// confirms the account is provisioned (uidmap) and loads the profile. Anyone
+// without a valid session simply stays on the login form.
 window.addEventListener('load', async function() {
+  const sess = await window.getSession();
+  if (!sess) { window.clearUserCaches(); return; }
   await syncFromFirebase();
-  _syncResolver(); // unlock login gate
-  getUsersDB(); // seed defaults if first visit
-  const user = localStorage.getItem('wmt_user');
-  const users = getUsersDB();
-  if (user && users[user]) {
-    document.getElementById('loginPage').classList.add('hidden');
-    document.getElementById('dashboardPage').classList.remove('hidden');
-    initDashboard(user);
-    await autoUpgradeCheck(user);
-  }
+  showDashboardFor(sess.username);
 });
 </script>
 </body>

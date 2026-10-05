@@ -556,25 +556,6 @@
   </div>
 </div>
 
-<!-- Reset Password Modal -->
-<div class="modal-overlay" id="resetPwModal">
-  <div class="modal-box" style="max-width:360px;">
-    <h3 style="color:var(--gold);margin-bottom:6px;">🔑 Reset Password</h3>
-    <p id="resetPwLabel" style="font-size:0.82rem;color:var(--text-muted);margin-bottom:20px;"></p>
-    <div class="form-group"><label>New Password</label>
-      <input type="password" id="resetPwNew" placeholder="Min 6 characters"
-        style="width:100%;padding:10px 14px;background:#0a0a16;border:1px solid #2a2a4a;border-radius:8px;color:#e0e0e0;font-size:14px;box-sizing:border-box;"></div>
-    <div class="form-group"><label>Confirm Password</label>
-      <input type="password" id="resetPwConfirm" placeholder="Repeat new password"
-        style="width:100%;padding:10px 14px;background:#0a0a16;border:1px solid #2a2a4a;border-radius:8px;color:#e0e0e0;font-size:14px;box-sizing:border-box;"></div>
-    <div id="resetPwError" style="color:#ff4d6d;font-size:0.82rem;margin-top:4px;min-height:18px;"></div>
-    <div class="modal-footer" style="margin-top:20px;">
-      <button class="btn btn-secondary" onclick="closeResetPwModal()">Cancel</button>
-      <button class="btn btn-primary" onclick="saveResetPw()">💾 Reset</button>
-    </div>
-  </div>
-</div>
-
 <!-- Exam Reset Modal -->
 <div class="modal-overlay" id="examResetModal">
   <div class="modal-box" style="max-width:480px;">
@@ -626,8 +607,8 @@
         <input type="text" id="editWorkName" placeholder="e.g. Alex Nguyen">
       </div>
       <div class="form-group" style="grid-column:1/-1">
-        <label>Email</label>
-        <input type="email" id="editEmail" placeholder="e.g. alex@example.com">
+        <label>Login Email <span style="font-weight:400;color:var(--text-muted);font-size:0.8rem;">(the user's Firebase sign-in — read-only)</span></label>
+        <input type="email" id="editEmail" disabled style="opacity:0.45;cursor:not-allowed;">
       </div>
       <div class="form-group">
         <label>Department</label>
@@ -672,28 +653,12 @@
         </select>
       </div>
 
-      <!-- PASSWORD SECTION -->
+      <!-- PASSWORD SECTION (passwords live in Firebase Auth — admins can only send a reset link) -->
       <div class="form-group" style="grid-column:1/-1;margin-top:4px;padding-top:16px;border-top:1px solid var(--border);">
         <label style="color:var(--text-secondary);margin-bottom:10px;display:block;">🔐 Password</label>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
-          <div>
-            <div style="font-size:0.75rem;color:var(--text-muted);margin-bottom:5px;">Current Password</div>
-            <div style="position:relative;">
-              <input type="text" id="editCurrentPwDisplay" disabled
-                style="width:100%;padding:9px 12px;background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:8px;color:var(--text-secondary);font-size:13px;box-sizing:border-box;">
-            </div>
-          </div>
-          <div>
-            <div style="font-size:0.75rem;color:var(--text-muted);margin-bottom:5px;">Set New Password <span style="opacity:.6;">(leave blank to keep)</span></div>
-            <div style="position:relative;">
-              <input type="password" id="editNewPw" placeholder="Min 6 characters"
-                style="width:100%;padding:9px 38px 9px 12px;background:#0a0a16;border:1px solid #2a2a4a;border-radius:8px;color:#e0e0e0;font-size:13px;box-sizing:border-box;">
-              <button type="button" onclick="toggleEditPwVis('editNewPw',this)"
-                style="position:absolute;right:8px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:0.9rem;padding:2px;color:var(--text-muted);line-height:1;"
-                title="Show/hide">👁️</button>
-            </div>
-          </div>
-        </div>
+        <div style="font-size:0.78rem;color:var(--text-muted);line-height:1.6;margin-bottom:10px;">Passwords are managed by Firebase and cannot be viewed or set here. Send the user a secure link to choose a new one.</div>
+        <button type="button" class="btn btn-secondary" id="editSendResetBtn" onclick="sendResetFromEdit()" style="padding:8px 14px;font-size:0.82rem;">📧 Send Password Reset Email</button>
+        <div id="editResetMsg" style="font-size:0.78rem;margin-top:8px;min-height:1.2em;"></div>
       </div>
     </div>
     <div class="error-msg" id="editUserError"></div>
@@ -708,7 +673,7 @@
 <div class="modal-overlay" id="addUserModal">
   <div class="modal-box" style="max-width:480px;">
     <h3>➕ Add New User</h3>
-    <div style="font-size:0.78rem;color:var(--text-muted);margin-bottom:16px;">Username and a temporary password are generated automatically — you'll get them to share with the user after saving.</div>
+    <div style="font-size:0.78rem;color:var(--text-muted);margin-bottom:16px;">The user signs in with this work email. A username and a temporary password are generated automatically — you'll get the sign-in details to share with them after saving.</div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:0 16px;">
       <div class="form-group">
         <label>Full Name</label>
@@ -746,12 +711,12 @@
     <h3 style="margin-bottom:10px;">Account Created</h3>
     <p style="font-size:0.82rem;color:var(--text-muted);margin-bottom:16px;">Share these credentials with the user through a separate channel (chat/email) — the password will not be shown again.</p>
     <div style="background:var(--bg-secondary);border:1px solid var(--border);border-radius:10px;padding:16px;text-align:left;margin-bottom:16px;">
-      <div style="font-size:0.75rem;color:var(--text-muted);margin-bottom:4px;">Username</div>
+      <div style="font-size:0.75rem;color:var(--text-muted);margin-bottom:4px;">Sign-in Email</div>
       <div style="font-weight:700;font-size:1rem;margin-bottom:12px;" id="auResultUsername"></div>
       <div style="font-size:0.75rem;color:var(--text-muted);margin-bottom:4px;">Temporary Password</div>
       <div style="font-weight:700;font-size:1rem;font-family:monospace;" id="auResultPassword"></div>
     </div>
-    <button class="btn btn-primary" style="width:100%;" onclick="copyAddUserCreds()">📋 Copy Username + Password</button>
+    <button class="btn btn-primary" style="width:100%;" onclick="copyAddUserCreds()">📋 Copy Sign-in Details</button>
     <button class="btn btn-secondary" style="width:100%;margin-top:8px;" onclick="closeAddUserSuccess()">Done</button>
   </div>
 </div>
@@ -893,10 +858,6 @@ function getInterviewData(username) {
 }
 function saveInterviewData(username, data) {
   dbWrite('wmt_interview_' + username, JSON.stringify(data));
-  const list = JSON.parse(localStorage.getItem('wmt_interviews_list') || '[]');
-  const idx  = list.findIndex(x => x.username === username);
-  if (idx >= 0) list[idx] = data; else list.push(data);
-  dbWrite('wmt_interviews_list', JSON.stringify(list));
 }
 
 // ===== TAB SWITCH =====
@@ -1441,8 +1402,6 @@ function resetUser(uname) {
   dbRemove('wmt_exam_'      + uname);
   dbRemove('wmt_interview_' + uname);
   for (let i = 1; i <= 5; i++) dbRemove(`wmt_quiz_${uname}_m${i}`);
-  const list = JSON.parse(localStorage.getItem('wmt_interviews_list') || '[]');
-  dbWrite('wmt_interviews_list', JSON.stringify(list.filter(x => x.username !== uname)));
   renderAdminPanel();
   renderInterviewsTable();
 }
@@ -1537,11 +1496,11 @@ function approveProposal(id) {
   const p = proposals[idx];
 
   if (p.source === 'exam') {
-    const bank = JSON.parse(localStorage.getItem('wmt_exam_qbank') || 'null');
+    const bank = JSON.parse(localStorage.getItem('wmt_exam_qbank_v2') || 'null');
     if (!bank) { alert('Question bank not initialised. Open the Final Exam page once first.'); return; }
     if (p.action === 'edit') bank[p.idx] = p.proposed;
     else bank.push(p.proposed);
-    dbWrite('wmt_exam_qbank', JSON.stringify(bank));
+    dbWrite('wmt_exam_qbank_v2', JSON.stringify(bank));
   } else if (p.source === 'monthly') {
     const qb = JSON.parse(localStorage.getItem('wmt_qbank_' + p.group) || 'null');
     if (!qb) { alert('Question Bank has no data. Upload a file first.'); return; }
@@ -1674,14 +1633,23 @@ async function deleteUser(uname) {
   }
   if (!confirm(`Delete user "${uname}"?\n\nThis will permanently remove their account and all data.`)) return;
   const users = getUsersDB();
+  const uid = users[uname] && users[uname].uid;
   delete users[uname];
   localStorage.setItem('wmt_users_db', JSON.stringify(users));
-  if (window.FDB) { await _authReady; window.FDB.ref('users/' + uname).remove(); }
+  if (window.FDB) {
+    // Removing uidmap/<uid> cuts the Firebase Auth account off from all data
+    // (the client SDK cannot delete another user's Auth account itself).
+    await Promise.all([
+      window.fbRemove('users/' + uname),
+      uid ? window.fbRemove('uidmap/' + uid) : Promise.resolve(),
+      window.fbRemove('feedback/' + uname),
+      window.fbRemove('reschedule/' + uname),
+      window.fbRemove('submissions/' + uname),
+      window.fbRemove('notif_prefs/' + uname),
+    ].map(p => p.catch(e => console.warn('[WG] deleteUser cleanup:', e.message))));
+  }
   ['wmt_progress_','wmt_exam_','wmt_interview_'].forEach(k => dbRemove(k + uname));
   for (let i = 1; i <= 5; i++) dbRemove(`wmt_quiz_${uname}_m${i}`);
-  const list = JSON.parse(localStorage.getItem('wmt_interviews_list') || '[]');
-  dbWrite('wmt_interviews_list', JSON.stringify(list.filter(x => x.username !== uname)));
-  if (localStorage.getItem('wmt_user') === uname) { localStorage.removeItem('wmt_user'); window.location.href = 'index.html'; return; }
   renderAdminPanel();
   renderInterviewsTable();
 }
@@ -1812,8 +1780,6 @@ function saveIvStatus(uname) {
   if (status === 'no_record') {
     // Clear interview data completely
     dbRemove('wmt_interview_' + uname);
-    const list = JSON.parse(localStorage.getItem('wmt_interviews_list') || '[]');
-    dbWrite('wmt_interviews_list', JSON.stringify(list.filter(x => x.username !== uname)));
   } else {
     const users = getUsersDB();
     const u = users[uname] || {};
@@ -1979,6 +1945,7 @@ function saveExamReset() {
     const updated = { ...ex };
     // Remove fail1Date to bypass lockout check — keep score/attempts so attempt 2 rules still apply
     delete updated.fail1Date;
+    delete updated.fail1AtMs;
     // Keep attempts at 1 so the system knows this is attempt 2
     updated.attempts = 1;
     dbWrite('wmt_exam_' + uname, JSON.stringify(updated));
@@ -2082,6 +2049,7 @@ function saveExamGrade() {
     updated.gradedAttempts = attemptNumber;
     if (attemptNumber === 1) {
       updated.fail1Date = now;
+      updated.fail1AtMs = Date.now(); // numeric twin of fail1Date so Security Rules can enforce the 3-day lockout
       updated.fail1Score = pct;
     } else {
       updated.fail2Date = now;
@@ -2145,13 +2113,6 @@ function saveConfirmInterview() {
 
 // ===== ADD USER MODAL =====
 
-function toggleEditPwVis(inputId, btn) {
-  const inp = document.getElementById(inputId);
-  if (!inp) return;
-  inp.type = inp.type === 'password' ? 'text' : 'password';
-  btn.textContent = inp.type === 'password' ? '👁️' : '🙈';
-}
-
 function openEditUser(uname) {
   const users = getUsersDB();
   const u = users[uname];
@@ -2169,34 +2130,41 @@ function openEditUser(uname) {
   document.getElementById('editIsLeader').checked      = u.isLeader    || false;
   document.getElementById('editLeaderName').value      = u.leaderName  || '';
   document.getElementById('editUserError').textContent = '';
-  // Password fields — hashed, so there is nothing to display; only a reset is possible.
-  document.getElementById('editCurrentPwDisplay').value = '•••••••• (hashed — cannot be viewed)';
-  document.getElementById('editNewPw').value = '';
-  document.getElementById('editNewPw').type  = 'password';
-  const newBtn = document.getElementById('editNewPw').nextElementSibling;
-  if (newBtn) newBtn.textContent = '👁️';
+  document.getElementById('editResetMsg').textContent = '';
+  document.getElementById('editSendResetBtn').disabled = !u.email;
   document.getElementById('editUserModal').classList.add('show');
   setTimeout(() => document.getElementById('editFullName').focus(), 100);
 }
 function closeEditUser() { document.getElementById('editUserModal').classList.remove('show'); }
+
+// Admins cannot set another user's password (that needs the Admin SDK); they send
+// Firebase's secure reset link to the account's email instead.
+async function sendResetFromEdit() {
+  const uname = document.getElementById('editUsername').value;
+  const u = getUsersDB()[uname];
+  const msg = document.getElementById('editResetMsg');
+  if (!u || !u.email) { msg.style.color = 'var(--danger)'; msg.textContent = 'This account has no email on file.'; return; }
+  msg.style.color = 'var(--text-muted)'; msg.textContent = 'Sending…';
+  try {
+    await window.sendResetEmail(u.email);
+    msg.style.color = 'var(--success)'; msg.textContent = `✓ Reset link sent to ${u.email}.`;
+  } catch (e) {
+    msg.style.color = 'var(--danger)'; msg.textContent = 'Could not send the email: ' + (e.code || e.message);
+  }
+}
 
 async function saveEditUser() {
   const uname = document.getElementById('editUsername').value;
   const users = getUsersDB();
   if (!users[uname]) return;
 
-  const newPw = document.getElementById('editNewPw').value;
-  const err   = document.getElementById('editUserError');
+  const err = document.getElementById('editUserError');
   err.textContent = '';
-  if (newPw && newPw.length < 6) {
-    err.textContent = 'New password must be at least 6 characters.';
-    return;
-  }
 
+  // `email` is the Firebase Auth identity — deliberately not editable here.
   const patch = {
     fullName:     document.getElementById('editFullName').value.trim(),
     workName:     document.getElementById('editWorkName').value.trim(),
-    email:        document.getElementById('editEmail').value.trim(),
     department:   document.getElementById('editDepartment').value.trim(),
     position:     document.getElementById('editPosition').value.trim(),
     role:         document.getElementById('editRole').value,
@@ -2205,14 +2173,21 @@ async function saveEditUser() {
     isLeader:     document.getElementById('editIsLeader').checked,
     leaderName:   document.getElementById('editLeaderName').value.trim().toLowerCase(),
   };
-  if (newPw) {
-    Object.assign(patch, await createPasswordRecord(newPw));
-    patch.password = null; // clear any legacy plaintext field on Firebase
+
+  if (uname === CUR_ADMIN && patch.role !== 'admin') {
+    err.textContent = "You can't remove your own admin role.";
+    return;
   }
 
+  try {
+    await window.fbUpdate('users/' + uname, patch);
+  } catch (e) {
+    console.warn('[WG] saveEditUser failed:', e.message);
+    err.textContent = 'Could not save: ' + e.message;
+    return;
+  }
   Object.assign(users[uname], patch);
   localStorage.setItem('wmt_users_db', JSON.stringify(users));
-  if (window.FDB) { await _authReady; window.FDB.ref('users/' + uname).update(patch); }
   closeEditUser();
   renderAdminPanel();
 }
@@ -2269,12 +2244,30 @@ async function saveAddUser() {
   if (!department) { err.textContent = 'Please enter Department.'; return; }
   if (!position)  { err.textContent = 'Please enter Position.'; return; }
 
+  if ((await _emailInUseLocally(email))) { err.textContent = 'An account with this email already exists.'; return; }
+
+  const btn = document.querySelector('#addUserModal .btn-primary');
+  btn.disabled = true;
   const users    = getUsersDB();
   const username = _generateUsernameFromEmail(email, users);
   const password = _generateTempPassword();
 
+  // 1) Firebase Auth account (secondary app instance — the admin stays signed in)
+  let acct;
+  try {
+    acct = await window.createAuthAccount(email, password);
+  } catch (e) {
+    btn.disabled = false;
+    err.textContent = e.code === 'auth/email-already-in-use'
+      ? 'This email already has a sign-in account in Firebase (possibly from a deleted user). Remove it in Firebase Console → Authentication, then try again.'
+      : e.code === 'auth/invalid-email' ? 'Please enter a valid Work Email.'
+      : 'Could not create the sign-in account: ' + (e.message || e.code);
+    return;
+  }
+
+  // 2) Profile + uidmap in ONE atomic write (rules allow it for admins only)
   const newUser = {
-    ...(await createPasswordRecord(password)),
+    uid:          acct.uid,
     role:         'trainee',
     fullName,
     workName,
@@ -2287,35 +2280,38 @@ async function saveAddUser() {
     testGroup:    'auto',
     createdAt:    new Date().toISOString()
   };
+  try {
+    await window.fbUpdate('/', { ['uidmap/' + acct.uid]: username, ['users/' + username]: newUser });
+  } catch (e) {
+    console.warn('[WG] addUser Firebase error:', e.message);
+    await acct.rollback();
+    btn.disabled = false;
+    err.textContent = 'Could not save the new account online. Please check your connection and try again.';
+    return;
+  }
+  await acct.commit();
 
   users[username] = newUser;
-  // Per-user set — only writes the new account, never touches other users
   localStorage.setItem('wmt_users_db', JSON.stringify(users));
-  if (window.FDB) {
-    await _authReady; // must not fire before anonymous auth settles — rules require auth != null
-    try {
-      await window.FDB.ref('users/' + username).set(newUser);
-    } catch (e) {
-      console.warn('[WG] addUser Firebase error:', e.message);
-      err.textContent = 'Could not save the new account online. Please check your connection and try again.';
-      delete users[username];
-      localStorage.setItem('wmt_users_db', JSON.stringify(users));
-      return;
-    }
-  }
+  btn.disabled = false;
 
   closeAddUser();
   renderAdminPanel();
 
-  document.getElementById('auResultUsername').textContent = username;
+  document.getElementById('auResultUsername').textContent = email;
   document.getElementById('auResultPassword').textContent = password;
   document.getElementById('addUserSuccessModal').classList.add('show');
+}
+
+async function _emailInUseLocally(email) {
+  const e = email.trim().toLowerCase();
+  return Object.values(getUsersDB()).some(u => (u.email || '').trim().toLowerCase() === e);
 }
 
 function copyAddUserCreds() {
   const u = document.getElementById('auResultUsername').textContent;
   const p = document.getElementById('auResultPassword').textContent;
-  const text = `Username: ${u}\nPassword: ${p}`;
+  const text = `Sign-in email: ${u}\nTemporary password: ${p}`;
   navigator.clipboard.writeText(text)
     .then(() => alert('✅ Copied to clipboard!'))
     .catch(() => alert(`Could not copy automatically.\n\n${text}`));
@@ -2517,56 +2513,14 @@ function resetRs(un, m) {
   updateRsBadge(); renderRescheduleTab();
 }
 
-// ===== RESET PASSWORD (admin) =====
-let _resetPwTarget = null;
-function openResetPwModal(uname) {
-  _resetPwTarget = uname;
-  document.getElementById('resetPwLabel').textContent = 'Set a new password for: ' + uname;
-  document.getElementById('resetPwNew').value     = '';
-  document.getElementById('resetPwConfirm').value = '';
-  document.getElementById('resetPwError').textContent = '';
-  document.getElementById('resetPwModal').classList.add('show');
-  setTimeout(() => document.getElementById('resetPwNew').focus(), 80);
-}
-
-function closeResetPwModal() {
-  document.getElementById('resetPwModal').classList.remove('show');
-  _resetPwTarget = null;
-}
-
-async function saveResetPw() {
-  const uname = _resetPwTarget;
-  const nw  = document.getElementById('resetPwNew').value;
-  const cf  = document.getElementById('resetPwConfirm').value;
-  const err = document.getElementById('resetPwError');
-  err.textContent = '';
-  if (!uname) { err.textContent = 'No user selected.'; return; }
-  if (nw.length < 6) { err.textContent = 'Password must be at least 6 characters.'; return; }
-  if (nw !== cf)     { err.textContent = 'Passwords do not match.'; return; }
-  const users = getUsersDB();
-  if (!users[uname]) { err.textContent = 'User not found.'; return; }
-  const rec = await createPasswordRecord(nw);
-  Object.assign(users[uname], rec);
-  delete users[uname].password;
-  localStorage.setItem('wmt_users_db', JSON.stringify(users));
-  if (window.FDB) {
-    await _authReady;
-    window.FDB.ref('users/' + uname).update({ ...rec, password: null })
-      .catch(e => console.warn('[WG] resetPw Firebase error:', e.message));
-  }
-  closeResetPwModal();
-  alert('✅ Password for "' + uname + '" has been reset successfully.');
-}
-
 document.getElementById('editUserModal').addEventListener('click',   function(e) { if (e.target===this) closeEditUser(); });
 document.getElementById('confirmModal').addEventListener('click',    function(e) { if (e.target===this) closeConfirmModal(); });
 document.getElementById('examResetModal').addEventListener('click',  function(e) { if (e.target===this) closeExamReset(); });
-document.getElementById('resetPwModal').addEventListener('click',    function(e) { if (e.target===this) closeResetPwModal(); });
 document.getElementById('addUserModal').addEventListener('click',    function(e) { if (e.target===this) closeAddUser(); });
 document.getElementById('addUserSuccessModal').addEventListener('click', function(e) { if (e.target===this) closeAddUserSuccess(); });
 
 document.addEventListener('keydown', function(e) {
-  if (e.key === 'Escape') { closeEditUser(); closeConfirmModal(); closeExamReset(); closeResetPwModal(); closeAddUser(); closeAddUserSuccess(); }
+  if (e.key === 'Escape') { closeEditUser(); closeConfirmModal(); closeExamReset(); closeAddUser(); closeAddUserSuccess(); }
   if (e.key === 'Enter') {
     if (document.getElementById('editUserModal').classList.contains('show')) saveEditUser();
     if (document.getElementById('confirmModal').classList.contains('show'))  saveConfirmInterview();

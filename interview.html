@@ -294,19 +294,14 @@ const USERNAME = localStorage.getItem('wmt_user');
 function getInterview() {
   return JSON.parse(localStorage.getItem('wmt_interview_' + USERNAME) || 'null');
 }
+// The old shared `interviews_list` mirror is gone — the admin page renders from
+// the per-user interview/<user> nodes, which Security Rules protect individually.
 function saveInterview(data) {
   dbWrite('wmt_interview_' + USERNAME, JSON.stringify(data));
-  // Keep central list in sync
-  const list = JSON.parse(localStorage.getItem('wmt_interviews_list') || '[]');
-  const idx  = list.findIndex(x => x.username === USERNAME);
-  if (idx >= 0) list[idx] = data; else list.push(data);
-  dbWrite('wmt_interviews_list', JSON.stringify(list));
 }
 
 function removeInterview() {
   dbRemove('wmt_interview_' + USERNAME);
-  const list = JSON.parse(localStorage.getItem('wmt_interviews_list') || '[]');
-  dbWrite('wmt_interviews_list', JSON.stringify(list.filter(x => x.username !== USERNAME)));
 }
 
 // Set minimum date to tomorrow

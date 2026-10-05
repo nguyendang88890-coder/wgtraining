@@ -300,20 +300,27 @@ function saveExamState(data) {
 // over from before Module 0 (About WG) was merged into Module 1; since no
 // bank has had a module-0 question since that merge, it was silently
 // resetting admin edits back to the default bank on every single read.
+function _isAdminUser() {
+  const u = getUsersDB()[getUser()];
+  return !!u && u.role === 'admin';
+}
 function getActiveQBank() {
   const stored = localStorage.getItem('wmt_exam_qbank_v2');
+  // Only an admin may seed/replace the shared bank in Firebase (Security Rules);
+  // everyone else just falls back to the built-in default locally.
+  const canWrite = _isAdminUser();
   if (stored) {
     const parsed = JSON.parse(stored);
     // One-time migration: a bank saved before the MCQ→Essay format change
     // still has an `opts` array per question, which the new UI can't render.
     // The two shapes are structurally incompatible, so replace it outright.
     if (parsed.length && parsed[0].opts !== undefined) {
-      saveExamQBank(QUESTION_BANK);
+      if (canWrite) saveExamQBank(QUESTION_BANK);
       return QUESTION_BANK;
     }
     return parsed;
   }
-  dbWrite('wmt_exam_qbank_v2', JSON.stringify(QUESTION_BANK));
+  if (canWrite) dbWrite('wmt_exam_qbank_v2', JSON.stringify(QUESTION_BANK));
   return QUESTION_BANK;
 }
 function saveExamQBank(d) { dbWrite('wmt_exam_qbank_v2', JSON.stringify(d)); }
@@ -404,7 +411,9 @@ function resetExamBank() {
 
 // ===== PROPOSALS (shared helpers) =====
 function getProposals()  { return JSON.parse(localStorage.getItem('wmt_proposals') || '[]'); }
-function addProposal(p)  { const ps = getProposals(); ps.push(p); dbWrite('wmt_proposals', JSON.stringify(ps)); }
+function addProposal(p)  {
+  window.submitProposal(p).catch(e => { console.warn('[WG] proposal save failed:', e.message); alert('Could not submit the proposal. Please try again.'); });
+}
 
 // ===== MOD VIEW =====
 function renderModExamView() {
@@ -632,7 +641,7 @@ function examNav(dir) {
   }
 }
 
-function submitExam() {
+async function submitExam() {
   const unanswered = examAnswers.filter(a => a.trim() === '').length;
   if (unanswered > 0) {
     const warn = document.getElementById('unansweredWarn');
@@ -649,16 +658,28 @@ function submitExam() {
   const pendingAttemptNumber = (es.gradedAttempts || 0) + 1;
   const passThreshold = pendingAttemptNumber === 1 ? 60 : 80;
 
-  es.status = 'pending_grading';
-  es.pendingAttemptNumber = pendingAttemptNumber;
-  es.passThreshold = passThreshold;
-  es.submittedAt = now;
-  es.questions = examQuestions.map(q => ({ q: q.q, module: q.module, maxPoints: q.maxPoints, rubric: q.rubric }));
-  es.answers = examAnswers.slice();
-  // Clear any previous final score — it no longer reflects the pending attempt
-  delete es.score;
-  delete es.total;
-  saveExamState(es);
+  // Only the submission fields are written (child paths): Security Rules let a
+  // trainee set these but never the grading outcome (passed/score/attempts/fail…).
+  // null clears any previous attempt's score — it no longer reflects this one.
+  const fields = {
+    status: 'pending_grading',
+    pendingAttemptNumber,
+    passThreshold,
+    submittedAt: now,
+    questions: examQuestions.map(q => ({ q: q.q, module: q.module, maxPoints: q.maxPoints, rubric: q.rubric })),
+    answers: examAnswers.slice(),
+    score: null, total: null, scores: null
+  };
+  try {
+    await window.fbUpdate('exam/' + getUser(), fields);
+  } catch (e) {
+    console.warn('[WG] exam submit failed:', e.message);
+    alert('Your exam could not be submitted (' + (e.message || 'network error') + '). Please check your connection and try again — your answers are still on this page.');
+    return;
+  }
+  Object.assign(es, fields);
+  delete es.score; delete es.total; delete es.scores;
+  localStorage.setItem('wmt_exam_' + getUser(), JSON.stringify(es));
 
   window.location.href = 'results.html';
 }

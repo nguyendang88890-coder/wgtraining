@@ -1,0 +1,6 @@
+{
+  "projects": {
+    "staging": "wgtraining-staging",
+    "prod": "wgtraining-a669d"
+  }
+}

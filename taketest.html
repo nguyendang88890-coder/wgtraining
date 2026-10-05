@@ -266,7 +266,10 @@ document.addEventListener('DOMContentLoaded', async function() {
         };
       });
       sub.questionSnapshot = snapshot;
-      saveSubmission(CUR_USER, _currentMonth, sub);
+      // Local copy + a child write: rules let the owner ADD a missing snapshot but not rewrite the submission.
+      localStorage.setItem('wmt_sub_' + CUR_USER + '_' + _currentMonth, JSON.stringify(sub));
+      window.fbSet(`submissions/${CUR_USER}/${_currentMonth}/questionSnapshot`, snapshot)
+        .catch(e => console.warn('[taketest] snapshot backfill skipped:', e.message));
     }
     renderResult(sub, _currentCfg || {});
     return;
@@ -641,13 +644,17 @@ async function doSubmit(auto) {
     const passOthers = mc.passOthers ?? 70;
     const allScores = getMS();
     if (!allScores[_currentMonth]) allScores[_currentMonth] = {};
-    allScores[_currentMonth][CUR_USER] = {
+    const myScore = {
       score:   mcqScore,
       passed:  mcqScore >= passOthers,
       gradedAt: new Date().toISOString(),
       autoGraded: true
     };
-    saveMS(allScores);
+    allScores[_currentMonth][CUR_USER] = myScore;
+    localStorage.setItem('wmt_monthly_scores', JSON.stringify(allScores));
+    // Child write — a trainee may only write their own entry, never the whole scores node.
+    window.fbSet(`monthly_scores/${_currentMonth}/${CUR_USER}`, myScore)
+      .catch(e => console.warn('[taketest] score save failed:', e.message));
   }
 
   renderResult(submission, mc);
