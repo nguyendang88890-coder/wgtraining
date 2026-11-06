@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Admin Panel | WG Training</title>
-  <link rel="stylesheet" href="style.css?v=2">
+  <link rel="stylesheet" href="style.css?v=3">
   <style>
     .admin-stats {
       display: grid;
@@ -1977,7 +1977,7 @@ function openExamGrade(uname) {
     const safeAnswer = answer.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
     return `<div style="background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:10px;padding:14px 16px;margin-bottom:12px;">
       <div style="font-weight:700;font-size:0.87rem;margin-bottom:8px;">Q${i+1}. ${q.q} <span style="color:var(--text-muted);font-weight:400;">(Module ${q.module})</span></div>
-      ${q.rubric ? `<div style="font-size:0.78rem;color:var(--text-muted);background:rgba(207,155,33,0.06);border-left:3px solid var(--border-gold);padding:8px 10px;margin-bottom:10px;border-radius:0 6px 6px 0;">📋 Answer Guide: ${q.rubric}</div>` : ''}
+      ${q.rubric ? `<div style="font-size:0.78rem;color:var(--text-muted);background:rgba(255,215,0,0.06);border-left:3px solid var(--border-gold);padding:8px 10px;margin-bottom:10px;border-radius:0 6px 6px 0;">📋 Answer Guide: ${q.rubric}</div>` : ''}
       <div style="font-size:0.85rem;color:var(--text-secondary);white-space:pre-wrap;background:rgba(0,0,0,0.15);border:1px solid var(--border);border-radius:8px;padding:10px 12px;margin-bottom:10px;">${safeAnswer || '<em style="color:var(--text-muted);">(no answer)</em>'}</div>
       <label style="font-size:0.82rem;display:flex;align-items:center;gap:8px;">
         Score (0–${q.maxPoints}):

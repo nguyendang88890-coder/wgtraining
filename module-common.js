@@ -663,7 +663,7 @@ function getSidebarHTML(activeModule) {
       ${announceSection}
       <div class="notif-section-hdr">Upcoming Tests</div>
       ${testRows}
-      <a href="monthlytest.html" style="display:block;text-align:center;margin-top:14px;padding:10px;background:rgba(207,155,33,0.08);border:1px solid var(--border-gold);border-radius:8px;color:var(--gold);font-size:0.8rem;font-weight:700;text-decoration:none;">🔔 Manage reminders → Monthly Test</a>`;
+      <a href="monthlytest.html" style="display:block;text-align:center;margin-top:14px;padding:10px;background:rgba(255,215,0,0.08);border:1px solid var(--border-gold);border-radius:8px;color:var(--gold);font-size:0.8rem;font-weight:700;text-decoration:none;">🔔 Manage reminders → Monthly Test</a>`;
   }
 
   window._refreshGlobalBell = function() {
