@@ -1,0 +1,18 @@
+name: Safety checks
+
+# Early feedback on every branch and pull request (no secrets involved).
+# main is checked by deploy.yml right before deploying.
+on:
+  push:
+    branches-ignore: [main]
+  pull_request:
+
+jobs:
+  guard:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: node .github/scripts/guard.js

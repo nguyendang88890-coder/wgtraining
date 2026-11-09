@@ -5,8 +5,23 @@ on:
     branches: [main]
 
 jobs:
-  deploy:
+  guard:
+    name: Safety checks
     runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      # Blocks the deploy if a change reopens a known security hole (see .github/scripts/guard.js).
+      - run: node .github/scripts/guard.js
+
+  deploy:
+    needs: guard
+    runs-on: ubuntu-latest
+    # Optional: move the VPS_* secrets into a GitHub Environment named "production"
+    # (restricted to the main branch) so other branches can never read them.
+    environment: production
     steps:
       - name: Deploy via SSH
         run: |
@@ -17,7 +32,7 @@ jobs:
           # (/usr/local/bin/deploy-training.sh): it pulls the repo kept OUTSIDE the
           # web root, then rsyncs only the site files into the docroot, so .git and
           # repo-internal files are never served. Whatever command is sent here is
-          # ignored server-side — kept for clarity.
+          # ignored server-side - kept for clarity.
           ssh -o StrictHostKeyChecking=accept-new -i ~/.ssh/deploy_key \
             "${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}" \
             "/usr/local/bin/deploy-training.sh"
