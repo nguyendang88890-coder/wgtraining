@@ -205,8 +205,12 @@ function _ans(q) { return parseInt(atob(q._c)); }
 
 // ===== QUIZ ENGINE =====
 class ModuleQuiz {
-  constructor(moduleId, questions) {
+  // `version` (optional): bump it when quiz content changes. A result saved under another
+  // version keeps its score, but its answer review is hidden — answers are stored as option
+  // indexes, so replaying them against rewritten questions would show wrong marks.
+  constructor(moduleId, questions, version) {
     this.moduleId = moduleId;
+    this.version = version || null;
     this.questions = questions;
     this.current = 0;
     this.answers = new Array(questions.length).fill(null);
@@ -218,7 +222,7 @@ class ModuleQuiz {
     const user  = localStorage.getItem('wmt_user') || '';
     const saved = getQuizResult(user, this.moduleId);
     if (saved) {
-      this.answers = saved.answers;
+      this.answers = Array.isArray(saved.answers) ? saved.answers : new Array(this.questions.length).fill(null);
       this.showLockedResult(saved);
       return;
     }
@@ -271,9 +275,13 @@ class ModuleQuiz {
   }
 
   showLockedResult(saved) {
+    const outdated = !Array.isArray(saved.answers) || (this.version && saved.quizVersion !== this.version);
+    const note = `<div style="font-size:0.85rem;color:var(--text-secondary);background:rgba(255,215,0,0.06);border-left:3px solid var(--border-gold);padding:10px 14px;margin-bottom:16px;border-radius:0 8px 8px 0;line-height:1.6;">
+      ℹ️ This quiz was updated after you submitted it, so the answer review is not available. Your score is unchanged. Contact admin if you would like to retake the updated quiz.
+    </div>`;
     document.getElementById('quizContainer').innerHTML =
       this._lockBanner(`Submitted at: ${new Date(saved.submittedAt).toLocaleString('en-GB')} &nbsp;·&nbsp; Contact admin to retake this quiz.`) +
-      this.buildReviewHTML();
+      (outdated ? note : this.buildReviewHTML());
     this._showResult(saved.score, `${saved.correct}/${saved.total} — ${saved.score}%`);
   }
 
@@ -376,7 +384,8 @@ class ModuleQuiz {
     saveQuizResult(user, this.moduleId, {
       submittedAt: new Date().toISOString(),
       score, correct, total: this.questions.length,
-      answers: this.answers
+      answers: this.answers,
+      quizVersion: this.version
     });
 
     const passed = score >= 60;

@@ -40,7 +40,7 @@
             <strong>Key Features</strong>
             <ul style="margin:8px 0 0;padding-left:18px;line-height:1.8;">
               <li>Raw spreads from 0.0 pip</li>
-              <li>Commission-based pricing</li>
+              <li>Commission-based pricing — USD 5/lot on Forex &amp; Metals</li>
               <li>Fast market execution with reduced slippage</li>
               <li>Margin Call: 150% · Stop Out: 20%</li>
             </ul>
@@ -88,7 +88,7 @@
           <div class="callout-content">
             <strong>Key Features</strong>
             <ul style="margin:8px 0 0;padding-left:18px;line-height:1.8;">
-              <li>Floating spreads</li>
+              <li>Fixed spread on Forex &amp; Gold</li>
               <li>No commission</li>
               <li>Fast execution through liquidity providers</li>
               <li>Margin Call: 150% · Stop Out: 20%</li>
@@ -135,6 +135,7 @@
             <strong>Key Features</strong>
             <ul style="margin:8px 0 0;padding-left:18px;line-height:1.8;">
               <li>Base currency: Cent (100 Cent = 1 USD)</li>
+              <li>Fixed spread on Forex &amp; Gold — no commission</li>
               <li>Minimum deposit: USD 3</li>
               <li>Available on MT5 Desktop, Web, and Mobile</li>
               <li>USDT deposits and withdrawals only</li>
@@ -173,6 +174,46 @@
         </div>
       </div>
 
+      <!-- 2.4 Trading conditions (all account types) -->
+      <div class="content-section">
+        <h3>🧾 2.4 Trading Conditions — All Account Types</h3>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr><th></th><th>ECN</th><th>Standard</th><th>Cent</th></tr>
+            </thead>
+            <tbody>
+              <tr><td><strong>Spread</strong></td><td class="highlight">Raw spread (from 0.0 pip)</td><td>Fixed spread on Forex &amp; Gold</td><td>Fixed spread on Forex &amp; Gold</td></tr>
+              <tr><td><strong>Commission</strong></td><td class="highlight">USD 5/lot on Forex &amp; Metals</td><td>No commission</td><td>No commission</td></tr>
+              <tr><td><strong>Order Types</strong></td><td colspan="3">Market orders · Limit orders (all 3 accounts)</td></tr>
+              <tr><td><strong>Max. Number of Orders</strong></td><td colspan="3">50 (all 3 accounts)</td></tr>
+              <tr><td><strong>Margin Call / Stop Out</strong></td><td colspan="3">150% / 20% (all 3 accounts)</td></tr>
+              <tr><td><strong>Leverage</strong></td><td colspan="3">Forex: client-selectable, up to 1:1000. Other instruments: fixed leverage — see Module 3.</td></tr>
+              <tr><td><strong>Bonus</strong></td><td class="highlight">Applicable</td><td class="highlight">Applicable</td><td>Not applicable</td></tr>
+              <tr><td><strong>Free Swap</strong></td><td colspan="3">Applied <strong>by default</strong> to all 3 account types, in all countries</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="callout success">
+          <span class="callout-icon">🎁</span>
+          <div class="callout-content">
+            <strong>Free Swap</strong>
+            <p>Free swap is applied automatically to ECN, Standard and Cent accounts in every country. Clients do <strong>not</strong> need a minimum deposit or an activation request.</p>
+          </div>
+        </div>
+        <div class="callout info">
+          <span class="callout-icon">🔄</span>
+          <div class="callout-content">
+            <strong>Existing Accounts</strong>
+            <ul style="margin:8px 0 0;padding-left:18px;line-height:1.8;">
+              <li>Existing accounts are moved to the new fee group once <strong>all open positions are closed</strong></li>
+              <li>Clients with existing accounts may open a <strong>new account</strong> to switch to the new Standard / ECN features right away</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
       <!-- Mark Complete -->
       <div class="mark-complete-bar">
         <div class="mark-complete-text">
@@ -187,7 +228,7 @@
       <div class="quiz-section">
         <div class="quiz-header">
           <h3>📝 Module 2 Quiz</h3>
-          <span class="quiz-counter" id="quizCounterTop">6 Questions</span>
+          <span class="quiz-counter" id="quizCounterTop">8 Questions</span>
         </div>
         <div class="quiz-progress-dots" id="quizDots"></div>
         <div id="quizContainer"></div>
@@ -207,7 +248,7 @@
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
 <script src="firebase-config.js?v=4"></script>
-<script src="module-common.js?v=2"></script>
+<script src="module-common.js?v=3"></script>
 <script>
 document.getElementById('sidebar').innerHTML = getSidebarHTML(2);
 updateSidebarProgress();
@@ -233,10 +274,10 @@ const questions = [
     explain: "The Cent Account uses Cent as its base currency, where 100 Cent = 1 USD."
   },
   {
-    q: "Does the Standard Account charge a commission?",
-    opts: ["Yes, always", "No, it's commission-free", "Only on withdrawals", "Only on large trades"],
+    q: "What spread type and commission does the Standard Account have on Forex & Gold?",
+    opts: ["Floating spread, with commission", "Fixed spread, no commission", "Raw spread, with commission", "Fixed spread, with commission"],
     _c: "MQ==",
-    explain: "The Standard Account is commission-free — trading costs are incorporated into the (floating) spread instead."
+    explain: "The Standard Account (like the Cent Account) has a fixed spread on Forex & Gold and charges no commission — trading costs are incorporated into the spread."
   },
   {
     q: "What is the Margin Call level for Standard and ECN accounts?",
@@ -249,10 +290,22 @@ const questions = [
     opts: ["ECN Account", "Standard Account", "Cent Account", "Master Account"],
     _c: "Mg==",
     explain: "The Cent Account is designed for new traders, strategy/EA testing, and risk management practice, with low financial risk."
+  },
+  {
+    q: "Which account types is the Bonus applicable to?",
+    opts: ["ECN and Standard only", "ECN, Standard and Cent", "Cent only", "ECN only"],
+    _c: "MA==",
+    explain: "The Bonus applies to ECN and Standard accounts. It is not applicable to Cent accounts."
+  },
+  {
+    q: "How is Free Swap applied to client accounts?",
+    opts: ["Only after a USD 1,000 deposit", "On request, through Support", "By default on all 3 account types, in all countries — no minimum deposit or activation request", "Only on ECN accounts"],
+    _c: "Mg==",
+    explain: "Free swap is applied by default to ECN, Standard and Cent accounts in all countries, with no minimum deposit or activation request."
   }
 ];
 
-const quiz = new ModuleQuiz(2, questions);
+const quiz = new ModuleQuiz(2, questions, '2026-11');
 quiz.render();
 </script>
 </body>

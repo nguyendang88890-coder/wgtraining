@@ -54,13 +54,13 @@
             </thead>
             <tbody>
               <tr><td><strong>Default Account</strong></td><td>Low Spread</td><td>Low Commission</td><td>Not applicable</td><td>Not applicable</td></tr>
-              <tr><td><strong>Spread</strong></td><td>Competitive spread</td><td class="highlight">Raw Spread</td><td>Competitive spread</td><td>Based on MA</td></tr>
+              <tr><td><strong>Spread</strong></td><td>Fixed spread (Forex &amp; Gold)</td><td class="highlight">Raw Spread</td><td>Competitive spread</td><td>Based on MA</td></tr>
               <tr><td><strong>Commission</strong></td><td>No</td><td class="highlight">Yes</td><td>No</td><td>No</td></tr>
-              <tr><td><strong>Leverage</strong></td><td>Floating (see below)</td><td>Floating (see below)</td><td>Fixed (see below)</td><td>Fixed (see below)</td></tr>
+              <tr><td><strong>Leverage</strong></td><td>Forex: selectable up to 1:1000; other symbols fixed (see 3.3)</td><td>Forex: selectable up to 1:1000; other symbols fixed (see 3.3)</td><td>Fixed (see 3.4)</td><td>Fixed (see 3.4)</td></tr>
               <tr><td><strong>IB Reward</strong></td><td>70% revenue</td><td>Forex, Metals: $3.5/lot</td><td>70% revenue</td><td>70% revenue</td></tr>
               <tr><td><strong>Commission / ECN</strong></td><td>No</td><td>Forex, Metals: $5/lot</td><td>No</td><td>No</td></tr>
               <tr><td><strong>Revenue Share</strong></td><td>Up to 70% revenue</td><td>No Revenue Share</td><td>Up to 70% revenue</td><td>Up to 70% revenue</td></tr>
-              <tr><td><strong>Execution Type</strong></td><td>Market Order · Pending Order</td><td>Market Order · Pending Order</td><td>Market Order · Pending Order</td><td>Market Order · Pending Order</td></tr>
+              <tr><td><strong>Execution Type</strong></td><td>Market Order · Limit Order</td><td>Market Order · Limit Order</td><td>Market Order · Pending Order</td><td>Market Order · Pending Order</td></tr>
               <tr><td><strong>Islamic Accounts</strong></td><td>Coming soon</td><td>Coming soon</td><td>Coming soon</td><td>Coming soon</td></tr>
               <tr><td><strong>Min–Max Lots</strong></td><td colspan="4">Forex, Metals: 0.01 – 30 lot. Other symbols have different min/max lot sizes — check via MT5 (symbol-dependent).</td></tr>
               <tr><td><strong>Max. Number of Orders</strong></td><td>50</td><td>50</td><td>50</td><td>50</td></tr>
@@ -71,65 +71,49 @@
         </div>
       </div>
 
-      <!-- 3.3 Floating Leverage -->
+      <!-- 3.3 Leverage (fixed per instrument) -->
       <div class="content-section">
-        <h3>🌐 3.3 Floating Leverage — All Countries</h3>
+        <h3>🌐 3.3 Leverage — All Countries</h3>
+        <p>The same leverage rules apply to <strong>all countries</strong>. Leverage depends on the instrument, not on the client's equity.</p>
         <div class="table-wrap">
           <table>
             <thead>
-              <tr><th>Equity (USD) / Type</th><th>FX</th><th>Gold</th><th>Silver</th><th>Indices</th><th>Energies</th><th>Cryptos</th><th>Shares</th></tr>
+              <tr><th>Instrument</th><th>Leverage</th><th>Type</th></tr>
             </thead>
             <tbody>
-              <tr><td>$0 – $1,000</td><td class="highlight">1:1000</td><td class="highlight">1:1000</td><td>1:100</td><td>1:100</td><td>1:100</td><td>1:10</td><td>1:10</td></tr>
-              <tr><td>$1,000 – $5,000</td><td>1:500</td><td>1:500</td><td>1:100</td><td>1:100</td><td>1:100</td><td>1:10</td><td>1:10</td></tr>
-              <tr><td>$5,000 – $10,000</td><td>1:200</td><td>1:200</td><td>1:100</td><td>1:100</td><td>1:100</td><td>1:10</td><td>1:10</td></tr>
-              <tr><td>$10,000 – $50,000</td><td class="highlight">1:200</td><td class="highlight">1:200</td><td>1:100</td><td>1:100</td><td>1:100</td><td>1:10</td><td>1:10</td></tr>
-              <tr><td>≥ $50,000</td><td>1:30</td><td>1:30</td><td>1:100</td><td>1:100</td><td>1:100</td><td>1:10</td><td>1:10</td></tr>
-              <tr><td>23:30–01:05 (weekdays close &amp; open)</td><td class="highlight">1:200</td><td class="highlight">1:200</td><td>1:100</td><td>1:100</td><td>1:100</td><td>1:10</td><td>1:10</td></tr>
-              <tr><td>Weekend close → market reopen (Fri 21:30 – Mon 01:05)</td><td class="highlight">1:200</td><td class="highlight">1:200</td><td>1:100</td><td>1:100</td><td>1:100</td><td>1:10</td><td>1:10</td></tr>
-              <tr><td>15 min before &amp; after news release</td><td class="highlight">1:200</td><td class="highlight">1:200</td><td>1:100</td><td>1:100</td><td>1:100</td><td>1:10</td><td>1:10</td></tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      <!-- 3.4 Fixed Leverage UZ/KGZ -->
-      <div class="content-section">
-        <h3>🇺🇿 3.4 Fixed Leverage 1:500 — Uzbekistan & Kyrgyzstan</h3>
-        <p>A dedicated fixed-leverage configuration applies to <strong>Uzbekistan (UZ)</strong> and <strong>Kyrgyzstan (KGZ)</strong>. All other leverage logic follows the Floating Leverage model above — only <strong>Gold is fixed at 1:500</strong>.</p>
-        <div class="table-wrap">
-          <table>
-            <thead>
-              <tr><th>Equity (USD) / Type</th><th>FX</th><th>Gold</th><th>Silver</th><th>Indices</th><th>Energies</th><th>Cryptos</th><th>Shares</th></tr>
-            </thead>
-            <tbody>
-              <tr><td>$0 – $1,000</td><td>1:1000</td><td class="highlight">1:500</td><td>1:100</td><td>1:100</td><td>1:100</td><td>1:10</td><td>1:10</td></tr>
-              <tr><td>$1,000 – $5,000</td><td>1:500</td><td class="highlight">1:500</td><td>1:100</td><td>1:100</td><td>1:100</td><td>1:10</td><td>1:10</td></tr>
-              <tr><td>$5,000 – $10,000</td><td>1:200</td><td class="highlight">1:500</td><td>1:100</td><td>1:100</td><td>1:100</td><td>1:10</td><td>1:10</td></tr>
-              <tr><td>$10,000 – $50,000</td><td class="highlight">1:200</td><td class="highlight">1:500</td><td>1:100</td><td>1:100</td><td>1:100</td><td>1:10</td><td>1:10</td></tr>
-              <tr><td>≥ $50,000</td><td>1:30</td><td class="highlight">1:500</td><td>1:100</td><td>1:100</td><td>1:100</td><td>1:10</td><td>1:10</td></tr>
-              <tr><td>23:30–01:05 (weekdays close &amp; open)</td><td class="highlight">1:200</td><td class="highlight">1:500</td><td>1:100</td><td>1:100</td><td>1:100</td><td>1:10</td><td>1:10</td></tr>
-              <tr><td>Weekend close → market reopen (Fri 21:30 – Mon 01:05)</td><td class="highlight">1:200</td><td class="highlight">1:500</td><td>1:100</td><td>1:100</td><td>1:100</td><td>1:10</td><td>1:10</td></tr>
-              <tr><td>15 min before &amp; after news</td><td class="highlight">1:200</td><td class="highlight">1:500</td><td>1:100</td><td>1:100</td><td>1:100</td><td>1:10</td><td>1:10</td></tr>
+              <tr><td><strong>Forex</strong></td><td class="highlight">Up to 1:1000</td><td>Client-selectable</td></tr>
+              <tr><td><strong>Gold</strong></td><td class="highlight">1:500</td><td>Fixed</td></tr>
+              <tr><td><strong>Silver</strong></td><td>1:100</td><td>Fixed</td></tr>
+              <tr><td><strong>Energies (Oil)</strong></td><td>1:100</td><td>Fixed</td></tr>
+              <tr><td><strong>Indices</strong></td><td>1:100</td><td>Fixed</td></tr>
+              <tr><td><strong>Crypto</strong></td><td>1:10</td><td>Fixed</td></tr>
+              <tr><td><strong>Stocks</strong></td><td>1:10</td><td>Fixed</td></tr>
             </tbody>
           </table>
         </div>
         <div class="callout info">
           <span class="callout-icon">📋</span>
           <div class="callout-content">
-            <strong>Business Rules</strong>
+            <strong>What changed</strong>
             <ul style="margin:8px 0 0;padding-left:18px;line-height:1.8;">
-              <li>Applies only to UZ and KGZ</li>
-              <li>Gold is fixed at 1:500</li>
-              <li>Existing and new eligible accounts follow this configuration</li>
+              <li>Floating leverage based on equity has been <strong>removed</strong></li>
+              <li><strong>No leverage reduction</strong> during news releases</li>
+              <li>The separate leverage configuration for Uzbekistan &amp; Kyrgyzstan (UZ &amp; KGZ) has been <strong>removed</strong> — one set of rules for every country</li>
             </ul>
+          </div>
+        </div>
+        <div class="callout gold">
+          <span class="callout-icon">🔄</span>
+          <div class="callout-content">
+            <strong>Existing accounts</strong>
+            <p>Existing accounts are moved to the new fee group once all open positions are closed. Clients may also open a new account to switch right away (see Module 2, section 2.4).</p>
           </div>
         </div>
       </div>
 
-      <!-- 3.5 Fixed Leverage Master/Investor -->
+      <!-- 3.4 Fixed Leverage Master/Investor -->
       <div class="content-section">
-        <h3>🔒 3.5 Fixed Leverage — Master & Investor Accounts</h3>
+        <h3>🔒 3.4 Fixed Leverage — Master & Investor Accounts</h3>
         <div class="table-wrap">
           <table>
             <thead>
@@ -182,7 +166,7 @@
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
 <script src="firebase-config.js?v=4"></script>
-<script src="module-common.js?v=2"></script>
+<script src="module-common.js?v=3"></script>
 <script>
 document.getElementById('sidebar').innerHTML = getSidebarHTML(3);
 updateSidebarProgress();
@@ -196,28 +180,28 @@ const questions = [
     explain: "WeGolden offers Forex, Precious Metals, Cryptocurrencies, Energy, Indices, and U.S. Stocks — not real estate."
   },
   {
-    q: "What is the floating leverage for FX at $0–$1,000 equity?",
+    q: "What is the maximum leverage a client can select for Forex?",
     opts: ["1:100", "1:500", "1:1000", "1:30"],
     _c: "Mg==",
-    explain: "At the lowest equity tier ($0–$1,000), FX and Gold both get the highest floating leverage of 1:1000."
+    explain: "Forex leverage is client-selectable, up to 1:1000. Other instruments use fixed leverage."
   },
   {
-    q: "What is the leverage for Cryptos across all equity tiers under the floating model?",
+    q: "What is the fixed leverage for Cryptos and Stocks?",
     opts: ["1:10", "1:100", "1:500", "1:1000"],
     _c: "MA==",
-    explain: "Cryptos (and Shares) stay fixed at 1:10 leverage regardless of equity tier, unlike FX/Gold which float down as equity rises."
+    explain: "Crypto and Stocks are fixed at 1:10 leverage."
   },
   {
-    q: "The Fixed Leverage 1:500 configuration applies specifically to which countries?",
-    opts: ["Vietnam & Thailand", "Uzbekistan & Kyrgyzstan", "Indonesia & Philippines", "Canada & Cyprus"],
-    _c: "MQ==",
-    explain: "A dedicated fixed-leverage configuration of 1:500 for Gold applies only to Uzbekistan (UZ) and Kyrgyzstan (KGZ)."
+    q: "What is the fixed leverage for Gold?",
+    opts: ["1:10", "1:100", "1:500", "1:1000"],
+    _c: "Mg==",
+    explain: "Gold is fixed at 1:500 for all clients in all countries. Silver, Energies and Indices are fixed at 1:100."
   },
   {
-    q: "Under the UZ/KGZ fixed leverage configuration, which asset is fixed at 1:500?",
-    opts: ["FX", "Gold", "Indices", "Shares"],
-    _c: "MQ==",
-    explain: "Only Gold is fixed at 1:500 for UZ/KGZ — all other assets keep following the standard floating leverage model."
+    q: "What happens to leverage during news releases under the current rules?",
+    opts: ["It is reduced to 1:200 for 15 minutes before and after", "It is reduced to 1:100", "There is no leverage reduction during news releases", "Trading is paused"],
+    _c: "Mg==",
+    explain: "Floating leverage based on equity has been removed, and there is no leverage reduction during news releases. The rules are the same in every country (the separate UZ & KGZ configuration was removed)."
   },
   {
     q: "What is the maximum leverage for FX on Master/Investor (fixed leverage) accounts?",
@@ -227,7 +211,7 @@ const questions = [
   }
 ];
 
-const quiz = new ModuleQuiz(3, questions);
+const quiz = new ModuleQuiz(3, questions, '2026-11');
 quiz.render();
 </script>
 </body>
