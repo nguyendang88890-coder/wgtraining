@@ -26,33 +26,22 @@
         <div class="module-header-info">
           <h2>IB Policies & Reward</h2>
           <p>How Introducing Brokers earn rewards, commission structure, and monthly bonuses</p>
+          <p style="font-size:0.78rem;color:var(--text-muted);margin-top:4px;">Last updated: 18 Nov 2026</p>
         </div>
       </div>
 
       <!-- 4.1 Standard Account IB Reward -->
       <div class="content-section">
-        <h3>🤝 4.1 Standard Account</h3>
-
-        <h4>High Spread (HS) — suffix "i", e.g. XAUUSDi</h4>
+        <h3>🤝 4.1 Standard Fixed Spread &amp; Cent Fixed Spread Accounts</h3>
         <div class="table-wrap">
           <table>
+            <thead>
+              <tr><th></th><th>Standard Fixed Spread</th><th>Cent Fixed Spread</th></tr>
+            </thead>
             <tbody>
-              <tr><td><strong>Fees/Commission</strong></td><td>Commission-free</td></tr>
-              <tr><td><strong>IB Reward (Forex & Gold)</strong></td><td class="highlight">USD 16 / lot</td></tr>
-              <tr><td><strong>Spread</strong></td><td>Fixed spread on Forex &amp; Gold</td></tr>
-              <tr><td><strong>Revenue Sharing Ratio</strong></td><td>Up to 70% of revenue (depending on configuration/agreement)</td></tr>
-            </tbody>
-          </table>
-        </div>
-
-        <h4>Low Spread (LS) — suffix "m", e.g. XAUUSDm <span style="font-weight:400;font-size:0.85rem;color:var(--text-muted);">(Default account)</span></h4>
-        <div class="table-wrap">
-          <table>
-            <tbody>
-              <tr><td><strong>Fees/Commission</strong></td><td>Commission-free</td></tr>
-              <tr><td><strong>IB Reward (Forex & Gold)</strong></td><td class="highlight">USD 8 / lot</td></tr>
-              <tr><td><strong>Spread</strong></td><td>Fixed spread on Forex &amp; Gold</td></tr>
-              <tr><td><strong>Revenue Sharing Ratio</strong></td><td>Up to 70% of revenue (depending on configuration/agreement)</td></tr>
+              <tr><td><strong>Fees/Commission</strong></td><td colspan="2">Commission-free</td></tr>
+              <tr><td><strong>Spread</strong></td><td colspan="2">Fixed spread on Forex &amp; Gold</td></tr>
+              <tr><td><strong>IB Reward</strong></td><td colspan="2" class="highlight">According to the current IB reward sheet (revenue share up to 70%, depending on configuration/agreement)</td></tr>
             </tbody>
           </table>
         </div>
@@ -156,14 +145,16 @@
         <div class="callout gold">
           <span class="callout-icon">✅</span>
           <div class="callout-content">
-            <strong>Qualified New Client</strong>
+            <strong>Qualified New Funded Client</strong>
             <p>A new client counts toward the tiers above only if all of the following are true:</p>
             <ul style="margin:8px 0 0;padding-left:18px;line-height:1.8;">
               <li>Makes their <strong>first deposit with WeGolden within the month</strong></li>
-              <li>Completes <strong>KYC</strong></li>
-              <li>Deposits a minimum of <strong>USD 150</strong></li>
+              <li>Completes <strong>KYC before the monthly cut-off date</strong></li>
+              <li>Does <strong>not share</strong> a device, payment method or bank account with the IB or with other clients</li>
+              <li>First deposit of at least <strong>USD 150</strong></li>
               <li>Makes <strong>no withdrawal of principal capital</strong> during the month (withdrawing profits is permitted)</li>
-              <li>Trades a minimum of <strong>0.5 lots</strong></li>
+              <li>Trades a minimum of <strong>0.5 lots round-turn</strong>, on at least <strong>2 different trading days</strong></li>
+              <li>No hedging or coordinated trading</li>
               <li>Has <strong>no trades closed in under 25 seconds</strong></li>
             </ul>
           </div>
@@ -175,7 +166,10 @@
             <strong>Notes</strong>
             <ul style="margin:8px 0 0;padding-left:18px;line-height:1.8;">
               <li>Rewards are calculated on a monthly basis</li>
-              <li>IBs may qualify for one reward tier per calendar month only</li>
+              <li>All <strong>3 criteria</strong> of a tier (Net Deposit, Volume, Qualified New Funded Clients) must be met <strong>within the same month</strong></li>
+              <li>IBs receive only the <strong>highest tier reached</strong> each calendar month</li>
+              <li>The reward is credited as <strong>commission within 7 business days</strong> after the month ends</li>
+              <li>Not applicable to <strong>WeGolden employees</strong> or <strong>net revenue share partners</strong></li>
               <li>Net deposits are calculated as total deposits minus withdrawals</li>
               <li>Trading volume is calculated in round-turn lots on eligible accounts</li>
               <li>Matching IP addresses are sent to a <strong>compliance review</strong> — they no longer cause automatic disqualification</li>
@@ -215,7 +209,7 @@
       <!-- 4.7 Welcome IB Bonus -->
       <div class="content-section">
         <h3>🎁 4.7 Welcome IB Bonus (One-time USD 3,000)</h3>
-        <p>A one-time bonus of <strong>USD 3,000</strong> for new IBs who meet <strong>all</strong> of the conditions below during their qualifying period.</p>
+        <p>A one-time bonus of <strong>USD 3,000</strong> for new IBs who meet <strong>all</strong> of the conditions below during their qualifying period. Each IB ID can receive it <strong>only once</strong>. <span style="color:var(--text-muted);">(Shown as "Welcome IB Reward" on wegolden.com.)</span></p>
 
         <div class="table-wrap">
           <table>
@@ -232,7 +226,7 @@
           <div class="callout-content">
             <strong>All three conditions</strong>
             <ul style="margin:8px 0 0;padding-left:18px;line-height:1.8;">
-              <li><strong>IB Tree Net Deposit ≥ USD 88,000</strong></li>
+              <li><strong>IB Tree Net Deposit ≥ USD 88,000</strong> (cumulative) — total deposits − withdrawals − rewards already paid, across the IB's direct referrals</li>
               <li><strong>2 consecutive months</strong> with a positive Net Deposit</li>
               <li><strong>≥ 20 Qualified Clients</strong> — direct referrals only</li>
             </ul>
@@ -256,6 +250,18 @@
           <span class="callout-icon">📢</span>
           <div class="callout-content">
             <p>These terms are effective immediately. <strong>Existing IBs are evaluated on the new criteria</strong> for both IB Power Rewards and the Welcome IB Bonus.</p>
+          </div>
+        </div>
+
+        <div class="callout danger">
+          <span class="callout-icon">⏳</span>
+          <div class="callout-content">
+            <strong>Holding period &amp; payment</strong>
+            <ul style="margin:8px 0 0;padding-left:18px;line-height:1.8;">
+              <li>The bonus is held for <strong>60 days</strong> after the conditions are met</li>
+              <li>It is <strong>not paid</strong> if the IB Tree Net Deposit drops by more than <strong>50%</strong>, if fraud is detected, or if the IB agreement is terminated</li>
+              <li>After the holding period it is credited to the <strong>Wallet within 7 business days</strong> and can be withdrawn in full</li>
+            </ul>
           </div>
         </div>
       </div>
@@ -302,10 +308,10 @@ checkCompleted(4);
 
 const questions = [
   {
-    q: "What is the IB Reward for the Standard Account High Spread (HS) on Forex & Gold?",
-    opts: ["USD 8 / lot", "USD 16 / lot", "USD 20 / lot", "USD 3.5 / lot"],
+    q: "What is the IB Reward on an ECN account (Forex & Metals)?",
+    opts: ["No IB reward (no revenue share)", "70% of commission ≈ USD 3.5 / lot", "USD 16 / lot", "USD 5 / lot"],
     _c: "MQ==",
-    explain: "The Standard Account HS tier pays IBs USD 16/lot on Forex & Gold; the LS (default) tier pays USD 8/lot."
+    explain: "ECN charges USD 5/lot commission on Forex & Metals; the IB receives 70% of that commission, about USD 3.5/lot."
   },
   {
     q: "What is the minimum holding time for a position to qualify for an IB Reward?",
@@ -338,10 +344,10 @@ const questions = [
     explain: "Under the anti-fraud policy, violating accounts have all profits confiscated, and the IB has all rewards from those trades deducted."
   },
   {
-    q: "What is the minimum deposit a new client must make to count as a \"Qualified New Client\" in IB Power Rewards?",
+    q: "What is the minimum first deposit a new client must make to count as a \"Qualified New Funded Client\" in IB Power Rewards?",
     opts: ["USD 100", "USD 150", "USD 250", "USD 500"],
     _c: "MQ==",
-    explain: "A Qualified New Client makes a first deposit of at least USD 150 within the month, completes KYC, makes no principal withdrawals, trades at least 0.5 lots, and has no trades closed in under 25 seconds."
+    explain: "A Qualified New Funded Client makes a first deposit of at least USD 150 within the month, completes KYC before the cut-off date, shares no device/payment method/bank account with the IB or other clients, makes no principal withdrawals, trades at least 0.5 lots round-turn on at least 2 days, does not hedge, and has no trades closed in under 25 seconds."
   },
   {
     q: "How is the Welcome IB Bonus qualifying period defined?",
@@ -351,7 +357,7 @@ const questions = [
   }
 ];
 
-const quiz = new ModuleQuiz(4, questions, '2026-11');
+const quiz = new ModuleQuiz(4, questions, '2026-11b');
 quiz.render();
 </script>
 </body>

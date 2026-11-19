@@ -26,6 +26,7 @@
         <div class="module-header-info">
           <h2>Deposit & Withdrawal</h2>
           <p>How clients fund and withdraw from their trading accounts</p>
+          <p style="font-size:0.78rem;color:var(--text-muted);margin-top:4px;">Last updated: 18 Nov 2026</p>
         </div>
       </div>
 
@@ -61,7 +62,7 @@
           <span class="callout-icon">✅</span>
           <div class="callout-content">
             <ul style="margin:0;padding-left:18px;line-height:1.8;">
-              <li>Withdrawals are completed within <strong>5 minutes</strong></li>
+              <li>Withdrawals are <strong>usually processed within about 5 minutes</strong>; some cases can take longer (e.g. additional verification checks or bank processing times)</li>
               <li>Funds are sent directly to the user's registered bank account or USDT wallet</li>
               <li>Protected by multi-layer authentication, data encryption, and 24/7 transaction monitoring</li>
               <li>Transaction history and status updates are available for full transparency</li>
@@ -202,10 +203,10 @@ const questions = [
     explain: "WeGolden covers all deposit and withdrawal gateway fees — no fees are charged to normal clients."
   },
   {
-    q: "How long does it take for a withdrawal to be completed?",
-    opts: ["24 hours", "5 minutes", "3 business days", "1 hour"],
+    q: "What should you tell a client about withdrawal processing time?",
+    opts: ["Always exactly 24 hours", "Usually within about 5 minutes, but some cases can take longer", "Guaranteed within 5 minutes, no exceptions", "3–5 business days"],
     _c: "MQ==",
-    explain: "Withdrawals are completed within 5 minutes, sent directly to the user's registered bank account or USDT wallet."
+    explain: "Withdrawals are usually processed within about 5 minutes, but some cases (additional verification or bank processing) can take longer — never promise an absolute time."
   },
   {
     q: "What compliance requirement applies to all deposit/withdrawal transactions?",
@@ -221,7 +222,7 @@ const questions = [
   }
 ];
 
-const quiz = new ModuleQuiz(5, questions);
+const quiz = new ModuleQuiz(5, questions, '2026-11b');
 quiz.render();
 </script>
 </body>

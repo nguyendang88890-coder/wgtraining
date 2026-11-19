@@ -26,6 +26,7 @@
         <div class="module-header-info">
           <h2>Overview</h2>
           <p>Who WeGolden is, where it operates, and the regulatory licenses behind it</p>
+          <p style="font-size:0.78rem;color:var(--text-muted);margin-top:4px;">Last updated: 18 Nov 2026</p>
         </div>
       </div>
 
@@ -42,9 +43,9 @@
         <div class="table-wrap">
           <table>
             <tbody>
-              <tr><td><strong>Established</strong></td><td>December 31, 2025</td></tr>
+              <tr><td><strong>Established</strong></td><td>Established Group, since 2021</td></tr>
               <tr><td><strong>Headquarters</strong></td><td class="highlight">Johannesburg, South Africa</td></tr>
-              <tr><td><strong>Representative offices</strong></td><td>Canada, Cyprus, Thailand, Vietnam, Dubai, Indonesia, Philippines</td></tr>
+              <tr><td><strong>Representative offices</strong></td><td>Canada, Uruguay, Cyprus, Dubai, Vietnam</td></tr>
               <tr><td><strong>Top-tier liquidity providers</strong></td><td>HSBC, Citibank, Barclays, Bank of America, Goldman Sachs</td></tr>
             </tbody>
           </table>
@@ -57,7 +58,7 @@
         <p>WeGolden holds <strong>three primary licenses</strong> that authorize its brokerage and financial services activities.</p>
 
         <h4>1. FSCA License — FSP No. 53890</h4>
-        <p>Issued by the <strong>Financial Sector Conduct Authority (South Africa)</strong>.</p>
+        <p><strong>WeGolden (Pty) Ltd</strong> is authorised and regulated by the <strong>Financial Sector Conduct Authority (FSCA), South Africa</strong>, under FSP Licence No. 53890 (Company Reg. No. <strong>2022/892357/07</strong>). Registered address: Johannesburg, South Africa.</p>
         <div class="callout gold">
           <span class="callout-icon">🎯</span>
           <div class="callout-content">
@@ -89,19 +90,24 @@
               <tr><td><strong>MSB Registration No.</strong></td><td>31000318885103</td></tr>
               <tr><td><strong>Issued by</strong></td><td>U.S. Financial Crimes Enforcement Network (FinCEN)</td></tr>
               <tr><td><strong>Compliance</strong></td><td>Bank Secrecy Act</td></tr>
-              <tr><td><strong>Authorization</strong></td><td>Global financial services</td></tr>
             </tbody>
           </table>
         </div>
 
-        <h4>3. Comoros License — No. HT00524061</h4>
-        <p>Authorized to conduct:</p>
-        <ul style="padding-left:20px;color:var(--text-secondary);line-height:1.8;margin-bottom:14px;">
-          <li>International Brokerage Services</li>
-          <li>Clearing House Activities</li>
-          <li>Financial Intermediation</li>
-          <li>Payment &amp; Clearing Services</li>
-        </ul>
+        <h4>3. Comoros (Mwali) License — MISA Licence No. BFX2024121</h4>
+        <p><strong>We Golden (PTY) LTD (Union of Comoros)</strong> is incorporated in the Union of Comoros and licensed by the <strong>Mwali International Services Authority (MISA)</strong> to provide <strong>international brokerage services</strong>.</p>
+        <div class="table-wrap">
+          <table>
+            <tbody>
+              <tr><td><strong>MISA Licence No.</strong></td><td class="highlight">BFX2024121</td></tr>
+              <tr><td><strong>Company Registration No.</strong></td><td>HT00524061 <span style="color:var(--text-muted);">(company number — not the licence number)</span></td></tr>
+              <tr><td><strong>Registered office</strong></td><td>Bonovo Road, Fomboni, Island of Mohéli, Union of Comoros</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h4>Payment Agent — Diretio Holding Ltd (Cyprus)</h4>
+        <p><strong>Diretio Holding Ltd</strong> (Registration No. HE 481457, Limassol, Cyprus) acts as a <strong>Payment Agent</strong> on behalf of WeGolden in the specified countries, as permitted under applicable laws and regulations.</p>
         <div class="callout success">
           <span class="callout-icon">🛡️</span>
           <div class="callout-content">
@@ -153,9 +159,9 @@ checkCompleted(1);
 const questions = [
   {
     q: "When was WeGolden established?",
-    opts: ["December 31, 2024", "December 31, 2025", "January 1, 2025", "March 1, 2025"],
+    opts: ["Since 2019", "Since 2021", "Since 2023", "Since 2025"],
     _c: "MQ==",
-    explain: "WeGolden was established on December 31, 2025."
+    explain: "WeGolden is an established group, operating since 2021."
   },
   {
     q: "Where is WeGolden headquartered?",
@@ -182,14 +188,14 @@ const questions = [
     explain: "The FSCA's objectives focus on industry stability, client protection, market integrity, and competition — not maximizing company profit."
   },
   {
-    q: "What does the Comoros License (No. HT00524061) authorize?",
-    opts: ["Only retail banking", "International brokerage & clearing house services", "Insurance underwriting", "Real estate transactions"],
+    q: "What is WeGolden's Comoros (MISA) brokerage licence number?",
+    opts: ["HT00524061", "BFX2024121", "FSP No. 53890", "31000318885103"],
     _c: "MQ==",
-    explain: "The Comoros License authorizes International Brokerage Services, Clearing House Activities, Financial Intermediation, and Payment & Clearing Services."
+    explain: "We Golden (PTY) LTD (Union of Comoros) is licensed by the Mwali International Services Authority (MISA) under Licence No. BFX2024121 to provide international brokerage services. HT00524061 is the company registration number, not the licence number."
   }
 ];
 
-const quiz = new ModuleQuiz(1, questions);
+const quiz = new ModuleQuiz(1, questions, '2026-11b');
 quiz.render();
 </script>
 </body>

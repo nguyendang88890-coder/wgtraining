@@ -26,6 +26,7 @@
         <div class="module-header-info">
           <h2>Financial Products & Leverage</h2>
           <p>Tradeable instruments and how leverage is applied across account types</p>
+          <p style="font-size:0.78rem;color:var(--text-muted);margin-top:4px;">Last updated: 18 Nov 2026</p>
         </div>
       </div>
 
@@ -45,27 +46,24 @@
 
       <!-- 3.2 Account Comparison -->
       <div class="content-section">
-        <h3>📊 3.2 Leverage by Account Type</h3>
-        <p style="font-size:0.85rem;color:var(--text-muted);">Applied according to MT5 server time.</p>
+        <h3>📊 3.2 Account Types at a Glance</h3>
+        <p style="font-size:0.85rem;color:var(--text-muted);">Applied according to MT5 server time. Full account details: Module 2 · IB rewards: Module 4.</p>
         <div class="table-wrap">
           <table>
             <thead>
-              <tr><th></th><th>Standard</th><th>ECN</th><th>Master Account</th><th>Investor Account</th></tr>
+              <tr><th></th><th>ECN</th><th>Standard Fixed Spread</th><th>Cent Fixed Spread</th></tr>
             </thead>
             <tbody>
-              <tr><td><strong>Default Account</strong></td><td>Low Spread</td><td>Not applicable</td><td>Not applicable</td><td>Not applicable</td></tr>
-              <tr><td><strong>Spread</strong></td><td>Fixed spread (Forex &amp; Gold)</td><td class="highlight">Raw Spread</td><td>Competitive spread</td><td>Based on MA</td></tr>
-              <tr><td><strong>Commission</strong></td><td>No</td><td class="highlight">Yes</td><td>No</td><td>No</td></tr>
-              <tr><td><strong>Leverage</strong></td><td>Forex: selectable up to 1:1000; other symbols fixed (see 3.3)</td><td>Forex: selectable up to 1:1000; other symbols fixed (see 3.3)</td><td>Fixed (see 3.4)</td><td>Fixed (see 3.4)</td></tr>
-              <tr><td><strong>IB Reward</strong></td><td>70% revenue</td><td>Forex, Metals: $3.5/lot</td><td>70% revenue</td><td>70% revenue</td></tr>
-              <tr><td><strong>Commission / ECN</strong></td><td>No</td><td>Forex, Metals: $5/lot</td><td>No</td><td>No</td></tr>
-              <tr><td><strong>Revenue Share</strong></td><td>Up to 70% revenue</td><td>No Revenue Share</td><td>Up to 70% revenue</td><td>Up to 70% revenue</td></tr>
-              <tr><td><strong>Execution Type</strong></td><td>Market Order · Limit Order</td><td>Market Order · Limit Order</td><td>Market Order · Pending Order</td><td>Market Order · Pending Order</td></tr>
-              <tr><td><strong>Islamic Accounts</strong></td><td>Coming soon</td><td>Coming soon</td><td>Coming soon</td><td>Coming soon</td></tr>
-              <tr><td><strong>Min–Max Lots</strong></td><td colspan="4">Forex, Metals: 0.01 – 30 lot. Other symbols have different min/max lot sizes — check via MT5 (symbol-dependent).</td></tr>
-              <tr><td><strong>Max. Number of Orders</strong></td><td>50</td><td>50</td><td>50</td><td>50</td></tr>
-              <tr><td><strong>Margin Call Level</strong></td><td>150%</td><td>150%</td><td>150%</td><td>150%</td></tr>
-              <tr><td><strong>Stop Out Level</strong></td><td>20%</td><td>20%</td><td>20%</td><td>20%</td></tr>
+              <tr><td><strong>Spread</strong></td><td class="highlight">Raw spread</td><td>Fixed spread (Forex &amp; Gold)</td><td>Fixed spread (Forex &amp; Gold)</td></tr>
+              <tr><td><strong>Commission</strong></td><td class="highlight">Forex, Metals: USD 5/lot</td><td>No</td><td>No</td></tr>
+              <tr><td><strong>Leverage</strong></td><td colspan="3">Forex: client-selectable, up to 1:1000 · other instruments fixed (see 3.3)</td></tr>
+              <tr><td><strong>IB Reward</strong></td><td>70% of commission (≈ USD 3.5/lot on Forex, Metals)</td><td colspan="2">See Module 4 / IB reward sheet</td></tr>
+              <tr><td><strong>Execution Type</strong></td><td colspan="3">Market Order · Limit Order</td></tr>
+              <tr><td><strong>Swap</strong></td><td colspan="3">Swap-free (default, all countries)</td></tr>
+              <tr><td><strong>Islamic Accounts</strong></td><td colspan="3">Coming soon</td></tr>
+              <tr><td><strong>Min–Max Lots</strong></td><td colspan="3">Forex, Metals: 0.01 – 30 lot. Other symbols have different min/max lot sizes — check via MT5 (symbol-dependent).</td></tr>
+              <tr><td><strong>Max. Number of Orders</strong></td><td colspan="3">50</td></tr>
+              <tr><td><strong>Margin Call / Stop Out</strong></td><td colspan="3">150% / 20%</td></tr>
             </tbody>
           </table>
         </div>
@@ -97,7 +95,7 @@
             <strong>What changed</strong>
             <ul style="margin:8px 0 0;padding-left:18px;line-height:1.8;">
               <li>Floating leverage based on equity has been <strong>removed</strong></li>
-              <li><strong>No leverage reduction</strong> during news releases</li>
+              <li><strong>No leverage reduction</strong> during news releases or around market open/close</li>
               <li>The separate leverage configuration for Uzbekistan &amp; Kyrgyzstan (UZ &amp; KGZ) has been <strong>removed</strong> — one set of rules for every country</li>
             </ul>
           </div>
@@ -108,27 +106,6 @@
             <strong>Existing accounts</strong>
             <p>Existing accounts are moved to the new fee group once all open positions are closed. Clients may also open a new account to switch right away (see Module 2, section 2.4).</p>
           </div>
-        </div>
-      </div>
-
-      <!-- 3.4 Fixed Leverage Master/Investor -->
-      <div class="content-section">
-        <h3>🔒 3.4 Fixed Leverage — Master & Investor Accounts</h3>
-        <div class="table-wrap">
-          <table>
-            <thead>
-              <tr><th>Asset Class</th><th>Maximum Leverage</th></tr>
-            </thead>
-            <tbody>
-              <tr><td>FX</td><td>1:100</td></tr>
-              <tr><td>Gold</td><td>1:100</td></tr>
-              <tr><td>Silver</td><td>1:100</td></tr>
-              <tr><td>CFD Indices</td><td>1:100</td></tr>
-              <tr><td>Energies</td><td>1:100</td></tr>
-              <tr><td>Cryptos</td><td>1:10</td></tr>
-              <tr><td>Shares</td><td>1:10</td></tr>
-            </tbody>
-          </table>
         </div>
       </div>
 
@@ -204,14 +181,14 @@ const questions = [
     explain: "Floating leverage based on equity has been removed, and there is no leverage reduction during news releases. The rules are the same in every country (the separate UZ & KGZ configuration was removed)."
   },
   {
-    q: "What is the maximum leverage for FX on Master/Investor (fixed leverage) accounts?",
-    opts: ["1:10", "1:30", "1:100", "1:1000"],
+    q: "Is leverage reduced around market open/close?",
+    opts: ["Yes, to 1:200", "Yes, to 1:100", "No — leverage is not reduced around market open/close or news releases", "Only for Gold"],
     _c: "Mg==",
-    explain: "Fixed leverage for Master and Investor accounts caps FX, Gold, Silver, Indices, and Energies at 1:100 (Cryptos/Shares at 1:10)."
+    explain: "Under the current rules there is no leverage reduction during news releases or around market open/close. Forex is client-selectable up to 1:1000; other instruments use fixed leverage."
   }
 ];
 
-const quiz = new ModuleQuiz(3, questions, '2026-11');
+const quiz = new ModuleQuiz(3, questions, '2026-11b');
 quiz.render();
 </script>
 </body>
