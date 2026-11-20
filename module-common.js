@@ -105,6 +105,7 @@ function markModuleComplete(moduleId) {
   p[`module${moduleId}_done`] = true;
   saveProgress(p);
   document.getElementById('markCompleteBtn').style.display = 'none';
+  document.getElementById('completedCheck').classList.remove('hidden');
   document.getElementById('completedCheck').style.display = 'flex';
 }
 
@@ -114,7 +115,7 @@ function checkCompleted(moduleId) {
     const btn = document.getElementById('markCompleteBtn');
     const chk = document.getElementById('completedCheck');
     if (btn) btn.style.display = 'none';
-    if (chk) chk.style.display = 'flex';
+    if (chk) { chk.classList.remove('hidden'); chk.style.display = 'flex'; }
   }
 }
 
@@ -218,7 +219,21 @@ class ModuleQuiz {
     this.p = getProgress();
   }
 
+  renderRules() {
+    const header = document.querySelector('.quiz-section .quiz-header');
+    if (!header || document.getElementById('quizRules')) return;
+    const box = document.createElement('div');
+    box.id = 'quizRules';
+    box.style.cssText = 'font-size:0.82rem;color:var(--text-secondary);background:rgba(255,215,0,0.06);border-left:3px solid var(--border-gold);padding:10px 14px;margin:0 0 16px;border-radius:0 8px 8px 0;line-height:1.7;';
+    box.innerHTML = '<strong>Quiz rules</strong><br>'
+      + '• Pass mark: <strong>60%</strong> — passing the quiz completes this module automatically<br>'
+      + '• <strong>One attempt</strong>: answers are locked after you submit<br>'
+      + '• Did not pass? Ask your trainer or admin to reset the quiz so you can retake it';
+    header.insertAdjacentElement('afterend', box);
+  }
+
   render() {
+    this.renderRules();
     const user  = localStorage.getItem('wmt_user') || '';
     const saved = getQuizResult(user, this.moduleId);
     if (saved) {
@@ -271,7 +286,7 @@ class ModuleQuiz {
     scoreEl.className   = `result-score ${score >= 60 ? 'pass' : 'fail'}`;
     document.getElementById('quizResultMsg').textContent = score >= 60
       ? '🎉 Great job! Module marked as complete.'
-      : '📚 Review the material. Contact admin to retake the quiz.';
+      : '📚 You need at least 60% to complete this module. Review the material and ask your trainer or admin to reset the quiz so you can retake it.';
   }
 
   showLockedResult(saved) {
@@ -402,15 +417,14 @@ class ModuleQuiz {
 
     document.getElementById('quizResultMsg').textContent = passed
       ? '🎉 Great job! Module marked as complete.'
-      : `⚠️ You scored ${score}%. You need at least 60% to complete this module. Contact admin to retake the quiz.`;
+      : `⚠️ You scored ${score}%. You need at least 60% to complete this module. Review the material and ask your trainer or admin to reset the quiz so you can retake it.`;
 
     const btn = document.getElementById('markCompleteBtn');
     const chk = document.getElementById('completedCheck');
     if (passed) {
       if (btn) btn.style.display = 'none';
-      if (chk) chk.style.display = 'flex';
+      if (chk) { chk.classList.remove('hidden'); chk.style.display = 'flex'; }
     }
-    if (chk) chk.style.display = 'flex';
 
     updateSidebarProgress();
     document.getElementById('quizContainer').innerHTML = this.buildReviewHTML();

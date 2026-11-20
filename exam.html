@@ -50,7 +50,7 @@
           <div>
             <div class="section-title" style="margin:0 0 4px;">📋 Question Bank</div>
             <div style="font-size:0.82rem;color:var(--text-muted);">
-              Total: <strong id="eqCount" style="color:var(--gold)">0</strong> questions &nbsp;·&nbsp; Each exam randomly draws <strong style="color:var(--gold)">30</strong> questions
+              Total: <strong id="eqCount" style="color:var(--gold)">0</strong> questions &nbsp;·&nbsp; Each exam randomly draws <strong id="eqDrawCount" style="color:var(--gold)">10</strong> questions
             </div>
           </div>
           <div style="display:flex;gap:8px;flex-wrap:wrap;">
@@ -80,7 +80,7 @@
         <div class="result-hero">
           <div class="result-icon">🚫</div>
           <h2 class="disqualified">You Have Been Disqualified</h2>
-          <p>You have failed the Final Exam twice. You are no longer eligible to retake the exam. Please contact your trainer for further guidance.</p>
+          <p>You have failed the Final Exam twice, so you cannot start a new attempt yourself. Please contact your trainer — in exceptional cases the trainer can reopen the exam.</p>
           <div style="margin-top:24px;">
             <a href="mailto:training@wemastertrade.com" class="btn btn-secondary">📧 Contact Trainer</a>
           </div>
@@ -92,7 +92,7 @@
         <div class="result-hero">
           <div class="result-icon">⏳</div>
           <h2>Exam Submitted — Awaiting Grading</h2>
-          <p>Your Final Exam answers have been submitted and are being reviewed by your trainer. You'll be able to see your result here once grading is complete.</p>
+          <p>Your Final Exam answers have been submitted and are being reviewed by your trainer. Grading usually takes up to <strong>2 business days</strong>. You'll see your result — with the score for each question and any trainer comments — once grading is complete.</p>
           <div style="margin-top:24px;">
             <a href="index.html" class="btn btn-secondary">← Back to Dashboard</a>
           </div>
@@ -142,12 +142,12 @@
           <h3>📋 Before You Start</h3>
           <ul>
             <li>10 essay questions will be selected randomly from a larger question bank — answer each in your own words</li>
-            <li>This is a written exam: your trainer will read and manually grade your answers after you submit</li>
+            <li>This is a written exam: your trainer will read and manually grade your answers after you submit — usually within <strong>2 business days</strong></li>
             <li><strong>Attempt 1</strong> — Minimum pass score: <strong>60%</strong> of total points</li>
             <li><strong>Attempt 2</strong> — Minimum pass score: <strong>80%</strong> of total points</li>
             <li>You have <strong>2 attempts</strong> total</li>
             <li>If you fail attempt 1, you must wait <strong>3 days</strong> after grading before retrying</li>
-            <li>If you fail attempt 2, you will be <strong>permanently disqualified</strong></li>
+            <li>If you fail attempt 2, you are <strong>disqualified</strong> — only your trainer can reopen the exam, in exceptional cases</li>
             <li>Make sure you have completed all 5 modules before taking this exam</li>
           </ul>
           <div class="callout gold" style="margin-top:16px;">
@@ -160,12 +160,13 @@
         </div>
 
         <div style="text-align:center;margin-top:28px;">
-          <button class="btn btn-primary" id="startExamBtn" onclick="startExam()" style="padding:14px 40px;font-size:1rem;">
+          <button class="btn btn-primary" id="startExamBtn" onclick="startExam()" style="padding:14px 40px;font-size:1rem;display:none;">
             🚀 Start Final Exam
           </button>
           <div id="moduleWarning" class="hidden" style="margin-top:14px;padding:14px 18px;background:rgba(255,61,113,0.08);border:1px solid rgba(255,61,113,0.3);border-radius:10px;font-size:0.88rem;color:var(--danger);">
             🔒 <strong>You have not completed all 5 Training Modules.</strong><br>
-            <span style="color:var(--text-muted);font-size:0.82rem;margin-top:4px;display:block;">Please complete all modules and submit each module quiz before taking the Final Exam.</span>
+            <span style="color:var(--text-muted);font-size:0.82rem;margin-top:4px;display:block;">Pass the quiz of every module (at least 60%) to unlock the Final Exam.</span>
+            <span id="missingModules" style="font-size:0.82rem;margin-top:8px;display:block;"></span>
           </div>
         </div>
       </div>
@@ -216,7 +217,7 @@
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
 <script src="firebase-config.js?v=4"></script>
-<script src="module-common.js?v=3"></script>
+<script src="module-common.js?v=4"></script>
 <script>
 // ===== QUESTION BANK (20 essay questions, 4 per module) =====
 // Each attempt draws EXAM_QUESTIONS_PER_ATTEMPT questions; maxPoints is kept
@@ -228,9 +229,9 @@ const QUESTION_BANK = [
   { q: "Describe what type of company WeGolden is and its three main business lines.", module: 1, maxPoints: 10,
     rubric: "Should mention: a global fintech company; the three business lines are derivatives brokerage, U.S. equities trading, and providing an advanced trading platform." },
   { q: "Where is WeGolden headquartered, and name at least four of its representative office locations.", module: 1, maxPoints: 10,
-    rubric: "Headquarters: Johannesburg, South Africa. Representative offices (any 4+): Canada, Cyprus, Thailand, Vietnam, Dubai, Indonesia, Philippines." },
+    rubric: "Headquarters: Johannesburg, South Africa. Offices (any 4+): Canada, Uruguay, Cyprus, Dubai, Vietnam." },
   { q: "Name WeGolden's three primary regulatory licenses and the authority/country behind each.", module: 1, maxPoints: 10,
-    rubric: "FSCA License (FSP No. 53890) — South Africa; MSB License — FinCEN (USA); Comoros License (No. HT00524061)." },
+    rubric: "FSCA License — FSP No. 53890, South Africa (company reg. no. 2022/892357/07); MSB License — FinCEN, USA (reg. no. 31000318885103); Comoros (Mwali) — MISA international brokerage Licence No. BFX2024121 (HT00524061 is the company registration number, not the licence number)." },
   { q: "What are the main objectives of the FSCA (Financial Sector Conduct Authority)?", module: 1, maxPoints: 10,
     rubric: "Ensure stability and smooth operation of the financial industry; protect clients and investors; maintain/enhance market integrity; promote competition for investors' benefit." },
 
@@ -251,24 +252,24 @@ const QUESTION_BANK = [
     rubric: "Forex: client-selectable, up to 1:1000. Fixed leverage: Gold 1:500; Silver 1:100; Energies (Oil) 1:100; Indices 1:100; Crypto 1:10; Stocks 1:10." },
   { q: "How has the leverage model changed — what happened to equity-based floating leverage, news-release reductions, and the separate Uzbekistan/Kyrgyzstan configuration?", module: 3, maxPoints: 10,
     rubric: "Floating leverage based on equity has been removed; there is no leverage reduction during news releases; the separate UZ & KGZ leverage configuration has been removed — the same rules apply to all countries." },
-  { q: "What is the maximum (fixed) leverage for FX/Gold and for Cryptos/Shares on Master and Investor Accounts?", module: 3, maxPoints: 10,
-    rubric: "FX, Gold, Silver, Indices, Energies: 1:100. Cryptos and Shares: 1:10." },
+  { q: "A client asks whether WeGolden will lower their Gold leverage before a major news release or at market open. How do you answer, and what leverage applies to Gold and to Forex?", module: 3, maxPoints: 10,
+    rubric: "Leverage is NOT reduced during news releases or around market open/close, and the same rules apply in every country. Gold: fixed 1:500. Forex: client-selectable, up to 1:1000." },
 
   // MODULE 4 — IB Policies & Reward
-  { q: "Explain the difference in IB reward between the High Spread (HS) and Low Spread (LS) Standard account sub-types.", module: 4, maxPoints: 10,
-    rubric: "HS (\"i\" suffix): USD 16/lot IB reward, wider spreads. LS (\"m\" suffix, default): USD 8/lot IB reward, tighter spreads." },
+  { q: "How is the IB reward calculated on an ECN account, and how does it work for Standard Fixed Spread and Cent Fixed Spread accounts?", module: 4, maxPoints: 10,
+    rubric: "ECN: client pays USD 5/lot commission on Forex & Metals; the IB receives 70% of that commission (about USD 3.5/lot). Standard Fixed Spread and Cent Fixed Spread: commission-free; IB reward follows the current IB reward sheet (revenue share up to 70%, depending on configuration/agreement)." },
   { q: "What is the Minimum Holding Time requirement for IB Rewards, and what happens in cases of trading violations such as latency arbitrage?", module: 4, maxPoints: 10,
     rubric: "Positions must stay open longer than 120 seconds to count for IB reward. Violations result in all profits being confiscated and all IB rewards from the violating trades being deducted." },
   { q: "Describe the Multi-Level Commission Policy for a Master IB.", module: 4, maxPoints: 10,
     rubric: "A Master IB receives 10% of income generated by direct Sub-IBs and 1% of income generated by direct Sub-Sub-IBs." },
   { q: "What net deposit, trading volume and new-client requirements must an IB meet to reach the \"Gold\" and \"Diamond\" IB Power Rewards tiers, and what bonus does each pay?", module: 4, maxPoints: 10,
-    rubric: "Gold: $8,000 net deposit, 75 lots, 5+ new clients → $250. Diamond: $40,000 net deposit, 300 lots, 12+ new clients → $1,000. (A Qualified New Client: first deposit with WeGolden within the month, KYC completed, deposit of at least $150, no principal withdrawal during the month, at least 0.5 lots traded, no trades closed in under 25 seconds.)" },
+    rubric: "Gold: $8,000 net deposit, 75 lots, 5+ new clients → $250. Diamond: $40,000 net deposit, 300 lots, 12+ new clients → $1,000. All 3 criteria must be met in the same month; only the highest tier reached is paid. (A Qualified New Funded Client: first deposit with WeGolden within the month of at least $150, KYC completed before the cut-off date, no shared device/payment method/bank account with the IB or other clients, no principal withdrawal during the month, at least 0.5 lots round-turn on at least 2 days, no hedging, no trades closed in under 25 seconds.)" },
 
   // MODULE 5 — Deposit & Withdrawal
   { q: "What are the two main payment methods for deposits/withdrawals, and what rule applies to the withdrawal destination for each?", module: 5, maxPoints: 10,
     rubric: "USDT and Bank Transfer (QR Code). USDT withdrawals must go to the same wallet used for deposit; bank deposits/withdrawals must use an account under the same account holder's name." },
   { q: "How long does WeGolden take to process a withdrawal, and who covers the transaction gateway fees?", module: 5, maxPoints: 10,
-    rubric: "Withdrawals are completed within 5 minutes. WeGolden covers all deposit/withdrawal gateway fees — no fees for normal clients (WeGolden may charge fees for low-activity or suspected-abuse accounts)." },
+    rubric: "Withdrawals are usually processed within about 5 minutes, but some cases can take longer (additional verification, bank processing) — staff must not promise an absolute time. WeGolden covers all deposit/withdrawal gateway fees — no fees for normal clients (WeGolden may charge fees for low-activity or suspected-abuse accounts)." },
   { q: "Explain the Savings program's minimum investment requirement and what happens if a client withdraws before the plan matures.", module: 5, maxPoints: 10,
     rubric: "Minimum investment is 5,000 USD for all plans; the interest rate is fixed for the entire term; early withdrawal is allowed but incurs an Early Withdrawal Penalty specific to the selected plan." },
   { q: "Compare the \"Excellence Premier\" and \"Excellence Short-Term\" savings plans in terms of lock period, interest rate, and early withdrawal penalty.", module: 5, maxPoints: 10,
@@ -276,6 +277,10 @@ const QUESTION_BANK = [
 ];
 
 const EXAM_QUESTIONS_PER_ATTEMPT = 10;
+document.addEventListener('DOMContentLoaded', () => {
+  const el = document.getElementById('eqDrawCount');
+  if (el) el.textContent = EXAM_QUESTIONS_PER_ATTEMPT;
+});
 
 // ===== EXAM STATE =====
 let examQuestions = [];
@@ -525,14 +530,13 @@ window.addEventListener('load', async function() {
   for (let i = 1; i <= 5; i++) {
     if (p[`module${i}_done`]) doneCnt++;
   }
-  if (doneCnt < 5) {
+  const modulesDone = doneCnt === 5;
+  if (!modulesDone) {
     document.getElementById('moduleWarning').classList.remove('hidden');
-    const btn = document.getElementById('startExamBtn');
-    btn.disabled = true;
-    btn.style.opacity = '0.4';
-    btn.style.cursor  = 'not-allowed';
-    btn.onclick       = null;
-    btn.textContent   = `🔒 Locked (${doneCnt}/5 modules done)`;
+    const names = ['Overview', 'Trading Accounts', 'Financial Products & Leverage', 'IB Policies & Reward', 'Deposit & Withdrawal'];
+    const missing = [1, 2, 3, 4, 5].filter(i => !p[`module${i}_done`]);
+    document.getElementById('missingModules').innerHTML = `Still to complete (${doneCnt}/5 done): ` +
+      missing.map(i => `<a href="module${i}.html" style="color:var(--gold);">Module ${i} — ${names[i-1]}</a>`).join(' · ');
   }
 
   const es = getExamState();
@@ -572,6 +576,7 @@ window.addEventListener('load', async function() {
   } else if (!es.fail1Date) {
     examAttempt = 1;
   }
+  if (modulesDone && examAttempt) document.getElementById('startExamBtn').style.display = '';
 });
 
 function startCountdown(unlockDate) {
@@ -594,6 +599,11 @@ function startCountdown(unlockDate) {
 }
 
 function startExam() {
+  const prog = getProgress();
+  if (![1, 2, 3, 4, 5].every(i => prog[`module${i}_done`])) {
+    alert('Please complete all 5 training modules before starting the Final Exam.');
+    return;
+  }
   const bank = getActiveQBank();
   if (!bank.length) {
     alert('The exam question bank is empty. Please contact admin — questions have not been added yet.');

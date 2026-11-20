@@ -725,7 +725,7 @@
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
 <script src="firebase-config.js?v=4"></script>
-<script src="module-common.js?v=3"></script>
+<script src="module-common.js?v=4"></script>
 <script>
 // Admin guard — runs AFTER syncFromFirebase so newly promoted admins
 // are recognised on their first visit without needing an extra navigation.
@@ -1985,6 +1985,8 @@ function openExamGrade(uname) {
           oninput="updateExamGradeTotal()"
           style="width:90px;padding:6px 10px;background:var(--bg-secondary);border:1px solid var(--border);border-radius:6px;color:var(--text-primary);">
       </label>
+      <textarea id="examGradeComment${i}" rows="2" maxlength="1000" placeholder="Comment for the trainee (optional) — shown on their result page"
+        style="width:100%;margin-top:8px;padding:8px 10px;background:var(--bg-secondary);border:1px solid var(--border);border-radius:6px;color:var(--text-primary);font-size:0.82rem;resize:vertical;"></textarea>
     </div>`;
   }).join('');
 
@@ -2025,6 +2027,10 @@ function saveExamGrade() {
     earned += v; max += q.maxPoints;
     return v;
   });
+  const comments = ex.questions.map((q, i) => {
+    const el = document.getElementById('examGradeComment' + i);
+    return el ? el.value.trim().slice(0, 1000) : '';
+  });
   const pct = max ? Math.round(earned / max * 100) : 0;
   const passThreshold = ex.passThreshold || 60;
   const passed = pct >= passThreshold;
@@ -2035,6 +2041,7 @@ function saveExamGrade() {
   const now = new Date().toISOString();
   const updated = { ...ex };
   updated.scores = scores;
+  updated.comments = comments;
   updated.score = earned;
   updated.total = max;
   updated.status = 'graded';
