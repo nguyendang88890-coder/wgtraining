@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>New User Tracker — WeGolden</title>
-  <link rel="stylesheet" href="style.css?v=3">
+  <link rel="stylesheet" href="style.css?v=4">
   <style>
     /* ── Layout ── */
     body { margin: 0; display: flex; min-height: 100vh; background: var(--bg-primary); color: var(--text-primary); font-family: var(--font-family, 'Inter', sans-serif); }
@@ -159,8 +159,8 @@
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
-<script src="firebase-config.js?v=4"></script>
-<script src="module-common.js?v=4"></script>
+<script src="firebase-config.js?v=5"></script>
+<script src="module-common.js?v=5"></script>
 <script>
 // ── Access guard + init ──────────────────────────────────────────────────────
 const CUR_USER = localStorage.getItem('wmt_user') || '';
@@ -256,10 +256,10 @@ function renderTracker() {
     const exam = getExam(un);
     const iv   = getIV(un);
 
-    // Modules (1-5)
+    // Modules (1..MODULE_COUNT)
     const modDone  = [];
     const modScore = [];
-    for (let n = 1; n <= 5; n++) {
+    for (let n = 1; n <= MODULE_COUNT; n++) {
       modDone.push(prog[`module${n}_done`] === true);
       modScore.push(prog[`module${n}_score`] != null ? prog[`module${n}_score`] : null);
     }
@@ -279,15 +279,15 @@ function renderTracker() {
     if (ivComplete || ivStatus === 'confirmed') ivDone++;
 
     // Completion % — weights: modules 7pts, exam 2pt, interview 1pt → /10 total
-    const pct = Math.round((doneCount / 5 * 70 + (examOK ? 20 : 0) + (ivComplete ? 10 : 0)));
+    const pct = Math.round((doneCount / MODULE_COUNT * 70 + (examOK ? 20 : 0) + (ivComplete ? 10 : 0)));
 
     // Overall status
     let status, statusBadge;
     if (examDQ) {
       status = 'Disqualified'; statusBadge = 'badge-dq';
-    } else if (doneCount === 5 && examOK && ivComplete) {
+    } else if (doneCount === MODULE_COUNT && examOK && ivComplete) {
       status = 'Completed'; statusBadge = 'badge-pass'; fullyComplete++;
-    } else if (doneCount === 5 && examOK) {
+    } else if (doneCount === MODULE_COUNT && examOK) {
       status = 'Exam Passed'; statusBadge = 'badge-done';
     } else if (examAtt >= 2 && !examOK && !examDQ) {
       status = 'Exam Failed'; statusBadge = 'badge-fail';
@@ -302,7 +302,7 @@ function renderTracker() {
 
   // Update stat cards
   document.getElementById('st-total').textContent    = rows.length;
-  document.getElementById('st-modavg').textContent   = rows.length ? (totalMod / rows.length).toFixed(1) + '/5' : '—';
+  document.getElementById('st-modavg').textContent   = rows.length ? (totalMod / rows.length).toFixed(1) + '/' + MODULE_COUNT : '—';
   document.getElementById('st-exampass').textContent = rows.length ? Math.round(examPassed / rows.length * 100) + '%' : '—';
   document.getElementById('st-ivdone').textContent   = rows.length ? Math.round(ivDone / rows.length * 100) + '%' : '—';
   document.getElementById('st-complete').textContent = rows.length ? fullyComplete + '/' + rows.length : '—';
@@ -365,7 +365,7 @@ function renderTracker() {
       <td>${empBadge}</td>
       <td><span style="white-space:nowrap">${fmtD(r.ud.createdAt)}</span></td>
       ${modCells}
-      <td><strong>${r.doneCount}/5</strong><br><span class="cell-sub">${r.doneCount === 5 ? '✅' : r.doneCount > 0 ? '🔄' : '—'}</span></td>
+      <td><strong>${r.doneCount}/${MODULE_COUNT}</strong><br><span class="cell-sub">${r.doneCount === MODULE_COUNT ? '✅' : r.doneCount > 0 ? '🔄' : '—'}</span></td>
       <td>${examCell}</td>
       <td>${ivCell}</td>
       <td>${progCell}</td>
@@ -433,7 +433,7 @@ function openUserPDF(un) {
       ${iv.adminNotes    ? `<tr><td>Notes</td><td>${iv.adminNotes}</td></tr>` : ''}`;
   }
 
-  const pct = Math.round((doneCount / 5 * 70) + (exam.passed ? 20 : 0) + (iv?.status === 'completed' ? 10 : 0));
+  const pct = Math.round((doneCount / MODULE_COUNT * 70) + (exam.passed ? 20 : 0) + (iv?.status === 'completed' ? 10 : 0));
 
   const html = `
     <div class="pdf-profile">
@@ -464,7 +464,7 @@ function openUserPDF(un) {
         <tr><td>Overall Completion</td><td><b>${pct}%</b></td></tr>
       </table>
 
-      <div class="pdf-section">📚 Training Modules (${doneCount}/5 done)</div>
+      <div class="pdf-section">📚 Training Modules (${doneCount}/${MODULE_COUNT} done)</div>
       <div class="mod-grid">${modGrid}</div>
 
       <div class="pdf-section">📝 Final Exam</div>

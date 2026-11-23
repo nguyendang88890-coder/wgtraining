@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Final Exam | WG Training</title>
-  <link rel="stylesheet" href="style.css?v=3">
+  <link rel="stylesheet" href="style.css?v=4">
 <style>
 .exam-mod-hdr { font-size:0.78rem;font-weight:700;color:var(--gold);text-transform:uppercase;letter-spacing:.5px;margin:22px 0 10px;padding-bottom:6px;border-bottom:1px solid var(--border); }
 .exam-q-item  { background:var(--bg-card);border:1px solid var(--border);border-radius:10px;padding:14px 18px;margin-bottom:8px; }
@@ -148,7 +148,7 @@
             <li>You have <strong>2 attempts</strong> total</li>
             <li>If you fail attempt 1, you must wait <strong>3 days</strong> after grading before retrying</li>
             <li>If you fail attempt 2, you are <strong>disqualified</strong> — only your trainer can reopen the exam, in exceptional cases</li>
-            <li>Make sure you have completed all 5 modules before taking this exam</li>
+            <li>Make sure you have completed all 6 modules before taking this exam</li>
           </ul>
           <div class="callout gold" style="margin-top:16px;">
             <span class="callout-icon">⭐</span>
@@ -216,10 +216,10 @@
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
-<script src="firebase-config.js?v=4"></script>
-<script src="module-common.js?v=4"></script>
+<script src="firebase-config.js?v=5"></script>
+<script src="module-common.js?v=5"></script>
 <script>
-// ===== QUESTION BANK (20 essay questions, 4 per module) =====
+// ===== QUESTION BANK (24 essay questions, 4 per module) =====
 // Each attempt draws EXAM_QUESTIONS_PER_ATTEMPT questions; maxPoints is kept
 // uniform (10) across every question purely so earned-points already equals
 // the percentage when the draw size is 10 — makes admin grading arithmetic
@@ -274,6 +274,16 @@ const QUESTION_BANK = [
     rubric: "Minimum investment is 5,000 USD for all plans; the interest rate is fixed for the entire term; early withdrawal is allowed but incurs an Early Withdrawal Penalty specific to the selected plan." },
   { q: "Compare the \"Excellence Premier\" and \"Excellence Short-Term\" savings plans in terms of lock period, interest rate, and early withdrawal penalty.", module: 5, maxPoints: 10,
     rubric: "Excellence Premier: 360-day lock, 3.00% interest, no early withdrawal penalty (N/A). Excellence Short-Term: 30-day lock, 0.20% interest, 15 USD early withdrawal penalty." },
+
+  // MODULE 6 — KPI & Compensation (source: WeGolden KPI Handbook)
+  { q: "Explain the three steps of the salary formula and what the final monthly pay consists of. / Giải thích ba bước của công thức lương và lương tháng thực nhận gồm những gì.", module: 6, maxPoints: 10,
+    rubric: "Step 1: agreed basic salary × market-KPI % = actual basic salary. Step 2: actual basic × (actual workdays ÷ standard workdays) = actual salary. Step 3: actual salary × hold % (20/30/50%) = amount held; salary paid = actual salary − amount held (the hold applies only when the Sales KPI is missed). Final monthly pay = salary paid + net commission (when approved). The step 1 loss is not received, held or refunded; the step 3 hold can be recovered." },
+  { q: "What are the two core KPIs of the net / salary KPI, what does each require, and which must Sales staff and Sales Leaders pass? / Hai KPI cốt lõi của KPI Net / lương là gì, mỗi KPI yêu cầu gì, và Sales cũng như Sales Leader phải đạt KPI nào?", module: 6, maxPoints: 10,
+    rubric: "Standard IB KPI: at least 1 newly qualified IB in the month (a qualified IB has ≥ 2 full-verified clients, each depositing ≥ $300 and trading ≥ 0.5 lot, and total IB deposit ≥ $2,000). Retail KPI: Net Level 1 ≥ $3,000 and ≥ 2 new retail clients, each full-verified, depositing ≥ $300 and trading ≥ 0.5 lot. Sales staff must pass at least one of the two; Sales Leaders must pass the standard IB KPI (the 7th-member program can count as passing it)." },
+  { q: "Describe how the salary hold progresses when both core KPIs are missed, and name the mechanisms that can release held salary. / Mô tả mức giữ lương tăng dần khi trượt cả hai KPI cốt lõi và nêu các cơ chế có thể giải phóng lương bị giữ.", module: 6, maxPoints: 10,
+    rubric: "Hold 20% → 30% → 50% → no salary (commission only); a pass resets the hold to 20% for the next miss. Release mechanisms (name at least 4): Double KPI (2 IBs releases the previous month's hold); Quarterly recovery (≥ 3 qualified IBs in the quarter); Yearly recovery (≥ 12 qualified IBs in the year); Explosion (net ≥ $30,000 in the month and 2 new IBs releases all held salary in the year — the only way to recover no-salary months); 7th-member program (Leaders only); Standby (working ≥ 6 months, at most once per 3 months, only for 20%/30% holds)." },
+  { q: "How are market-creation points converted into salary, and what is the penalty for the monthly knowledge quiz? / Điểm KPI tạo thị trường được quy đổi thành lương như thế nào, và mức phạt của quiz kiến thức hàng tháng là gì?", module: 6, maxPoints: 10,
+    rubric: "1,650 points = 100% of the agreed basic salary; tiers 25% / 50% / 75% / 100% start at 412.5 / 825 / 1,237.5 / 1,650 points; points above 1,650 become a bonus (points − 1,650); probation month 1 is locked at 100%. Monthly knowledge quiz (20 questions, 20 seconds each): penalty of −1,000,000đ per session if absent or if attending with under 60% correct (fewer than 12 of 20)." },
 ];
 
 const EXAM_QUESTIONS_PER_ATTEMPT = 10;
@@ -340,7 +350,7 @@ function shuffle(arr) {
 }
 
 // ===== ADMIN EXAM MANAGEMENT =====
-const EQ_MODULE_NAMES = [null,'Overview','Trading Accounts','Financial Products & Leverage','IB Policies & Reward','Deposit & Withdrawal'];
+const EQ_MODULE_NAMES = [null,'Overview','Trading Accounts','Financial Products & Leverage','IB Policies & Reward','Deposit & Withdrawal','KPI & Compensation'];
 function getExamQBank() { return getActiveQBank(); }
 
 function renderAdminExamView() {
@@ -372,7 +382,7 @@ function _eqModal(title, q, idx, isNew) {
     <h3 style="margin-bottom:16px;">${title}</h3>
     <div class="form-group"><label>Module</label>
       <select id="eeM" style="width:100%;background:var(--bg-secondary);border:1px solid var(--border);color:var(--text-primary);padding:8px 12px;border-radius:8px;">
-        ${[1,2,3,4,5].map(n=>`<option value="${n}" ${q&&q.module===n?'selected':''}>${n} — ${EQ_MODULE_NAMES[n]}</option>`).join('')}
+        ${[1,2,3,4,5,6].map(n=>`<option value="${n}" ${q&&q.module===n?'selected':''}>${n} — ${EQ_MODULE_NAMES[n]}</option>`).join('')}
       </select></div>
     <div class="form-group"><label>Question</label>
       <textarea id="eeQ" rows="3" style="width:100%;background:var(--bg-secondary);border:1px solid var(--border);color:var(--text-primary);padding:10px;border-radius:8px;font-size:0.88rem;resize:vertical;">${q?q.q:''}</textarea></div>
@@ -449,7 +459,7 @@ function _proposeModal(title, q, idx, isNew) {
     <div style="font-size:0.78rem;color:var(--text-muted);margin-bottom:16px;">Your proposal will be sent to Admin for review. The original question remains unchanged until approved.</div>
     <div class="form-group"><label>Module</label>
       <select id="ppM" style="${inputStyle}">
-        ${[1,2,3,4,5].map(n=>`<option value="${n}" ${q&&q.module===n?'selected':''}>${n} — ${EQ_MODULE_NAMES[n]}</option>`).join('')}
+        ${[1,2,3,4,5,6].map(n=>`<option value="${n}" ${q&&q.module===n?'selected':''}>${n} — ${EQ_MODULE_NAMES[n]}</option>`).join('')}
       </select></div>
     <div class="form-group"><label>Question</label>
       <textarea id="ppQ" rows="3" style="${inputStyle}resize:vertical;">${q?q.q:''}</textarea></div>
@@ -527,15 +537,15 @@ window.addEventListener('load', async function() {
   // Check module completion — hard block if not all done
   const p = getProgress();
   let doneCnt = 0;
-  for (let i = 1; i <= 5; i++) {
+  for (let i = 1; i <= MODULE_COUNT; i++) {
     if (p[`module${i}_done`]) doneCnt++;
   }
-  const modulesDone = doneCnt === 5;
+  const modulesDone = doneCnt === MODULE_COUNT;
   if (!modulesDone) {
     document.getElementById('moduleWarning').classList.remove('hidden');
-    const names = ['Overview', 'Trading Accounts', 'Financial Products & Leverage', 'IB Policies & Reward', 'Deposit & Withdrawal'];
-    const missing = [1, 2, 3, 4, 5].filter(i => !p[`module${i}_done`]);
-    document.getElementById('missingModules').innerHTML = `Still to complete (${doneCnt}/5 done): ` +
+    const names = ['Overview', 'Trading Accounts', 'Financial Products & Leverage', 'IB Policies & Reward', 'Deposit & Withdrawal', 'KPI & Compensation'];
+    const missing = [1, 2, 3, 4, 5, 6].filter(i => !p[`module${i}_done`]);
+    document.getElementById('missingModules').innerHTML = `Still to complete (${doneCnt}/${MODULE_COUNT} done): ` +
       missing.map(i => `<a href="module${i}.html" style="color:var(--gold);">Module ${i} — ${names[i-1]}</a>`).join(' · ');
   }
 
@@ -600,8 +610,8 @@ function startCountdown(unlockDate) {
 
 function startExam() {
   const prog = getProgress();
-  if (![1, 2, 3, 4, 5].every(i => prog[`module${i}_done`])) {
-    alert('Please complete all 5 training modules before starting the Final Exam.');
+  if (![1, 2, 3, 4, 5, 6].every(i => prog[`module${i}_done`])) {
+    alert('Please complete all 6 training modules before starting the Final Exam.');
     return;
   }
   const bank = getActiveQBank();

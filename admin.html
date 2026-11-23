@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Admin Panel | WG Training</title>
-  <link rel="stylesheet" href="style.css?v=3">
+  <link rel="stylesheet" href="style.css?v=4">
   <style>
     .admin-stats {
       display: grid;
@@ -724,8 +724,8 @@
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
-<script src="firebase-config.js?v=4"></script>
-<script src="module-common.js?v=4"></script>
+<script src="firebase-config.js?v=5"></script>
+<script src="module-common.js?v=5"></script>
 <script>
 // Admin guard — runs AFTER syncFromFirebase so newly promoted admins
 // are recognised on their first visit without needing an extra navigation.
@@ -1156,12 +1156,12 @@ function renderUsersTableBody() {
     const iv = getInterviewData(uname);
 
     let doneCnt = 0, scoreSum = 0, scoreCnt = 0;
-    for (let i = 1; i <= 5; i++) {
+    for (let i = 1; i <= MODULE_COUNT; i++) {
       if (p[`module${i}_done`]) doneCnt++;
       if (p[`module${i}_score`] !== undefined) { scoreSum += p[`module${i}_score`]; scoreCnt++; }
     }
     const avgScore = scoreCnt > 0 ? Math.round(scoreSum / scoreCnt) + '%' : '—';
-    const modPct   = Math.round((doneCnt / 5) * 100);
+    const modPct   = Math.round((doneCnt / MODULE_COUNT) * 100);
 
     let examBadge = '';
     const isPendingGrade = ex.status === 'pending_grading';
@@ -1246,9 +1246,9 @@ function renderUsersTableBody() {
       <td>
         <div class="mod-progress">
           <div class="mod-progress-bar">
-            <div class="mod-progress-fill ${doneCnt===5?'complete':''}" style="width:${modPct}%"></div>
+            <div class="mod-progress-fill ${doneCnt===MODULE_COUNT?'complete':''}" style="width:${modPct}%"></div>
           </div>
-          <span style="color:${doneCnt===5?'var(--success)':'var(--text-secondary)'};">${doneCnt}/5</span>
+          <span style="color:${doneCnt===MODULE_COUNT?'var(--success)':'var(--text-secondary)'};">${doneCnt}/${MODULE_COUNT}</span>
         </div>
       </td>
       <td style="color:var(--gold);font-weight:600;">${avgScore}</td>
@@ -1276,8 +1276,8 @@ function renderAdminPanel() {
     if (udata.role !== 'admin') totalTrainees++;
     const p = getUserProgress(uname);
     let done = 0;
-    for (let i = 1; i <= 5; i++) { if (p[`module${i}_done`]) done++; }
-    if (done === 5) totalCompleted++;
+    for (let i = 1; i <= MODULE_COUNT; i++) { if (p[`module${i}_done`]) done++; }
+    if (done === MODULE_COUNT) totalCompleted++;
     if (getExamData(uname).passed) totalPassed++;
     const iv = getInterviewData(uname);
     if (iv) { totalInterviews++; if (iv.status === 'pending') pendingCount++; }
@@ -1401,7 +1401,7 @@ function resetUser(uname) {
   dbRemove('wmt_progress_' + uname);
   dbRemove('wmt_exam_'      + uname);
   dbRemove('wmt_interview_' + uname);
-  for (let i = 1; i <= 5; i++) dbRemove(`wmt_quiz_${uname}_m${i}`);
+  for (let i = 1; i <= MODULE_COUNT; i++) dbRemove(`wmt_quiz_${uname}_m${i}`);
   renderAdminPanel();
   renderInterviewsTable();
 }
@@ -1612,9 +1612,9 @@ function resetQuiz(uname, moduleId) {
 }
 
 function resetAllQuizzes(uname) {
-  if (!confirm(`Reset all quizzes for "${uname}"?\nTrainee will be able to retake all 5 module quizzes.`)) return;
+  if (!confirm(`Reset all quizzes for "${uname}"?\nTrainee will be able to retake all ${MODULE_COUNT} module quizzes.`)) return;
   const p = getUserProgress(uname);
-  for (let i = 1; i <= 5; i++) {
+  for (let i = 1; i <= MODULE_COUNT; i++) {
     dbRemove(`wmt_quiz_${uname}_m${i}`);
     delete p[`module${i}_done`];
     delete p[`module${i}_score`];
@@ -1649,7 +1649,7 @@ async function deleteUser(uname) {
     ].map(p => p.catch(e => console.warn('[WG] deleteUser cleanup:', e.message))));
   }
   ['wmt_progress_','wmt_exam_','wmt_interview_'].forEach(k => dbRemove(k + uname));
-  for (let i = 1; i <= 5; i++) dbRemove(`wmt_quiz_${uname}_m${i}`);
+  for (let i = 1; i <= MODULE_COUNT; i++) dbRemove(`wmt_quiz_${uname}_m${i}`);
   renderAdminPanel();
   renderInterviewsTable();
 }

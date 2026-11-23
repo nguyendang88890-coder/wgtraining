@@ -754,7 +754,8 @@ a:hover {
   flex: 1;
 }
 
-.callout-content strong {
+/* only the callout title (direct child) is a block; bold words inside text stay inline */
+.callout-content > strong {
   display: block;
   margin-bottom: 4px;
   font-size: 0.9rem;

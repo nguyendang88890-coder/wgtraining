@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>WeGolden — Internal Training Portal</title>
-  <link rel="stylesheet" href="style.css?v=3">
+  <link rel="stylesheet" href="style.css?v=4">
   <style>
     .exam-ready-card {
       background: linear-gradient(135deg, rgba(255,215,0,0.1), rgba(255,215,0,0.03));
@@ -208,6 +208,10 @@
         <span class="nav-icon">💳</span> <span>Deposit & Withdrawal</span>
         <span class="nav-badge" id="badge-m5">M5</span>
       </a>
+      <a href="module6.html" class="nav-item" id="nav-m6">
+        <span class="nav-icon">📊</span> <span>KPI & Compensation</span>
+        <span class="nav-badge" id="badge-m6">M6</span>
+      </a>
 
       <div class="nav-section-title">Assessment</div>
       <a href="exam.html" class="nav-item" id="nav-exam">
@@ -260,7 +264,7 @@
       <button class="hamburger" onclick="toggleSidebar()">☰</button>
       <span class="top-bar-title">Dashboard</span>
       <div class="top-bar-actions">
-        <div class="progress-pill" id="topProgressPill">0 / 5 Modules</div>
+        <div class="progress-pill" id="topProgressPill">0 / 6 Modules</div>
         <button class="notif-bell-btn hidden" id="notifBellDash" onclick="toggleDashNotifPanel()" title="Monthly Test Notifications">
           🔔 <span class="notif-badge hidden" id="notifBadgeDash">0</span>
         </button>
@@ -271,7 +275,7 @@
     <div class="page-content animate-in">
       <div class="welcome-banner">
         <h2>Welcome back, <span id="welcomeName">Trainee</span>! 👋</h2>
-        <p>Complete all 5 modules and pass the final exam to become a certified WeGolden Sales Partner.</p>
+        <p>Complete all 6 modules and pass the final exam to become a certified WeGolden Sales Partner.</p>
         <div class="overall-progress">
           <div class="progress-stats">
             <div class="stat-item">
@@ -306,7 +310,7 @@
       <div class="exam-ready-card" id="examCard">
         <div class="exam-ready-text">
           <h4>📝 Final Exam — 10 Essay Questions</h4>
-          <p>Covers all 5 modules. Pass score: 60% (attempt 1) / 80% (attempt 2). You have 2 attempts.</p>
+          <p>Covers all 6 modules. Pass score: 60% (attempt 1) / 80% (attempt 2). You have 2 attempts.</p>
           <div class="locked-msg" id="examLockMsg">Complete all modules to unlock the exam.</div>
         </div>
         <a href="exam.html" class="btn btn-primary" id="examBtn" style="display:none">Start Exam →</a>
@@ -331,7 +335,7 @@
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
-<script src="firebase-config.js?v=4"></script>
+<script src="firebase-config.js?v=5"></script>
 <script>
 // ===== USER DB =====
 function getUsersDB() {
@@ -583,7 +587,8 @@ const MODULES = [
   { id: 2, title: 'Trading Accounts',              icon: '💼', file: 'module2.html' },
   { id: 3, title: 'Financial Products & Leverage', icon: '📈', file: 'module3.html' },
   { id: 4, title: 'IB Policies & Reward',          icon: '🤝', file: 'module4.html' },
-  { id: 5, title: 'Deposit & Withdrawal',          icon: '💳', file: 'module5.html' }
+  { id: 5, title: 'Deposit & Withdrawal',          icon: '💳', file: 'module5.html' },
+  { id: 6, title: 'KPI & Compensation',            icon: '📊', file: 'module6.html' }
 ];
 
 // ===== DASHBOARD =====
@@ -663,15 +668,15 @@ function initDashboard(user) {
       </a>`;
   });
 
-  const pct = Math.round((completedCount / 5) * 100);
+  const pct = Math.round((completedCount / MODULE_COUNT) * 100);
   document.getElementById('statCompleted').textContent = completedCount;
   document.getElementById('statPercent').textContent = pct + '%';
   document.getElementById('overallProgressBar').style.width = pct + '%';
-  document.getElementById('topProgressPill').textContent = `${completedCount} / 5 Modules`;
+  document.getElementById('topProgressPill').textContent = `${completedCount} / ${MODULE_COUNT} Modules`;
   document.getElementById('statAvgScore').textContent = scoredModules > 0
     ? Math.round(totalScore / scoredModules) + '%' : '—';
 
-  if (completedCount === 5) {
+  if (completedCount === MODULE_COUNT) {
     document.getElementById('examLockMsg').textContent = '🎉 All modules complete! You can now take the final exam.';
     document.getElementById('examBtn').style.display = 'inline-flex';
   }

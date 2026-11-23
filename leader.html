@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>My Team | WG Training</title>
-  <link rel="stylesheet" href="style.css?v=3">
+  <link rel="stylesheet" href="style.css?v=4">
   <style>
     /* Stats */
     .team-stats {
@@ -220,8 +220,8 @@
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
-<script src="firebase-config.js?v=4"></script>
-<script src="module-common.js?v=4"></script>
+<script src="firebase-config.js?v=5"></script>
+<script src="module-common.js?v=5"></script>
 <script>
 // ===== GLOBALS =====
 let _isAdmin = false;
@@ -468,9 +468,9 @@ function renderAllTeamsOverview() {
     members.forEach(([uname]) => {
       const p = getUserProgress(uname);
       let done = 0;
-      for (let i = 1; i <= 5; i++) if (p[`module${i}_done`]) done++;
+      for (let i = 1; i <= MODULE_COUNT; i++) if (p[`module${i}_done`]) done++;
       if (done > 0) tStarted++;
-      if (done === 5) tDone++;
+      if (done === MODULE_COUNT) tDone++;
       if (getExamData(uname).passed) tPassed++;
     });
     totalMembers += members.length;
@@ -542,9 +542,9 @@ function renderTeamStats(leaderName) {
   members.forEach(([uname]) => {
     const p = getUserProgress(uname);
     let done = 0;
-    for (let i = 1; i <= 5; i++) if (p[`module${i}_done`]) done++;
+    for (let i = 1; i <= MODULE_COUNT; i++) if (p[`module${i}_done`]) done++;
     if (done > 0) totalStarted++;
-    if (done === 5) totalDone++;
+    if (done === MODULE_COUNT) totalDone++;
     if (getExamData(uname).passed) totalPassed++;
   });
 
@@ -608,9 +608,9 @@ function renderTeamTable() {
     if (filterProg || filterExam) {
       const p = getUserProgress(uname);
       let done = 0;
-      for (let i = 1; i <= 5; i++) if (p[`module${i}_done`]) done++;
+      for (let i = 1; i <= MODULE_COUNT; i++) if (p[`module${i}_done`]) done++;
       if (filterProg === 'complete'   && done < 7) return false;
-      if (filterProg === 'inprogress' && (done === 0 || done === 5)) return false;
+      if (filterProg === 'inprogress' && (done === 0 || done === MODULE_COUNT)) return false;
       if (filterProg === 'notstarted' && done > 0) return false;
 
       const ex = getExamData(uname);
@@ -640,12 +640,12 @@ function renderTeamTable() {
     const ex = getExamData(uname);
 
     let doneCnt = 0, scoreSum = 0, scoreCnt = 0;
-    for (let i = 1; i <= 5; i++) {
+    for (let i = 1; i <= MODULE_COUNT; i++) {
       if (p[`module${i}_done`]) doneCnt++;
       if (p[`module${i}_score`] !== undefined) { scoreSum += p[`module${i}_score`]; scoreCnt++; }
     }
     const avgScore = scoreCnt > 0 ? Math.round(scoreSum / scoreCnt) + '%' : '—';
-    const modPct   = Math.round((doneCnt / 5) * 100);
+    const modPct   = Math.round((doneCnt / MODULE_COUNT) * 100);
 
     let examBadge;
     if (ex.passed) {
@@ -682,9 +682,9 @@ function renderTeamTable() {
       <td>
         <div class="mod-progress">
           <div class="mod-progress-bar">
-            <div class="mod-progress-fill ${doneCnt===5?'complete':''}" style="width:${modPct}%"></div>
+            <div class="mod-progress-fill ${doneCnt===MODULE_COUNT?'complete':''}" style="width:${modPct}%"></div>
           </div>
-          <span style="font-size:0.8rem;color:${doneCnt===5?'var(--success)':'var(--text-secondary)'};">${doneCnt}/5</span>
+          <span style="font-size:0.8rem;color:${doneCnt===MODULE_COUNT?'var(--success)':'var(--text-secondary)'};">${doneCnt}/${MODULE_COUNT}</span>
         </div>
       </td>
       <td style="color:var(--gold);font-weight:600;">${avgScore}</td>

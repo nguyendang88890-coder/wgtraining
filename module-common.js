@@ -189,7 +189,7 @@ function toggleSidebar() {
 
 function updateSidebarProgress() {
   const p = getProgress();
-  for (let i = 1; i <= 5; i++) {
+  for (let i = 1; i <= MODULE_COUNT; i++) {
     const badge = document.getElementById(`badge-m${i}`);
     const navItem = document.getElementById(`nav-m${i}`);
     if (badge && p[`module${i}_done`]) {
@@ -453,7 +453,8 @@ function getSidebarHTML(activeModule) {
     { id: 2, icon: '💼', title: 'Trading Accounts',                 file: 'module2.html' },
     { id: 3, icon: '📈', title: 'Financial Products & Leverage',    file: 'module3.html' },
     { id: 4, icon: '🤝', title: 'IB Policies & Reward',             file: 'module4.html' },
-    { id: 5, icon: '💳', title: 'Deposit & Withdrawal',             file: 'module5.html' }
+    { id: 5, icon: '💳', title: 'Deposit & Withdrawal',             file: 'module5.html' },
+    { id: 6, icon: '📊', title: 'KPI & Compensation',               file: 'module6.html' }
   ];
   const user    = localStorage.getItem('wmt_user') || 'Trainee';
   const users   = getUsersDB();
@@ -952,6 +953,7 @@ const _MOD_PAGE_MAP = {
   'module3.html': { moduleId: 3, moduleName: 'Financial Products & Leverage' },
   'module4.html': { moduleId: 4, moduleName: 'IB Policies & Reward' },
   'module5.html': { moduleId: 5, moduleName: 'Deposit & Withdrawal' },
+  'module6.html': { moduleId: 6, moduleName: 'KPI & Compensation' },
   'exam.html':    { moduleId: 0, moduleName: 'Final Exam' },
   'monthlytest.html': { moduleId: 0, moduleName: 'Monthly Test' },
   'leader.html':      { moduleId: 0, moduleName: 'Leader Dashboard' },

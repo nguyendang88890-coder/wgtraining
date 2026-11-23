@@ -4,6 +4,9 @@
 // Security Rules (database.rules.json) authorise everything through that mapping.
 // The Firebase web API key is client-side config, not a secret.
 
+// Number of training modules (module1.html … moduleN.html). Change here when adding a module.
+var MODULE_COUNT = 6;
+
 const _FB_CONFIGS = {
   prod: {
     apiKey: "AIzaSyDb1g23S4_5qub_WO8zeeASF_Y8ySi352E",
@@ -412,11 +415,11 @@ async function _doSync() {
     put(ls, await read(fb), clearable);
   })));
 
-  // Quiz results: quiz/{user}/m{1-5} — clear the 5 slots then repopulate so admin resets propagate.
+  // Quiz results: quiz/{user}/m{1-N} — clear every module slot then repopulate so admin resets propagate.
   await Promise.all(usernames.map(async u => {
     const snap = await read(`quiz/${u}`);
     if (!snap) return;
-    for (let m = 1; m <= 5; m++) localStorage.removeItem(`wmt_quiz_${u}_m${m}`);
+    for (let m = 1; m <= MODULE_COUNT; m++) localStorage.removeItem(`wmt_quiz_${u}_m${m}`);
     if (snap.exists()) {
       const quizData = snap.val();
       Object.keys(quizData).forEach(mKey => {
