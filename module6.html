@@ -7,7 +7,8 @@
   <link rel="stylesheet" href="style.css?v=4">
   <style>
     /* Bilingual content: .en / .vi spans, switched by a class on <body> */
-    .vi { color: var(--text-muted); font-style: italic; }
+    .vi { color: var(--text-secondary); font-style: italic; }
+    .m6-list .en { color: var(--text-primary); }
     body.lang-en .vi, body.lang-en .both { display: none; }
     body.lang-vi .en, body.lang-vi .both { display: none; }
     body.lang-vi .vi { color: inherit; font-style: normal; }
@@ -37,8 +38,8 @@
         <div class="module-header-num">6</div>
         <div class="module-header-info">
           <h2>KPI &amp; Compensation <span class="vi">· KPI &amp; Lương thưởng</span></h2>
-          <p><span class="en">How Sales staff and Sales Leaders are measured, how salary is paid or held, and the recovery and special programs</span><span class="vi"><br>Cách đo KPI của Sales và Sales Leader, cách trả hoặc giữ lương, các cơ chế phục hồi và chương trình đặc biệt</span></p>
-          <p style="font-size:0.78rem;color:var(--text-muted);margin-top:4px;">Last updated: 23 Nov 2026 · Cập nhật: 23/11/2026</p>
+          <p><span class="en">The two KPI systems every Sales staff member and Sales Leader works with, what each one requires, and how to meet them</span><span class="vi"><br>Hai hệ thống KPI mà mọi Sales và Sales Leader làm việc cùng, mỗi hệ thống yêu cầu gì và cách đạt được</span></p>
+          <p style="font-size:0.78rem;color:var(--text-muted);margin-top:4px;">Last updated: 25 Nov 2026 · Cập nhật: 25/11/2026</p>
           <div class="lang-switch" role="group" aria-label="Language">
             <button type="button" id="lang-both" onclick="setLang('both')">EN + VI</button>
             <button type="button" id="lang-en" onclick="setLang('en')">EN</button>
@@ -62,40 +63,23 @@
         <ul class="m6-list">
           <li><span class="en"><strong>Two KPI systems, one standard.</strong> Every Sales staff member must meet both each month: the <strong>market-creation KPI</strong> and the <strong>net / salary KPI</strong>. Both decide the salary received.</span><span class="vi"><br>Hai hệ thống KPI, một chuẩn. Mỗi tháng Sales phải đáp ứng cả <strong>KPI tạo thị trường</strong> và <strong>KPI Net / lương</strong>. Cả hai quyết định mức lương nhận được.</span></li>
           <li><span class="en">Recovery and protection mechanisms (quarterly recovery, yearly recovery, 7th-member program for Leaders, Standby) are <strong>not KPIs</strong> — there is nothing to "pass" each month.</span><span class="vi"><br>Các cơ chế phục hồi và bảo vệ (phục hồi theo quý, theo năm, chương trình thành viên thứ 7 cho Leader, Standby) <strong>không phải KPI</strong>, không có gì để "đạt" mỗi tháng.</span></li>
+          <li><span class="en"><strong>Probation, month 1:</strong> the market-creation KPI is locked at 100% and the net KPI hold does not apply.</span><span class="vi"><br>Tháng thử việc đầu tiên: KPI tạo thị trường được khóa ở 100% và không áp dụng giữ lương theo KPI Net.</span></li>
         </ul>
-
-        <h4><span class="en">Salary formula (apply in this order)</span><span class="both"> — </span><span class="vi">Công thức lương (áp dụng theo thứ tự)</span></h4>
-        <div class="table-wrap">
-          <table>
-            <thead><tr><th>Step</th><th>Calculation</th></tr></thead>
-            <tbody>
-              <tr><td><strong>1</strong></td><td><span class="en">Agreed basic salary × market-KPI % = <strong>actual basic salary</strong></span><span class="vi"><br>Lương cơ bản thỏa thuận × % KPI thị trường = lương cơ bản thực tế</span></td></tr>
-              <tr><td><strong>2</strong></td><td><span class="en">Actual basic × (actual workdays ÷ standard workdays) = <strong>actual salary</strong> (approved attendance)</span><span class="vi"><br>Lương cơ bản thực tế × (ngày công thực tế ÷ ngày công chuẩn) = lương thực tế (theo chấm công đã duyệt)</span></td></tr>
-              <tr><td><strong>3</strong></td><td><span class="en">Actual salary × hold % (20 / 30 / 50%) = <strong>amount held</strong>. Actual salary − amount held = <strong>salary paid</strong>. The hold applies only when the Sales KPI is missed.</span><span class="vi"><br>Lương thực tế × % giữ lại (20 / 30 / 50%) = số tiền bị giữ. Lương thực tế − số tiền giữ = lương được trả. Chỉ giữ khi trượt KPI Sales.</span></td></tr>
-              <tr class="highlight-row"><td><strong><span class="en">Final</span><span class="both"> / </span><span class="vi">Cuối</span></strong></td><td><span class="en"><strong>Final monthly pay = salary paid (step 3) + net commission</strong> (when approved)</span><span class="vi"><br>Lương tháng thực nhận = lương được trả (bước 3) + hoa hồng Net (khi được duyệt)</span></td></tr>
-            </tbody>
-          </table>
-        </div>
-        <div class="callout gold">
-          <span class="callout-icon">📌</span>
-          <div class="callout-content">
-            <strong><span class="en">Important</span><span class="both"> · </span><span class="vi">Lưu ý</span></strong>
-            <ul style="margin:8px 0 0;padding-left:18px;line-height:1.8;">
-              <li><span class="en">The step 1 loss (missed market points) is <strong>not received, not held and not refunded</strong>.</span><span class="vi"><br>Phần giảm ở bước 1 (thiếu điểm thị trường) không được nhận, không bị giữ và không hoàn lại.</span></li>
-              <li><span class="en">The step 3 hold <strong>can be recovered</strong> under the recovery rules. The net hold is always calculated on the salary <strong>after steps 1 and 2</strong>, never on the original basic salary.</span><span class="vi"><br>Phần giữ ở bước 3 có thể được phục hồi theo quy tắc phục hồi. Mức giữ luôn tính trên lương sau bước 1 và 2, không tính trên lương cơ bản ban đầu.</span></li>
-              <li><span class="en">Missing both KPIs does <strong>not</strong> automatically mean receiving 0%: the result depends on the market-KPI tier reached and the net hold applied.</span><span class="vi"><br>Trượt cả hai KPI không có nghĩa tự động nhận 0%: kết quả phụ thuộc bậc KPI thị trường đạt được và mức giữ Net áp dụng.</span></li>
-              <li><span class="en"><strong>Probation, month 1:</strong> the market KPI is locked at 100% (full agreed basic) and no net KPI hold applies.</span><span class="vi"><br>Tháng thử việc đầu tiên: KPI thị trường khóa ở 100% (nhận đủ lương cơ bản) và không áp dụng giữ lương theo KPI Net.</span></li>
-            </ul>
-          </div>
-        </div>
       </div>
+
 
       <!-- 6.2 Market-creation KPI -->
       <div class="content-section">
         <h3>📣 6.2 <span class="en">Market-creation KPI</span><span class="both"> — </span><span class="vi">KPI Sale tạo thị trường</span></h3>
         <p><span class="en">Purpose: use marketing to build the WeGolden reputation and attract prospects. Requirements differ between Sales staff and Sales Leaders. <strong>Off Trade</strong> is a team KPI (team members make videos, the Leader submits the links). The <strong>Telegram KPI</strong> is for Sales staff only.</span><span class="vi"><br>Mục đích: dùng marketing để xây dựng uy tín WeGolden và thu hút khách tiềm năng. Yêu cầu khác nhau giữa Sales và Sales Leader. <strong>Off Trade</strong> là KPI của nhóm (thành viên làm video, Leader nộp link). <strong>KPI Telegram</strong> chỉ dành cho Sales.</span></p>
 
-        <h4><span class="en">Posting channels by country</span><span class="both"> — </span><span class="vi">Kênh đăng theo quốc gia</span></h4>
+        <h4><span class="en">Posting channels by country (example)</span><span class="both"> — </span><span class="vi">Kênh đăng theo quốc gia (ví dụ)</span></h4>
+        <div class="callout info">
+          <span class="callout-icon">ℹ️</span>
+          <div class="callout-content">
+            <p><span class="en"><strong>Example only.</strong> The channels for each country have not been confirmed yet by the Country Managers (CM). Follow your CM's instructions.</span><span class="vi"><br>Chỉ là ví dụ. Các kênh cho từng quốc gia chưa được CM xác nhận. Hãy làm theo hướng dẫn của CM của bạn.</span></p>
+          </div>
+        </div>
         <div class="table-wrap">
           <table>
             <thead><tr><th>Country / Quốc gia</th><th>Channels / Kênh</th></tr></thead>
@@ -214,36 +198,9 @@
         </ul>
       </div>
 
-      <!-- 6.4 Special programs -->
+      <!-- 6.4 Certification -->
       <div class="content-section">
-        <h3>🎯 6.4 <span class="en">Special programs</span><span class="both"> — </span><span class="vi">Chương trình đặc biệt</span></h3>
-        <div class="callout danger">
-          <span class="callout-icon">🧠</span>
-          <div class="callout-content">
-            <strong><span class="en">Monthly knowledge quiz (mandatory, Zoom + Quizizz)</span><span class="both"> · </span><span class="vi">Quiz kiến thức hàng tháng (bắt buộc)</span></strong>
-            <ul style="margin:8px 0 0;padding-left:18px;line-height:1.8;">
-              <li><span class="en">Applies to all Leaders and Sales. <strong>20 questions</strong> (7 easy, 7 medium, 6 hard), max <strong>20 seconds</strong> per question; faster correct answers score higher.</span><span class="vi"><br>Áp dụng cho mọi Leader và Sales. 20 câu (7 dễ, 7 trung bình, 6 khó), tối đa 20 giây mỗi câu; trả lời đúng nhanh được điểm cao hơn.</span></li>
-              <li><span class="en"><strong>Penalty: −1,000,000đ per session</strong> if you are absent, or you attend but score <strong>under 60%</strong> (fewer than 12 of 20 correct).</span><span class="vi"><br>Phạt −1,000,000đ mỗi buổi nếu vắng mặt, hoặc tham dự nhưng đúng dưới 60% (ít hơn 12/20 câu).</span></li>
-              <li><span class="en">Prizes after Q20: Top 1: 7.2 million; Top 2: 4.8 million; 3rd–4th: 3.6 million each; 5th–7th: 1.6 million each. Milestone bonus: after Q5, Q10 and Q15 the leader at that point gets +2,000,000đ (maximum 6,000,000đ extra).</span><span class="vi"><br>Giải thưởng sau câu 20: Top 1: 7.2 triệu; Top 2: 4.8 triệu; hạng 3–4: 3.6 triệu mỗi người; hạng 5–7: 1.6 triệu mỗi người. Thưởng mốc: sau câu 5, 10 và 15, người dẫn đầu lúc đó nhận thêm 2,000,000đ (tối đa thêm 6,000,000đ).</span></li>
-            </ul>
-          </div>
-        </div>
-        <div class="callout success">
-          <span class="callout-icon">🎟️</span>
-          <div class="callout-content">
-            <strong><span class="en">Lucky draw (monthly, extra)</span><span class="both"> · </span><span class="vi">Quay số may mắn (hàng tháng, thưởng thêm)</span></strong>
-            <ul style="margin:8px 0 0;padding-left:18px;line-height:1.8;">
-              <li><span class="en">Announced 1 week ahead; online on Zoom with an MC; prize pool <strong>50,000,000đ</strong> over multiple rounds.</span><span class="vi"><br>Thông báo trước 1 tuần; quay online trên Zoom có MC; tổng giải thưởng 50,000,000đ, chia nhiều vòng.</span></li>
-              <li><span class="en"><strong>1 ticket per 1,000,000đ</strong> of the salary actually received this month (30 million = 30 tickets; below 1 million = no ticket). HR compiles the official totals.</span><span class="vi"><br>1 vé cho mỗi 1,000,000đ lương thực nhận trong tháng (30 triệu = 30 vé; dưới 1 triệu = không có vé). HR tổng hợp số vé chính thức.</span></li>
-              <li><span class="en">You must be <strong>present on Zoom</strong> during the draw; absence forfeits the prize.</span><span class="vi"><br>Phải có mặt trên Zoom khi quay số; vắng mặt sẽ mất giải.</span></li>
-            </ul>
-          </div>
-        </div>
-      </div>
-
-      <!-- 6.5 Certification -->
-      <div class="content-section">
-        <h3>🏅 6.5 <span class="en">KPI test and certification</span><span class="both"> — </span><span class="vi">Kiểm tra &amp; chứng nhận KPI</span></h3>
+        <h3>🏅 6.4 <span class="en">KPI test and certification</span><span class="both"> — </span><span class="vi">Kiểm tra &amp; chứng nhận KPI</span></h3>
         <p><span class="en">The KPI Handbook has its own onboarding test: choose your role (Sales, CM / BD, or Auditor), enter your full name, and submit. The <strong>pass mark is 80%</strong>, retakes are unlimited and the questions are shuffled each time. Passing gives a <strong>Certificate of Completion</strong> with your name. This is separate from the Module 6 quiz below (pass mark 60%).</span><span class="vi"><br>Cẩm nang KPI có bài kiểm tra riêng: chọn vai trò (Sales, CM / BD hoặc Auditor), nhập họ tên và nộp bài. Điểm đạt là 80%, được làm lại không giới hạn và câu hỏi được xáo trộn mỗi lần. Đạt sẽ nhận Chứng nhận hoàn thành có ghi tên bạn. Bài này tách biệt với quiz Module 6 bên dưới (điểm đạt 60%).</span></p>
         <p><a href="https://auditorwmt.github.io/Training-KPI-WEGOLDEN/#kiem-tra" target="_blank" rel="noopener noreferrer" class="btn btn-primary" style="padding:8px 18px;font-size:0.85rem;">Take the KPI test ↗ <span class="vi">· Làm bài kiểm tra KPI</span></a></p>
       </div>
@@ -307,10 +264,10 @@ const questions = [
     explain: "1,650 points = 100%. The tiers are 25% (412.5), 50% (825), 75% (1,237.5) and 100% (1,650). / 1,650 điểm = 100%. Các bậc: 25% (412.5), 50% (825), 75% (1,237.5), 100% (1,650)."
   },
   {
-    q: "<span class=\"en\">Which step of the salary formula is applied first?</span><br class=\"both\"><span class=\"vi\">Bước nào của công thức lương được áp dụng đầu tiên?</span>",
-    opts: ["Agreed basic salary × market-KPI % = actual basic salary", "Actual salary × hold %", "Salary × workdays ratio", "Adding the net commission"],
+    q: "<span class=\"en\">Which two KPI systems must every Sales staff member meet each month?</span><br class=\"both\"><span class=\"vi\">Mỗi tháng Sales phải đáp ứng hai hệ thống KPI nào?</span>",
+    opts: ["Market-creation KPI and net / salary KPI", "Retail KPI and livestream KPI", "Attendance KPI and quiz KPI", "Only the net / salary KPI"],
     _c: "MA==",
-    explain: "Step 1 is agreed basic × market-KPI %. Step 2 applies the workdays ratio, step 3 the net hold %, and net commission is added at the end. / Bước 1: lương cơ bản × % KPI thị trường. Bước 2: tỷ lệ ngày công. Bước 3: % giữ Net. Cuối cùng cộng hoa hồng Net."
+    explain: "Both the market-creation KPI and the net / salary KPI must be met each month. / Mỗi tháng phải đáp ứng cả KPI tạo thị trường và KPI Net / lương."
   },
   {
     q: "<span class=\"en\">What makes an IB a \"qualified IB\" for the standard IB KPI?</span><br class=\"both\"><span class=\"vi\">IB cần điều kiện gì để được tính là \"IB đạt chuẩn\" cho KPI IB chuẩn?</span>",
@@ -343,14 +300,14 @@ const questions = [
     explain: "Explosion = net ≥ $30,000 in the month and 2 new IBs. It is the only way to recover no-salary months. / Bùng nổ = Net ≥ $30,000 trong tháng và 2 IB mới. Đây là cách duy nhất phục hồi các tháng không lương."
   },
   {
-    q: "<span class=\"en\">What is the penalty for the monthly knowledge quiz?</span><br class=\"both\"><span class=\"vi\">Mức phạt của quiz kiến thức hàng tháng là gì?</span>",
-    opts: ["No penalty", "−1,000,000đ only if absent", "−500,000đ if under 80%", "−1,000,000đ if absent, or if attending with under 60% correct (fewer than 12 of 20)"],
+    q: "<span class=\"en\">How is Net calculated?</span><br class=\"both\"><span class=\"vi\">Net được tính như thế nào?</span>",
+    opts: ["Deposit + Withdraw", "Withdraw − Deposit", "Deposit − Com only", "Deposit − Withdraw − Com"],
     _c: "Mw==",
-    explain: "The penalty is −1,000,000đ per session if you are absent or score under 60% (fewer than 12 of 20). / Phạt −1,000,000đ mỗi buổi nếu vắng mặt hoặc đúng dưới 60% (ít hơn 12/20 câu)."
+    explain: "Net = Deposit − Withdraw − Com (Com = commission). Net Level 1 is the net from retail clients. / Net = Nạp − Rút − Com (Com = hoa hồng). Net Level 1 là Net từ khách lẻ."
   }
 ];
 
-const quiz = new ModuleQuiz(6, questions, '2026-11b');
+const quiz = new ModuleQuiz(6, questions, '2026-11c');
 quiz.render();
 </script>
 </body>
