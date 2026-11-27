@@ -205,6 +205,10 @@ function updateSidebarProgress() {
 function _ans(q) { return parseInt(atob(q._c)); }
 
 // ===== QUIZ ENGINE =====
+// Opt-in bilingual chrome: a page that sets window.QUIZ_BILINGUAL = true (module 6) gets every engine
+// message as an .en/.vi pair, which that page's own CSS shows one at a time. Other pages keep plain English.
+function _bl(en, vi) { return window.QUIZ_BILINGUAL ? `<span class="en">${en}</span><span class="vi">${vi}</span>` : en; }
+
 class ModuleQuiz {
   // `version` (optional): bump it when quiz content changes. A result saved under another
   // version keeps its score, but its answer review is hidden — answers are stored as option
@@ -225,10 +229,10 @@ class ModuleQuiz {
     const box = document.createElement('div');
     box.id = 'quizRules';
     box.style.cssText = 'font-size:0.82rem;color:var(--text-secondary);background:rgba(255,215,0,0.06);border-left:3px solid var(--border-gold);padding:10px 14px;margin:0 0 16px;border-radius:0 8px 8px 0;line-height:1.7;';
-    box.innerHTML = '<strong>Quiz rules</strong><br>'
-      + '• Pass mark: <strong>60%</strong> — passing the quiz completes this module automatically<br>'
-      + '• <strong>One attempt</strong>: answers are locked after you submit<br>'
-      + '• Did not pass? Ask your trainer or admin to reset the quiz so you can retake it';
+    box.innerHTML = '<strong>' + _bl('Quiz rules', 'Quy tắc quiz') + '</strong><br>'
+      + '• ' + _bl('Pass mark: <strong>60%</strong> — passing the quiz completes this module automatically', 'Điểm đạt: <strong>60%</strong> — đạt quiz thì module tự động hoàn thành') + '<br>'
+      + '• ' + _bl('<strong>One attempt</strong>: answers are locked after you submit', '<strong>Một lượt làm</strong>: đáp án bị khóa sau khi nộp') + '<br>'
+      + '• ' + _bl('Did not pass? Ask your trainer or admin to reset the quiz so you can retake it', 'Chưa đạt? Nhờ trainer hoặc admin đặt lại quiz để làm lại');
     header.insertAdjacentElement('afterend', box);
   }
 
@@ -268,7 +272,7 @@ class ModuleQuiz {
     return `<div style="background:rgba(100,150,255,0.07);border:1px solid rgba(100,150,255,0.25);border-radius:10px;padding:14px 18px;margin-bottom:20px;display:flex;align-items:center;gap:12px;">
       <span style="font-size:1.4rem;">🔒</span>
       <div>
-        <div style="font-weight:700;color:#6496ff;font-size:0.9rem;">Quiz Submitted</div>
+        <div style="font-weight:700;color:#6496ff;font-size:0.9rem;">${_bl('Quiz Submitted', 'Đã nộp quiz')}</div>
         <div style="font-size:0.78rem;color:var(--text-muted);margin-top:3px;">${subtitle}</div>
       </div>
     </div>`;
@@ -284,31 +288,31 @@ class ModuleQuiz {
     result.classList.add('show');
     scoreEl.textContent = correctStr;
     scoreEl.className   = `result-score ${score >= 60 ? 'pass' : 'fail'}`;
-    document.getElementById('quizResultMsg').textContent = score >= 60
-      ? '🎉 Great job! Module marked as complete.'
-      : '📚 You need at least 60% to complete this module. Review the material and ask your trainer or admin to reset the quiz so you can retake it.';
+    document.getElementById('quizResultMsg').innerHTML = score >= 60
+      ? _bl('🎉 Great job! Module marked as complete.', '🎉 Làm tốt lắm! Module đã được đánh dấu hoàn thành.')
+      : _bl('📚 You need at least 60% to complete this module. Review the material and ask your trainer or admin to reset the quiz so you can retake it.', '📚 Bạn cần đạt tối thiểu 60% để hoàn thành module này. Hãy ôn lại tài liệu và nhờ trainer hoặc admin đặt lại quiz để làm lại.');
   }
 
   showLockedResult(saved) {
     const outdated = !Array.isArray(saved.answers) || (this.version && saved.quizVersion !== this.version);
     const note = `<div style="font-size:0.85rem;color:var(--text-secondary);background:rgba(255,215,0,0.06);border-left:3px solid var(--border-gold);padding:10px 14px;margin-bottom:16px;border-radius:0 8px 8px 0;line-height:1.6;">
-      ℹ️ This quiz was updated after you submitted it, so the answer review is not available. Your score is unchanged. Contact admin if you would like to retake the updated quiz.
+      ℹ️ ${_bl('This quiz was updated after you submitted it, so the answer review is not available. Your score is unchanged. Contact admin if you would like to retake the updated quiz.', 'Quiz này đã được cập nhật sau khi bạn nộp bài nên không thể xem lại đáp án. Điểm của bạn không đổi. Hãy liên hệ admin nếu muốn làm lại quiz đã cập nhật.')}
     </div>`;
     document.getElementById('quizContainer').innerHTML =
-      this._lockBanner(`Submitted at: ${new Date(saved.submittedAt).toLocaleString('en-GB')} &nbsp;·&nbsp; Contact admin to retake this quiz.`) +
+      this._lockBanner(`${new Date(saved.submittedAt).toLocaleString('en-GB')} &nbsp;·&nbsp; ` + _bl('Submitted — contact admin to retake this quiz.', 'Đã nộp — liên hệ admin để làm lại quiz này.')) +
       (outdated ? note : this.buildReviewHTML());
     this._showResult(saved.score, `${saved.correct}/${saved.total} — ${saved.score}%`);
   }
 
   showLockedLegacy(score) {
     document.getElementById('quizContainer').innerHTML =
-      this._lockBanner('Contact admin to retake this quiz.');
+      this._lockBanner(_bl('Contact admin to retake this quiz.', 'Liên hệ admin để làm lại quiz này.'));
     this._showResult(score, `${score}%`);
   }
 
   buildReviewHTML() {
     return `<div class="review-section">
-      <h3 class="review-title">📋 Answer Review</h3>
+      <h3 class="review-title">📋 ${_bl('Answer Review', 'Xem lại đáp án')}</h3>
       ${this.questions.map((q, i) => {
         const userAns   = this.answers[i];
         const isCorrect = userAns === _ans(q);
@@ -354,16 +358,16 @@ class ModuleQuiz {
           }).join('')}
         </ul>
         ${answered ? `<div class="feedback-box show ${this.answers[idx] === _ans(q) ? 'correct' : 'wrong'}">
-          ${this.answers[idx] === _ans(q) ? '✓ Correct! Well done.' : `✗ Incorrect. The correct answer is: ${q.opts[_ans(q)]}`}
+          ${this.answers[idx] === _ans(q) ? _bl('✓ Correct! Well done.', '✓ Chính xác! Làm tốt lắm.') : `${_bl('✗ Incorrect. The correct answer is:', '✗ Chưa đúng. Đáp án đúng là:')} ${q.opts[_ans(q)]}`}
           ${q.explain ? `<div class="explain-text">💡 ${q.explain}</div>` : ''}
         </div>` : ''}
       </div>
       <div class="quiz-nav">
-        <button class="btn btn-secondary" onclick="quiz.prev()" ${idx === 0 ? 'disabled' : ''}>← Prev</button>
+        <button class="btn btn-secondary" onclick="quiz.prev()" ${idx === 0 ? 'disabled' : ''}>${_bl('← Prev', '← Trước')}</button>
         <span class="quiz-counter">${idx+1} / ${this.questions.length}</span>
         ${idx < this.questions.length - 1
-          ? `<button class="btn btn-secondary" onclick="quiz.next()" ${this.answers[idx] === null ? 'disabled' : ''}>Next →</button>`
-          : `<button class="btn btn-primary" onclick="quiz.submit()" ${this.answers.includes(null) ? 'disabled' : ''}>Submit Quiz</button>`
+          ? `<button class="btn btn-secondary" onclick="quiz.next()" ${this.answers[idx] === null ? 'disabled' : ''}>${_bl('Next →', 'Sau →')}</button>`
+          : `<button class="btn btn-primary" onclick="quiz.submit()" ${this.answers.includes(null) ? 'disabled' : ''}>${_bl('Submit Quiz', 'Nộp bài')}</button>`
         }
       </div>`;
     this.renderDots();
@@ -415,9 +419,9 @@ class ModuleQuiz {
     scoreEl.textContent = `${correct}/${this.questions.length} — ${score}%`;
     scoreEl.className   = `result-score ${passed ? 'pass' : 'fail'}`;
 
-    document.getElementById('quizResultMsg').textContent = passed
-      ? '🎉 Great job! Module marked as complete.'
-      : `⚠️ You scored ${score}%. You need at least 60% to complete this module. Review the material and ask your trainer or admin to reset the quiz so you can retake it.`;
+    document.getElementById('quizResultMsg').innerHTML = passed
+      ? _bl('🎉 Great job! Module marked as complete.', '🎉 Làm tốt lắm! Module đã được đánh dấu hoàn thành.')
+      : _bl(`⚠️ You scored ${score}%. You need at least 60% to complete this module. Review the material and ask your trainer or admin to reset the quiz so you can retake it.`, `⚠️ Bạn đạt ${score}%. Cần tối thiểu 60% để hoàn thành module này. Hãy ôn lại tài liệu và nhờ trainer hoặc admin đặt lại quiz để làm lại.`);
 
     const btn = document.getElementById('markCompleteBtn');
     const chk = document.getElementById('completedCheck');
