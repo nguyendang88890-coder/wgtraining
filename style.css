@@ -1,5 +1,6 @@
 /* WeGolden Training Portal - Shared Styles */
 :root {
+  color-scheme: dark;   /* native controls (date/time pickers and their icons, select lists, checkboxes) render dark */
   --bg-primary: #0a0a16;
   --bg-secondary: #0f0f24;
   --bg-card: #13132a;

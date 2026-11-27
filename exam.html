@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Final Exam | WG Training</title>
-  <link rel="stylesheet" href="style.css?v=5">
+  <link rel="stylesheet" href="style.css?v=6">
 <style>
 .exam-mod-hdr { font-size:0.78rem;font-weight:700;color:var(--gold);text-transform:uppercase;letter-spacing:.5px;margin:22px 0 10px;padding-bottom:6px;border-bottom:1px solid var(--border); }
 .exam-q-item  { background:var(--bg-card);border:1px solid var(--border);border-radius:10px;padding:14px 18px;margin-bottom:8px; }
@@ -187,6 +187,11 @@
           <div class="exam-progress-bar" style="margin-top:16px;">
             <div class="exam-progress-fill" id="examProgressFill" style="width:0%"></div>
           </div>
+          <div id="examLangBar" class="hidden" style="display:flex;align-items:center;gap:8px;margin-top:14px;font-size:0.8rem;color:var(--text-muted);">
+            <span>KPI questions · Câu hỏi KPI:</span>
+            <button type="button" id="examLangEn" class="btn btn-secondary" style="padding:4px 12px;font-size:0.78rem;" onclick="setExamLang('en')">English</button>
+            <button type="button" id="examLangVi" class="btn btn-secondary" style="padding:4px 12px;font-size:0.78rem;" onclick="setExamLang('vi')">Tiếng Việt</button>
+          </div>
         </div>
 
         <div class="exam-content">
@@ -276,17 +281,34 @@ const QUESTION_BANK = [
     rubric: "Excellence Premier: 360-day lock, 3.00% interest, no early withdrawal penalty (N/A). Excellence Short-Term: 30-day lock, 0.20% interest, 15 USD early withdrawal penalty." },
 
   // MODULE 6 — KPI & Compensation (source: WeGolden KPI Handbook)
-  { q: "Define IB, retail client (Level 1) and full verify, and explain how Net is calculated. / Định nghĩa IB, khách lẻ (Level 1) và full verify, và giải thích cách tính Net.", module: 6, maxPoints: 10,
+  { q: "Define IB, retail client (Level 1) and full verify, and explain how Net is calculated.", qVi: "Định nghĩa IB, khách lẻ (Level 1) và full verify, và giải thích cách tính Net.", module: 6, maxPoints: 10,
     rubric: "IB (Introducing Broker): a referral partner who brings clients through the Sale's system. Retail client (Level 1): an individual who opens an account and trades directly under the Sale, not through an IB. Full verify: the client's identity is fully verified. Net = Deposit − Withdraw − Com (Com = commission); Net Level 1 = net from retail clients." },
-  { q: "What are the two core KPIs of the net / salary KPI, what does each require, and which must Sales staff and Sales Leaders pass? / Hai KPI cốt lõi của KPI Net / lương là gì, mỗi KPI yêu cầu gì, và Sales cũng như Sales Leader phải đạt KPI nào?", module: 6, maxPoints: 10,
+  { q: "What are the two core KPIs of the net / salary KPI, what does each require, and which must Sales staff and Sales Leaders pass?", qVi: "Hai KPI cốt lõi của KPI Net / lương là gì, mỗi KPI yêu cầu gì, và Sales cũng như Sales Leader phải đạt KPI nào?", module: 6, maxPoints: 10,
     rubric: "Standard IB KPI: at least 1 newly qualified IB in the month (a qualified IB has ≥ 2 full-verified clients, each depositing ≥ $300 and trading ≥ 0.5 lot, and total IB deposit ≥ $2,000). Retail KPI: Net Level 1 ≥ $3,000 and ≥ 2 new retail clients, each full-verified, depositing ≥ $300 and trading ≥ 0.5 lot. Sales staff must pass at least one of the two; Sales Leaders must pass the standard IB KPI (the 7th-member program can count as passing it)." },
-  { q: "Describe how the salary hold progresses when both core KPIs are missed, and name the mechanisms that can release held salary. / Mô tả mức giữ lương tăng dần khi trượt cả hai KPI cốt lõi và nêu các cơ chế có thể giải phóng lương bị giữ.", module: 6, maxPoints: 10,
+  { q: "Describe how the salary hold progresses when both core KPIs are missed, and name the mechanisms that can release held salary.", qVi: "Mô tả mức giữ lương tăng dần khi trượt cả hai KPI cốt lõi và nêu các cơ chế có thể giải phóng lương bị giữ.", module: 6, maxPoints: 10,
     rubric: "Hold 20% → 30% → 50% → no salary (commission only); a pass resets the hold to 20% for the next miss. Release mechanisms (name at least 4): Double KPI (2 IBs releases the previous month's hold); Quarterly recovery (≥ 3 qualified IBs in the quarter); Yearly recovery (≥ 12 qualified IBs in the year); Explosion (net ≥ $30,000 in the month and 2 new IBs releases all held salary in the year — the only way to recover no-salary months); 7th-member program (Leaders only); Standby (working ≥ 6 months, at most once per 3 months, only for 20%/30% holds)." },
-  { q: "How are market-creation KPI points converted into a share of the basic salary, and what applies in the first probation month? / Điểm KPI tạo thị trường được quy đổi thành % lương cơ bản như thế nào, và tháng thử việc đầu tiên được áp dụng thế nào?", module: 6, maxPoints: 10,
+  { q: "How are market-creation KPI points converted into a share of the basic salary, and what applies in the first probation month?", qVi: "Điểm KPI tạo thị trường được quy đổi thành % lương cơ bản như thế nào, và tháng thử việc đầu tiên được áp dụng thế nào?", module: 6, maxPoints: 10,
     rubric: "1,650 points = 100% of the agreed basic salary; the tiers 25% / 50% / 75% / 100% start at 412.5 / 825 / 1,237.5 / 1,650 points; points above 1,650 become a bonus (points − 1,650). In probation month 1 the market-creation KPI is locked at 100% (and the net KPI hold does not apply)." },
 ];
 
 const EXAM_QUESTIONS_PER_ATTEMPT = 10;
+
+// Questions that have a Vietnamese version (qVi, currently the module 6 KPI questions) are shown in the
+// language chosen here — the same choice as on the module 6 page. All other questions are English only.
+function examLang() { try { return localStorage.getItem('wg_m6_lang') === 'vi' ? 'vi' : 'en'; } catch (e) { return 'en'; } }
+function qText(q) { return (examLang() === 'vi' && q.qVi) ? q.qVi : q.q; }
+function setExamLang(l) {
+  try { localStorage.setItem('wg_m6_lang', l === 'vi' ? 'vi' : 'en'); } catch (e) {}
+  syncExamLangBar();
+  if (examQuestions.length) renderExamQuestion(examCurrent);
+}
+function syncExamLangBar() {
+  const bar = document.getElementById('examLangBar'); if (!bar) return;
+  bar.classList.toggle('hidden', !examQuestions.some(q => q.qVi));
+  const l = examLang();
+  document.getElementById('examLangEn').classList.toggle('active', l === 'en');
+  document.getElementById('examLangVi').classList.toggle('active', l === 'vi');
+}
 document.addEventListener('DOMContentLoaded', () => {
   const el = document.getElementById('eqDrawCount');
   if (el) el.textContent = EXAM_QUESTIONS_PER_ATTEMPT;
@@ -364,7 +386,7 @@ function renderAdminExamView() {
       <div class="exam-q-item">
         <div class="exam-q-hdr">
           <span class="exam-q-num">#${q._i+1}</span>
-          <span class="exam-q-text">${q.q} <span style="color:var(--text-muted);font-weight:400;">(${q.maxPoints||10} pts)</span></span>
+          <span class="exam-q-text">${q.q} <span style="color:var(--text-muted);font-weight:400;">(${q.maxPoints||10} pts)</span>${q.qVi ? `<span style="display:block;color:var(--text-muted);font-weight:400;font-size:0.85em;margin-top:4px;">🇻🇳 ${q.qVi}</span>` : ''}</span>
           <div style="display:flex;gap:6px;flex-shrink:0;">
             <button class="btn-xs eq-edit" onclick="openEditQuestion(${q._i})">✎ Edit</button>
             <button class="btn-xs eq-del"  onclick="deleteQuestion(${q._i})">✕</button>
@@ -386,6 +408,8 @@ function _eqModal(title, q, idx, isNew) {
       </select></div>
     <div class="form-group"><label>Question</label>
       <textarea id="eeQ" rows="3" style="width:100%;background:var(--bg-secondary);border:1px solid var(--border);color:var(--text-primary);padding:10px;border-radius:8px;font-size:0.88rem;resize:vertical;">${q?q.q:''}</textarea></div>
+    <div class="form-group"><label>Vietnamese version <span style="color:var(--text-muted);font-weight:400;">(optional — shown to trainees who choose Tiếng Việt)</span></label>
+      <textarea id="eeQv" rows="3" style="width:100%;background:var(--bg-secondary);border:1px solid var(--border);color:var(--text-primary);padding:10px;border-radius:8px;font-size:0.88rem;resize:vertical;">${q&&q.qVi?q.qVi:''}</textarea></div>
     <div class="form-group"><label>Max Points</label>
       <input type="number" id="eeP" min="1" step="0.5" value="${q&&q.maxPoints!==undefined?q.maxPoints:10}"></div>
     <div class="form-group"><label>Answer Guide / Rubric <span style="color:var(--text-muted);font-weight:400;">(admin-only — used for grading, never shown to the trainee)</span></label>
@@ -403,16 +427,17 @@ function openAddQuestion()   { _eqModal('+ Add New Question',null,null,true); }
 function _readModal() {
   return { module:+document.getElementById('eeM').value, q:document.getElementById('eeQ').value.trim(),
     maxPoints: +document.getElementById('eeP').value || 10,
-    rubric: document.getElementById('eeR').value.trim() };
+    rubric: document.getElementById('eeR').value.trim(),
+    qVi: document.getElementById('eeQv').value.trim() };
 }
 function saveEditQ(i) {
   const v=_readModal(); if(!v.q){alert('Please enter the question.');return;}
-  const b=getExamQBank(); b[i]=v; saveExamQBank(b);
+  const b=getExamQBank(); const nb={...b[i], ...v}; if(!v.qVi) delete nb.qVi; b[i]=nb; saveExamQBank(b);
   document.getElementById('eqModal').remove(); renderAdminExamView();
 }
 function saveNewQ() {
   const v=_readModal(); if(!v.q){alert('Please enter the question.');return;}
-  const b=getExamQBank()||[]; b.push(v); saveExamQBank(b);
+  const b=getExamQBank()||[]; if(!v.qVi) delete v.qVi; b.push(v); saveExamQBank(b);
   document.getElementById('eqModal').remove(); renderAdminExamView();
 }
 function deleteQuestion(i) {
@@ -636,7 +661,8 @@ function renderExamQuestion(idx) {
 
   document.getElementById('examQuestionNum').textContent = `Question ${idx+1} of ${examQuestions.length}`;
   document.getElementById('examProgressFill').style.width = `${((idx+1)/examQuestions.length)*100}%`;
-  document.getElementById('examQuestionText').textContent = q.q;
+  document.getElementById('examQuestionText').textContent = qText(q);
+  syncExamLangBar();
 
   // Rubric is intentionally NOT shown here — it's an answer key (exact facts/
   // figures), not just a topic hint, so revealing it during the exam would let
@@ -686,7 +712,7 @@ async function submitExam() {
     pendingAttemptNumber,
     passThreshold,
     submittedAt: now,
-    questions: examQuestions.map(q => ({ q: q.q, module: q.module, maxPoints: q.maxPoints, rubric: q.rubric })),
+    questions: examQuestions.map(q => { const shown = qText(q); return { q: shown, ...(shown !== q.q ? { qEn: q.q } : {}), module: q.module, maxPoints: q.maxPoints, rubric: q.rubric }; }),
     answers: examAnswers.slice(),
     score: null, total: null, scores: null
   };
