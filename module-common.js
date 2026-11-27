@@ -1004,29 +1004,29 @@ function openModProposalModal(pageInfo) {
     <div style="background:#12122a;border:1px solid rgba(255,255,255,0.1);border-radius:16px;padding:28px;max-width:560px;width:100%;max-height:90vh;overflow-y:auto;box-shadow:0 16px 48px rgba(0,0,0,0.6);">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;">
         <h3 style="margin:0;color:#fff;font-size:1rem;">✏️ Suggest Edit — Module ${pageInfo.moduleId || ''} ${pageInfo.moduleName}</h3>
-        <button onclick="document.getElementById('modProposalModal').remove()" style="background:none;border:none;color:#888;font-size:1.3rem;cursor:pointer;padding:0 4px;">✕</button>
+        <button onclick="document.getElementById('modProposalModal').remove()" style="background:none;border:none;color:#9d9dba;font-size:1.3rem;cursor:pointer;padding:0 4px;">✕</button>
       </div>
       <div style="display:flex;flex-direction:column;gap:14px;">
         <div>
-          <label style="display:block;font-size:0.8rem;color:#aaa;margin-bottom:5px;">Section / Item to Edit <span style="color:#ff6b6b">*</span></label>
+          <label style="display:block;font-size:0.8rem;color:#c8c8dc;margin-bottom:5px;">Section / Item to Edit <span style="color:#ff6b6b">*</span></label>
           <input id="mpSection" placeholder="e.g. Leverage table, Zero commission callout, Quiz question #3…" style="width:100%;padding:9px 12px;background:#0a0a1a;border:1px solid #2a2a4a;border-radius:8px;color:#fff;font-size:0.88rem;box-sizing:border-box;">
         </div>
         <div>
-          <label style="display:block;font-size:0.8rem;color:#aaa;margin-bottom:5px;">Current Content (original)</label>
+          <label style="display:block;font-size:0.8rem;color:#c8c8dc;margin-bottom:5px;">Current Content (original)</label>
           <textarea id="mpOriginal" rows="3" placeholder="Paste the current content to be changed (if any)…" style="width:100%;padding:9px 12px;background:#0a0a1a;border:1px solid #2a2a4a;border-radius:8px;color:#fff;font-size:0.88rem;resize:vertical;box-sizing:border-box;"></textarea>
         </div>
         <div>
-          <label style="display:block;font-size:0.8rem;color:#aaa;margin-bottom:5px;">Proposed Content <span style="color:#ff6b6b">*</span></label>
+          <label style="display:block;font-size:0.8rem;color:#c8c8dc;margin-bottom:5px;">Proposed Content <span style="color:#ff6b6b">*</span></label>
           <textarea id="mpProposed" rows="4" placeholder="Enter your proposed edit…" style="width:100%;padding:9px 12px;background:#0a0a1a;border:1px solid #2a2a4a;border-radius:8px;color:#fff;font-size:0.88rem;resize:vertical;box-sizing:border-box;"></textarea>
         </div>
         <div>
-          <label style="display:block;font-size:0.8rem;color:#aaa;margin-bottom:5px;">Notes / Reason</label>
+          <label style="display:block;font-size:0.8rem;color:#c8c8dc;margin-bottom:5px;">Notes / Reason</label>
           <input id="mpNote" placeholder="Reason for the proposed edit (optional)…" style="width:100%;padding:9px 12px;background:#0a0a1a;border:1px solid #2a2a4a;border-radius:8px;color:#fff;font-size:0.88rem;box-sizing:border-box;">
         </div>
         <div id="mpError" style="color:#ff6b6b;font-size:0.82rem;display:none;"></div>
         <div style="display:flex;gap:10px;margin-top:4px;">
           <button onclick="submitModProposal(${JSON.stringify(pageInfo)})" style="flex:1;padding:10px;background:linear-gradient(135deg,#6496ff,#4a6fe0);color:#fff;border:none;border-radius:8px;font-size:0.88rem;font-weight:700;cursor:pointer;">📤 Submit Proposal</button>
-          <button onclick="document.getElementById('modProposalModal').remove()" style="padding:10px 18px;background:#1e1e3a;color:#aaa;border:1px solid #2a2a4a;border-radius:8px;font-size:0.88rem;cursor:pointer;">Cancel</button>
+          <button onclick="document.getElementById('modProposalModal').remove()" style="padding:10px 18px;background:#1e1e3a;color:#c8c8dc;border:1px solid #2a2a4a;border-radius:8px;font-size:0.88rem;cursor:pointer;">Cancel</button>
         </div>
       </div>
     </div>`;

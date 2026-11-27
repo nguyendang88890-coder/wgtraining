@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>New User Tracker — WeGolden</title>
-  <link rel="stylesheet" href="style.css?v=4">
+  <link rel="stylesheet" href="style.css?v=5">
   <style>
     /* ── Layout ── */
     body { margin: 0; display: flex; min-height: 100vh; background: var(--bg-primary); color: var(--text-primary); font-family: var(--font-family, 'Inter', sans-serif); }
@@ -160,7 +160,7 @@
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
 <script src="firebase-config.js?v=6"></script>
-<script src="module-common.js?v=6"></script>
+<script src="module-common.js?v=7"></script>
 <script>
 // ── Access guard + init ──────────────────────────────────────────────────────
 const CUR_USER = localStorage.getItem('wmt_user') || '';
@@ -394,7 +394,7 @@ function openUserPDF(un) {
       <div class="mb-title">M${n}</div>
       <div>${done ? '<span class="mb-done">✅</span>' : '<span class="mb-nope">⬜</span>'}</div>
       <div>${name.split(' ').slice(0,2).join(' ')}</div>
-      ${sc != null ? `<div style="font-size:0.7rem;color:#888;">Score: ${sc}</div>` : ''}
+      ${sc != null ? `<div style="font-size:0.7rem;color:#9d9dba;">Score: ${sc}</div>` : ''}
     </div>`;
   }).join('');
 
@@ -444,7 +444,7 @@ function openUserPDF(un) {
             ${ud.workName ? ud.workName + ' · ' : ''}${un}${ud.department ? ' · ' + ud.department : ''}${ud.position ? ' · ' + ud.position : ''}
           </div>
         </div>
-        <div style="text-align:right;font-size:0.78rem;color:#888;">
+        <div style="text-align:right;font-size:0.78rem;color:#9d9dba;">
           Generated ${new Date().toLocaleDateString('en-GB', {day:'2-digit',month:'short',year:'numeric'})}<br>
           WeGolden Training Portal
         </div>
